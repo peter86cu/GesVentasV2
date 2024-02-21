@@ -533,7 +533,7 @@ public class EmpleadosController {
 				responseHttp.setContentType("application/json");
 				responseHttp.setCharacterEncoding("UTF-8");
 				responseHttp.getWriter().write(json);
-
+//
 
 			} else {
 
