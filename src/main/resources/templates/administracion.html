@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+
+<head th:replace="template :: html_head">
+
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fa-solid fa-screwdriver-wrench" style="color:#218838"></i>
+								<strong>EJECUCIÓN DE PROCESOS</strong>
+							</h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Ejecución de procesos</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+
+			</div>
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+
+				</div>
+				<br>
+
+
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="ordenes">
+						<thead>
+							<tr style="background: #778899">
+								<th style="width: 10%;text-align: center;"><strong>ID PROCESO</strong></th>
+								<th style="width: 30%;text-align: center;"><strong>PROCESO</strong></th>
+								<th style="width: 20%;text-align: center;"><strong>ESTADO</strong></th>
+								<th style="width: 20%;text-align: center;"><strong>ULTIMA EJECUCIÓN</strong></th>
+								<th style="width: 10%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="proceso :${lstProcesos}">
+								<td style="width: 10%;text-align: center;" th:text="${proceso.id}"></td>
+								<td th:text="${proceso.proceso}"></td>
+								<td>
+									<span th:each="estado :${listaEstado}">
+										<span th:if="${estado.id}==${proceso.id_estado}"
+											th:text="${estado.estado}"></span>
+									</span>
+								</td>
+								<td th:text="${proceso.fecha_ultima_ejecucion}"></td>
+								<td>
+									<button class="btn btn-primary ModalEjecutarProceso"
+										th:onclick="ejecutarProceso('[(${proceso.id})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="fas fa-play"></i></button>
+
+									<button class="btn btn-primary ModalEjecutarProceso"
+										th:onclick="stopApplication('[(${proceso.id})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="fas fa-stop-circle"></i></button>
+
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title in" id="myModalLabel">Please Wait</h4>
+					<h4 class="modal-title hide" id="myModalLabel">Complete</h4>
+				</div>
+				<div class="modal-body center-block">
+					<div class="progress">
+						<div class="progress-bar bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+							aria-valuemax="100">
+
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default hide" data-dismiss="modal" id="btnClose"
+						onclick="ejecutarProceso('myModal')">Close</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+
+	<div th:replace="template :: mDiaTemplate"></div>
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+	<div th:replace="template :: footer"></div>
+
+</body>
+
+
+<style type="text/css">
+	.text_verde {
+		color: #006400;
+		font-weight: bold;
+	}
+
+	.text_rojo {
+		color: #C40000;
+		font-weight: bold;
+	}
+
+	.text_verde {
+		color: #060;
+		font-weight: bold;
+	}
+
+	.text_azul {
+		color: #00F;
+		font-weight: bold;
+	}
+
+	.text_naranja {
+		color: #F60;
+		font-weight: bold;
+	}
+
+	.text_negro {
+		color: #000000;
+		font-weight: bold;
+	}
+
+	.text_normal {
+		color: inherit;
+
+	}
+
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>
+
+
+
+</html>

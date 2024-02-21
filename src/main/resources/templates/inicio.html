@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: html_head">
+ 
+</head>
+
+<body >
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+
+ <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      
+    </div>
+    
+
+
+</main>
+
+
+
+ <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+		<div th:replace="template :: loadingTemplate"></div>
+	<div th:replace="template :: mDiaTemplate"></div>
+
+</body>
+<div th:replace="template :: footer"> </div>
+</html>

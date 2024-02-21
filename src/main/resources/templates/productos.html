@@ -1,0 +1,638 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+
+</head>
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<body>
+
+
+	<main id="main" class="main">
+
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i>
+								<strong>PRODUCTOS</strong>
+							</h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Productos</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc; justify-content:right;"
+						onclick="abrirModal('addProducto'); return false"><i class="fas fa-plus"></i>Agregar</button>
+
+
+				</div>
+			</div>
+
+
+
+			<div class="myForm">
+				<form method="post" id="addProductos" name="addProductos" enctype="multipart/form-data">
+					<div class="modal fade" id="addProducto" tabindex="-1" role="dialog"
+						aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-xl" role="document">
+							<div class="modal-content">
+								<div class="modal-header" style="background: #17a2b8;">
+									<h4 class="modal-title"><strong>NUEVO PRODUCTO</strong></h4>
+									<button type="button" class="close"
+										onclick="cerrarModalProducto('addProducto'); return false" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<div class="card-body">
+
+										<form th:action="@{/registrar}" th:object="${producto}"
+											enctype="multipart/form-data" class="row g-3 needs-validation" id="addUser1"
+											name="addUser1" novalidate method="POST">
+
+											<div class="photo">
+												<div class="prevPhoto">
+													<span class="delPhoto notBlock">X</span>
+													<label for="foto1"></label>
+												</div>
+												<div class="upimg">
+													<input type="file" name="foto" id="foto1">
+													<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+												</div>
+												<div id="form_alert"></div>
+											</div>
+
+
+											<div class="col-md-5">
+												<label for="inputCodigo">Código de Producto:</label>
+												<input type="text" th:field="*{codigo}" id="inputCodigo"
+													onchange="validarChange(this,'inputCodigo')" name="inputCodigo"
+													class="form-control">
+											</div>
+
+											<div class="row">
+												<div class="col-md-6 ">
+													<label for="inputNombre">Producto:</label>
+													<input type="text" th:field="*{nombre}" id="inputNombre"
+														name="inputNombre" class="form-control"
+														onchange="validarChange(this,'inputNombre')">
+												</div>
+											</div>
+
+
+											<div class="row">
+												<div class="col-md-3 ">
+													<label for="inputMinimo">Cantidad Minima:</label>
+													<input type="text" th:field="*{cantidadminima}" id="inputMinimo"
+														name="inputMinimo" class="form-control"
+														onchange="validarChange(this,'inputMinimo')">
+												</div>
+												<div class="col-md-3">
+													<label for="inputPVenta">Precio de Venta:</label>
+													<input type="text" id="inputPVenta" th:field="*{precioventa}"
+														name="inputPVenta" class="form-control"
+														onchange="validarChange(this,'inputPVenta')">
+												</div>
+
+												<div class="col-md-3">
+													<label>I.V.A de Venta:</label>
+													<select id="idiva" name="idiva" class="form-control custom-select"
+														onchange="validarChange(this,'idiva');">
+														<option value="0" selected disabled>Seleccionar</option>
+														<option th:each="imp : ${listaImpuestos}"
+															th:value="${imp.id_impuesto}" th:text="${imp.toString()}">
+														</option>
+													</select>
+												</div>
+												<div class="col-md-3">
+													<label>Moneda:</label>
+													<select id="idMoneda" name="idMoneda"
+														class="form-control custom-select"
+														onchange="validarChange(this,'idMoneda');">
+														<option value="0" selected disabled>Seleccionar</option>
+														<option th:each="mony : ${listaMoneda}" th:value="${mony.id}"
+															th:text="${mony.moneda}">
+														</option>
+													</select>
+												</div>
+											</div>
+
+
+											<br>
+											<div class="row">
+
+												<div class="imput-group col-md-3">
+													<label>Tipo Producto:</label>
+													<select id="tipoproducto" name="tipoproducto"
+														class="form-control custom-select"
+														onchange="selectProductoCategoria(this);validarChange(this,'tipoproducto');">
+														<option value="0" selected disabled>Seleccionar</option>
+														<option th:each="tipo : ${listaTipoProd}"
+															th:value="${tipo.id_tipo_producto}"
+															th:text="${tipo.toString()}"></option>
+													</select>
+												</div>
+
+												<div id="catDIV" class="form-group col-md-3" style="display: none">
+													<label>Categoria:</label>
+													<select class="categoria custom-select" id="txtCategoria"
+														name="txtCategoria"
+														onchange="selectProductoMarca(this);validarChange(this,'txtCategoria');">
+														<option disabled value="0">Buscar categoria</option>
+													</select>
+													<input type="hidden" id="idCategoria" name="idCategoria" value="">
+												</div>
+
+												<div id="marcaDIV" class="form-group col-md-3" style="display: none">
+													<label>Marca:</label>
+													<select class="marca custom-select" id="txtMarca" name="txtMarca"
+														onchange="selectProductoModelo(this);validarChange(this,'txtMarca');">
+														<option disabled value="0">Buscar marca</option>
+													</select>
+													<input type="hidden" id="idMarca" name="idMarca" value="">
+												</div>
+												<br>
+												<div id="modeloDIV" class="form-group col-md-3" style="display: none">
+													<label>Modelo:</label>
+													<select class="modelo custom-select" id="txtModelo" name="txtModelo"
+														onchange="validarChange(this,'txtMarca');">
+														<option disabled value="0">Buscar modelo</option>
+													</select>
+													<input type="hidden" id="idModelo" name="idModelo" value="">
+												</div>
+
+											</div>
+											<br>
+											<div class="row">
+												<div class="form-group col-md-3">
+													<label>Unidad de medida:</label>
+													<select id="um" name="um" class="form-control custom-select"
+														onchange="validarChange(this,'um');">
+														<option value="0" selected disabled>Seleccionar</option>
+														<option th:each="um : ${listaUM}"
+															th:value="${um.id_unidad_medida}"
+															th:text="${um.toString()}"></option>
+													</select>
+												</div>
+
+
+												<div class="form-group col-md-3">
+													<label>Inventariable:</label>
+													<select id="inventariable" name="inventariable"
+														class="form-control custom-select"
+														onchange="validarChange(this,'inventariable');">
+														<option value="3" selected disabled>Seleccionar</option>
+														<option value=1>SI</option>
+														<option value=0>NO</option>
+													</select>
+												</div>
+
+												<div class="form-group col-md-3">
+													<label>Disponible:</label>
+													<select id="disponible" name="disponible"
+														class="form-control custom-select"
+														onchange="validarChange(this,'disponible');">
+														<option value="3" selected disabled>Seleccionar</option>
+														<option value=1>SI</option>
+														<option value=0>NO</option>
+													</select>
+												</div>
+
+												<div class="form-group col-md-3">
+													<label></label>
+
+													<button type="button" href="javascript:;"
+														onclick="abrirModalDetalle('ModalDetalleProducto'); return false"
+														class="btn btn-block btn-dark btn-lg">Características</button>
+												</div>
+
+
+										</form>
+
+
+									</div>
+
+
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger"
+					onclick="cerrarModalProducto('addProducto'); return false">Cancelar</button>
+				<button type="submit" href="javascript:;" onclick="agregarProductos(this); return false"
+					class="btn btn-success">Guardar</button>
+			</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</form>
+		</div>
+
+		<div class="card-body">
+
+			<div align="right" class="form-group">
+				<input type="text" class="form-control pull-right" style="width:20%;" id="searchprodcutos"
+					placeholder="Type to search table...">
+			</div>
+			<br>
+
+			<div class="card-block">
+				<table class="table table-bordered table-striped" id="productost">
+					<thead>
+						<tr style="background: #778899">
+							<th>IMAGEN</th>
+							<th>CÓDIGO</th>
+							<th>NOMBRE PRODUCTO</th>
+							<th>PRECIO VENTA</th>
+							<th>UM</th>
+							<th>CATEGORÍA</th>
+							<th>STOCK</th>
+							<th>TIPO</th>
+							<th>IMPUESTO</th>
+							<th>ACCIÓN</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="prod :${listaProductos}">
+							<td><img class="table-avatar" alt="Producto" th:if="${prod.foto !=null}"
+									th:src="@{${'productos/' + prod.foto}}" width="50" height="40">
+
+								<img class="table-avatar" alt="Producto" th:unless="${prod.foto !=null}"
+									th:src="@{${'productos/img_producto.png'}}" width="50" height="40">
+							</td>
+							<td th:text="${prod.codigo}"></td>
+							<td th:text="${prod.nombre}"></td>
+							<td th:text="${prod.precioventa}"></td>
+							<td th:each="um :${listaUM}" th:if="${um.id_unidad_medida == prod.um} "
+								th:text="${um.toString()}"></td>
+							<td th:each="catP :${categorias}" th:if="${catP.id_categoria_producto == prod.categoria} "
+								th:text="${catP.categoria}"></td>
+							<td>
+								<span th:each="stock :${lstStock}">
+									<span th:if="${stock.id_producto}==${prod.id}" th:text="${stock.cantidad}"></span>
+								</span>
+							</td>
+							<td th:each="tipo :${listaTipoProd}" th:if="${tipo.id_tipo_producto == prod.tipoproducto} "
+								th:text="${tipo.toString()}">
+							</td>
+							<td th:each="impuesto :${listaImpuestos}" th:if="${impuesto.id_impuesto == prod.idiva} "
+								th:text="${impuesto.toString()}"></td>
+
+							<td>
+								<button class="btn btn-primary " th:onclick="editarProducto('[(${prod.id})]')"
+									style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+										class="far fa-edit"></i></button>
+
+								<button class="btn btn-default btnEliminarOrden"
+									th:onclick="eliminarProducto('[(${prod.id})]','[(${prod.nombre})]')"
+									style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+										class="fas fa-trash"></i></button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+		</div>
+
+		</div>
+
+	</main>
+
+	<div class="modal" id="ModalDetalleProducto" data-backdrop="static" data-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="box-body">
+
+						<h3 class="card-title">CARACTERISTICAS DEL PRODUCTO</h3>
+						<div class="row mb-3">
+							<label class="col-md-2 col-lg-1 col-form-label">Etiqueta:</label>
+							<div class="col-md-8 col-lg-4">
+								<input name="key" type="text" class="form-control" id="key" value="">
+							</div><label class="col-md-2 col-lg-1 col-form-label">Valor:</label>
+							<div class="col-md-8 col-lg-5">
+								<input name="value" type="text" class="form-control" id="value" value="">
+							</div>
+							<div class="col-md-1 col-lg-1">
+								<button class="btn btn-primary" onclick="agregarDetalle()"><i class="fa fa-plus-circle"
+										aria-hidden="true"></i>
+								</button>
+
+							</div>
+
+						</div>
+						<div class="row mb-3">
+							<label class="col-sm-3 col-form-label">Características:</label>
+							<div class="col-sm-7">
+								<textarea class="form-control" style="height: 100px" id="detalleProducto"
+									name="detalleProducto" disabled></textarea>
+							</div>
+						</div>
+						
+						<div class="row mb-3">
+							<label class="col-sm-3 col-form-label">Descripción del Producto: </label>
+							<div class="col-sm-7">
+								<textarea class="form-control" style="height: 100px" id="caracteristica"
+									name="caracteristica"></textarea>
+							</div>
+						</div>
+					</div>
+
+
+
+
+
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger"
+							onclick="cerrarModalDetalle('ModalDetalleProducto'); return false">Cerrar</button>
+						<button type="submit" class="btn btn-success" href="javascript:;"
+							onclick="guardarDetalleProducto(); return false">Guardar</button>
+					</div>
+
+
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+
+
+	<div th:replace="template :: mDiaTemplate"></div>
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+	<div th:replace="template :: footer"></div>
+
+</body>
+
+
+
+<!--***************************************FIN APERTURA DIA*************************************************-->
+
+<script>
+
+
+</script>
+
+<style type="text/css">
+	.categoria {
+		width: 250px;
+	}
+
+	.modelo {
+		width: 230px;
+	}
+
+	.marca {
+		width: 220px;
+	}
+
+	.negrita {
+		font-weight: bold;
+	}
+
+	.prevPhoto {
+		display: flex;
+		justify-content: space-between;
+		width: 160px;
+		height: 150px;
+		border: 1px solid #CCC;
+		position: relative;
+		cursor: pointer;
+		background: url(iconos/upload_foto.png);
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center center;
+		margin: auto;
+		float: right;
+	}
+
+	.prevPhoto label {
+		cursor: pointer;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+
+	}
+
+	.prevPhoto img {
+		width: 100%;
+		height: 100%;
+
+	}
+
+	.upimg,
+	.notBlock {
+		display: none !important;
+	}
+
+	.errorArchivo {
+		font-size: 16px;
+		font-family: arial;
+		color: #cc0000;
+		text-align: center;
+		font-weight: bold;
+		margin-top: 10px;
+	}
+
+	.delPhoto {
+		color: #FFF;
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 50%;
+		width: 25px;
+		height: 25px;
+		background: red;
+		position: absolute;
+		right: -10px;
+		top: -10px;
+		z-index: 10;
+	}
+
+	#tbl_list_productos img {
+		width: 50px;
+	}
+
+	.imgProductoDelete {
+		width: 175px;
+	}
+
+
+
+	.products-list .product-title {
+		font-weight: 600;
+	}
+
+	.products-list {
+		list-style: none;
+	}
+
+	.float-right {
+		float: right !important;
+	}
+
+	.badge-info {
+		color: #fff;
+		background-color: #17a2b8;
+	}
+
+	.badge {
+		display: inline-block;
+		padding: .25em .4em;
+		font-size: 75%;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: baseline;
+		border-radius: .25rem;
+		transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+	}
+
+
+	a {
+		color: #007bff;
+		text-decoration: none;
+		background-color: transparent;
+	}
+
+
+
+
+	.bg_black {
+		background: #000;
+		height: 100vh;
+	}
+
+	.bg_black img {
+		position: absolute;
+		width: 100px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.alert-dismissible .btn-close {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 2;
+		padding: 1.25rem 1rem;
+	}
+
+
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>
+
+</html>

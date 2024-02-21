@@ -1,0 +1,31 @@
+.loginbg {
+    background: repeating-linear-gradient(45deg,
+    #9ddaff,
+    #9ddaff 35px,
+    #6fa6ff 35px,
+    #6fa6ff 50px)
+}
+
+.login-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+footer.credit {
+    width: 100%;
+    text-align: center;
+    background-color: rgba(240, 248, 255, 0.5);
+}
+
+input {
+    margin: 10px !important; /* sobrescribe bootstrap */
+}
+
+.vertical-flex-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}

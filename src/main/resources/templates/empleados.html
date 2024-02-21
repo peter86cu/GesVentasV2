@@ -1,0 +1,881 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+<body>
+
+
+	<main id="main" class="main">
+
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i>
+								<strong>EMPLEADOS</strong>
+							</h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Empleados</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card" th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==6">
+				<div class="card-header">
+					<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc; justify-content:right;"
+						onclick="abrirModal('ModalEditarEmpleado'); return false"><i
+							class="fas fa-plus"></i>Agregar</button>
+
+
+				</div>
+			</div>
+
+
+
+
+
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right" style="width:20%;" id="searchempleados"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="empleadost">
+						<thead>
+							<tr style="background: #778899">
+								<th>NOMBRE</th>
+								<th>APELLIDOS</th>
+								<th>TIPO DOCUMENTO</th>
+								<th>DOCUMENTO</th>
+								<th>FECHA INGRESO</th>
+								<th>FECHA NACIMIENTO</th>
+								<th>FOTO</th>
+								<th>ACCIÓN</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="emp :${listaEmpleados}">
+								<td th:text="${emp.nombre}"></td>
+								<td th:text="${emp.apellidos}"></td>
+								<td th:each="t : ${tipoDocumento}" th:if="${t.id == emp.idtipodocumento} "
+									th:text="${t.tipo}"></td>
+								<td th:text="${emp.documento}"></td>
+								<td th:text="${emp.fechaingreso}"></td>
+								<td th:text="${emp.fechanacimiento}"></td>
+								<td>
+									<img class="rounded-circle" alt="Empleado" th:if="${emp.foto !=null}"
+										th:src="@{${'empleados/' + emp.foto}}" width="50" height="35">
+
+									<img class="rounded-circle" alt="Empleado" th:unless="${emp.foto !=null}"
+										th:src="@{${'empleados/img_empleado.png'}}" width="60" height="50">
+								</td>
+								<td>
+
+									<button class="btn btn-primary "
+										th:onclick="editarEmpleado('[(${emp.idempleado})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+
+									<button class="btn btn-default btnEliminarOrden"
+										th:onclick="eliminarProducto('[(${emp.idempleado})]')"
+										style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+											class="fas fa-trash"></i></button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+
+	<!--*************************************************MODAL EDITAR EMPLEADO*********************************-->
+	<div class="modal" id="ModalEditarEmpleado" name="ModalEditarEmpleado" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h4 class="modal-title"><strong>NUEVO EMPLEADO</strong></h4>
+					<button type="button" class="close" onclick="cerrarModal('ModalEditarEmpleado'); return false"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+						<div class="card-body pt-3">
+							<!-- Bordered Tabs -->
+							<ul class="nav nav-tabs nav-tabs-bordered">
+
+								<input type="hidden" id="idEmpleado" name="idEmpleado" value="">
+
+
+								<li class="nav-item">
+									<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-edit"
+										id="profile-edit">Datos
+										Personales</button>
+								</li>
+
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-profesion"
+										id="profile-profesion">Profesión</button>
+								</li>
+
+								<!--<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-laborales"
+										id="profile-laborales">Datos
+										Laborales</button>
+								</li>-->
+
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-salud"
+										id="profile-salud">Salud</button>
+								</li>
+								
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-banco"
+										id="profile-banco">Banco</button>
+								</li>
+
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-cargo"
+										id="profile-cargo">Cargo</button>
+								</li>
+
+							</ul>
+							<div class="tab-content pt-2">
+
+
+
+								<div class="tab-pane fade profile-edit pt-3 show active" id="profile-edit-div">
+
+									<!-- Profile Edit Form -->
+									<form>
+										<div class="row mb-3">
+											<label class="col-md-4 col-lg-3 col-form-label">Foto</label>
+											<div class="col-md-8 col-lg-9">
+												<div class="photo">
+													<div class="prevPhoto">
+														<span class="delPhoto notBlock">X</span>
+														<label id="up" for="foto1"></label>
+													</div>
+													<div class="upimg">
+														<input type="file" name="fotoE" id="foto1">
+														<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+													</div>
+													<div id="form_alert"></div>
+												</div>
+
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="fullName" class="col-md-4 col-lg-3 col-form-label">Nombre
+												Completo</label>
+											<div class="col-md-8 col-lg-5">
+												<input name="nombre" type="text" class="form-control" id="nombre"
+													value="">
+											</div>
+
+										</div>
+
+										<div class="row mb-3">
+											<label for="fullName"
+												class="col-md-4 col-lg-3 col-form-label">Apellidos</label>
+											<div class="col-md-8 col-lg-6">
+												<input name="apellidos" type="text" class="form-control" id="apellidos"
+													value="">
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Country" class="col-md-4 col-lg-3 col-form-label">Sexo</label>
+											<div class="col-md-8 col-lg-4">
+												<select id="sexo" name="sexo" class="form-control custom-select">
+													<option selected disabled>Seleccionar</option>
+													<option value="1">MASCULINO</option>
+													<option value="2">FEMENINO</option>
+													<option value="3">OTRO</option>
+												</select>
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="fullName" class="col-md-4 col-lg-3 col-form-label">Fecha
+												Nacimiento</label>
+											<div class="col-md-8 col-lg-4">
+												<input type="date" id="fechaNac" name="fechaNac" class="form-control">
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Country" class="col-md-4 col-lg-3 col-form-label">Tipo
+												Documento</label>
+											<div class="col-md-8 col-lg-6">
+												<select id="tipoDoc" name="tipoDoc" class="form-control custom-select">
+													<option selected disabled>Seleccionar</option>
+													<option th:each="td : ${tipoDocumento}" th:value="${td.id}"
+														th:text="${td.tipo}"></option>
+												</select>
+											</div>
+										</div>
+
+
+
+										<div class="row mb-3">
+											<label for="fullName"
+												class="col-md-4 col-lg-3 col-form-label">Documento</label>
+											<div class="col-md-8 col-lg-6">
+												<input name="documento" type="text" class="form-control" id="documento"
+													value="">
+											</div>
+										</div>
+
+
+										<div class="row mb-3">
+											<label for="fullName" class="col-md-4 col-lg-3 col-form-label">Fecha
+												Ingreso</label>
+											<div class="col-md-8 col-lg-4">
+												<input type="date" id="fecha" name="fecha" class="form-control">
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Country" class="col-md-4 col-lg-3 col-form-label">País
+												Documento</label>
+											<div class="col-md-8 col-lg-6">
+												<select id="paisDoc" name="paisDoc" class="form-control custom-select">
+													<option selected disabled>Seleccionar</option>
+													<option th:each="pais : ${listaPais}" th:value="${pais.id}"
+														th:text="${pais.pais}"></option>
+												</select>
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Address"
+												class="col-md-4 col-lg-3 col-form-label">Dirección</label>
+											<div class="col-md-8 col-lg-9">
+												<input name="address" type="text" class="form-control" id="address"
+													value="">
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Country" class="col-md-4 col-lg-3 col-form-label">País
+												Residencia</label>
+											<div class="col-md-8 col-lg-6">
+												<select id="paisResidencia" name="paisResidencia"
+													class="form-control custom-select">
+													<option selected disabled>Seleccionar</option>
+													<option th:each="pais : ${listaPais}" th:value="${pais.id}"
+														th:text="${pais.pais}"></option>
+												</select>
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Phone" class="col-md-4 col-lg-3 col-form-label">Telefono</label>
+											<div class="col-md-8 col-lg-5">
+												<input name="phone" type="text" class="form-control" id="phone"
+													value="">
+											</div>
+										</div>
+
+										<div class="row mb-3">
+											<label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+											<div class="col-md-8 col-lg-9">
+												<input name="email" type="email" class="form-control" id="email"
+													value="">
+											</div>
+										</div>
+										<div class="text-center">
+											<button type="submit" class="btn btn-primary" href="javascript:;"
+												onclick="agregaNuevoEmpleado(); return false">Siguiente</button>
+										</div>
+									</form><!-- End Profile Edit Form -->
+
+								</div>
+
+								<div class="tab-pane fade pt-3" id="profile-profesion-div">
+									<div class="card card-secondary">
+										<div class="card-header">
+											<h3 class="card-title">DATOS PROFESIONALES</h3>
+											<div class="row mb-3">
+												<label for="Titulo"
+													class="col-md-2 col-lg-2 col-form-label">Título</label>
+												<div class="col-md-8 col-lg-8">
+													<select style="width: 100%" class="titulos form-control"
+														name="titulos" id="titulos" required>
+														<option value="">Buscar título</option>
+													</select>
+												</div>
+											</div>
+
+											<div class="row mb-3">
+												<!--	<label class="col-sm-3 col-form-label">Títulos Seleccionados</label>
+												<div class="col-sm-7">
+												
+
+													<textarea class="form-control" style="height: 100px"
+														id="opcionTitulo" name="opcionTitulo"></textarea>
+												</div>-->
+												<div id="data">
+													<table id="g-table" class="table">
+														<thead>
+															<tr>
+																<th width="10%" align="center" valign="middle">Id</th>
+																<th width="40%" align="center" valign="middle">Título
+																</th>
+																<th width="40%" align="center" valign="middle">Archivo
+																</th>
+
+															</tr>
+
+														</thead>
+
+
+														<tbody id="cuerpo-items">
+															<tr style="background: #ccffcc">
+
+															</tr>
+														</tbody>
+
+													</table>
+												</div>
+
+											</div>
+
+
+
+
+
+										</div>
+									</div>
+
+									<div class="card card-secondary">
+										<div class="card-header">
+											<h3 class="card-title">DATOS LABORALES</h3>
+											<div class="row mb-3">
+												<label class="col-md-2 col-lg-2 col-form-label">Empresa</label>
+												<div class="col-md-8 col-lg-4">
+													<input name="trabajo" type="text" class="form-control" id="trabajo"
+														value="">
+												</div><label class="col-md-1 col-lg-2 col-form-label">Tiempo</label>
+												<div class="col-md-2 col-lg-2">
+													<input name="tiempo" type="text" class="form-control" id="tiempo"
+														value="">
+												</div>
+												<div class="col-md-1 col-lg-1">
+													<button class="btn btn-primary" onclick="agregaTrabajos()"><i
+															class="fa-sharp fa-regular fa-circle-plus"></i>+</button>
+
+												</div>
+
+											</div>
+											<div class="row mb-3">
+												<label class="col-sm-3 col-form-label">Trabajos</label>
+												<div class="col-sm-7">
+													<textarea class="form-control" style="height: 100px"
+														id="opcionTrabajos" name="opcionTrabajos"></textarea>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary" onclick="next(1)">Atras</button>
+										<button type="submit" class="btn btn-primary"
+											onclick="guardarDatosPersonales()">Siguiente</button>
+
+									</div>
+
+								</div>
+
+								<div class="tab-pane fade pt-3" id="profile-salud-div">
+									<!-- Change Password Form -->
+									<div class="row mb-3">
+										<label for="nombreContacto" class="col-md-4 col-lg-3 col-form-label">Nombre
+											Contacto
+										</label>
+										<div class="col-md-8 col-lg-6">
+											<input name="nombreContacto" type="text" class="form-control"
+												id="nombreContacto">
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label for="Country" class="col-md-4 col-lg-3 col-form-label">Parentesco</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="parentesco" name="parentesco"
+												class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="parents : ${listaParents}" th:value="${parents.id}"
+													th:text="${parents.descripcion}"></option>
+											</select>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label for="contacto" class="col-md-4 col-lg-3 col-form-label">Contacto
+											Urgencia</label>
+										<div class="col-md-8 col-lg-6">
+											<input name="text" type="numeroContacto" class="form-control"
+												id="numeroContacto">
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<label for="newPassword" class="col-md-4 col-lg-3 col-form-label">Vencimiento
+											Carne</label>
+										<div class="col-md-8 col-lg-4">
+											<input type="date" id="vencimiento" name="vencimiento" class="form-control">
+										</div>
+									</div>
+
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary" onclick="next(2)">Atras</button>
+										<button type="submit" class="btn btn-primary"
+											onclick="guardarDatosSalud()">Siguiente</button>
+									</div>
+
+								</div>
+
+									<div class="tab-pane fade pt-3" id="profile-banco-div">
+										<div class="row mb-3">
+										<label  class="col-md-4 col-lg-3 col-form-label">Banco</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="bancoId" name="bancoId"
+												class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="banco : ${listaBanco}" th:value="${banco.idbanco}"
+													th:text="${banco.banco}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<label for="numeroCuenta" class="col-md-4 col-lg-3 col-form-label">Número cuenta</label>
+										<div class="col-md-8 col-lg-6">
+											<input name="numeroCuenta" type="text" class="form-control"
+												id="numeroCuenta">
+										</div>
+									</div>
+								
+									<div class="row mb-3">
+										<label for="Country" class="col-md-4 col-lg-3 col-form-label">Forma Cobro</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="formaCobro" name="formaCobro"
+												class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="formaCobro : ${listaFormasCobro}" th:value="${formaCobro.idFormaCobro}"
+													th:text="${formaCobro.descripcion}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<label for="Country" class="col-md-4 col-lg-3 col-form-label">Moneda</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="monedaId" name="monedaId"
+												class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="moneda : ${listaMoneda}" th:value="${moneda.id}"
+													th:text="${moneda.moneda}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary" onclick="next(3)">Atras</button>
+										<button type="submit" class="btn btn-primary"
+											onclick="guardarDatosBanco()">Siguiente</button>
+									</div>
+
+								</div>
+
+								<div class="tab-pane fade pt-3" id="profile-cargo-div">
+									<!-- Change Password Form -->
+
+									<div class="row mb-3">
+										<label for="departamento"
+											class="col-md-4 col-lg-3 col-form-label">Departamento</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="departamento" name="departamento"
+												class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="depa : ${listaDepa}" th:value="${depa.id}"
+													th:text="${depa.departamento}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<label for="departamento" class="col-md-4 col-lg-3 col-form-label">Cargo</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="cargo" name="cargo" class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="car : ${listaCargos}" th:value="${car.id}"
+													th:text="${car.cargo}"></option>
+											</select>
+										</div>
+									</div>
+
+									<script th:inline="javascript">
+										/* Variable Javascript que guarda el contextPath para formar la URL a la cual haremos la peticion*/
+										var contextPath = /*[[@{buscarCargosPorDepa}]]*/
+											$('#departamento').change(
+												function () {
+													$.getJSON(contextPath,
+														{
+															idDepa: $(this).val(),
+															ajax: 'true'
+														},
+														function (data) {
+															var html = '<option selected disabled>Seleccionar</option>';
+															var len = data.length;
+															for (var i = 0; i < len; i++) {
+																html += '<option value="' + data[i].id + '">'
+																	+ data[i].cargo
+																	+ '</option>';
+															}
+															html += '</option>';
+															$('#cargo').html(html);
+														});
+												});
+
+
+									</script>
+									
+									<div class="row mb-3">
+										<label for="salario" class="col-md-4 col-lg-3 col-form-label">Salario</label>
+										<div class="col-md-8 col-lg-6">
+											<input name="text" type="salario" class="form-control"
+												id="salario">
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<label for="horario" class="col-md-4 col-lg-3 col-form-label">Horario</label>
+										<div class="col-md-8 col-lg-6">
+											<select id="horario" name="horario" class="form-control custom-select">
+												<option selected disabled>Seleccionar</option>
+												<option th:each="hora : ${listaHorario}" th:value="${hora.id}"
+													th:text="${hora.horario}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary" onclick="next(4)">Atras</button>
+										<button type="submit" class="btn btn-primary"
+											onclick="guardarEmpleadoFinal()">Guardar Empleado</button>
+									</div>
+
+								</div>
+
+							</div><!-- End Bordered Tabs -->
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!--*******************************************************FIN*********************************************-->
+
+	<div th:replace="template :: mDiaTemplate"></div>
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+	<script>
+		$(document).ready(function () {
+
+			//--------------------- SELECCIONAR FOTO PRODUCTO ---------------------
+			$("#foto1").on("change", function () {
+
+				var uploadFoto = document.getElementById("foto1").value;
+				var foto = document.getElementById("foto1").files;
+				var nav = window.URL || window.webkitURL;
+				var contactAlert = document.getElementById('form_alert');
+				if (uploadFoto != '') {
+					var type = foto[0].type;
+					var name = foto[0].name;
+					if (type != 'image/jpeg' && type != 'image/jpg' && type != 'image/png') {
+						contactAlert.innerHTML = '<p class="errorArchivo">El archivo no es válido.</p>';
+						$("#img").remove();
+						$(".delPhoto").addClass('notBlock');
+						$('#foto1').val('');
+						return false;
+					} else {
+						contactAlert.innerHTML = '';
+						$("#img").remove();
+						$(".delPhoto").removeClass('notBlock');
+						var objeto_url = nav.createObjectURL(this.files[0]);
+						$(".prevPhoto").append("<img id='img' src=" + objeto_url + ">");
+						$(".upimg label").remove();
+
+					}
+				} else {
+					alert("No selecciono foto");
+					$("#img").remove();
+				}
+			});
+
+			$('.delPhoto').click(function () {
+				$('#foto1').val('');
+				$(".delPhoto").addClass('notBlock');
+				$("#img").remove();
+
+			});
+
+		});
+
+	</script>
+
+	<style type="text/css">
+		.prevPhoto {
+			display: flex;
+			justify-content: space-between;
+			width: 160px;
+			height: 150px;
+			border: 1px solid #CCC;
+			position: relative;
+			cursor: pointer;
+			background: url(empleados/img_empleado.png);
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center center;
+			margin: auto;
+			float: right;
+		}
+
+		.prevPhoto label {
+			cursor: pointer;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 2;
+
+		}
+
+		.prevPhoto img {
+			width: 100%;
+			height: 100%;
+
+		}
+
+		.upimg,
+		.notBlock {
+			display: none !important;
+		}
+
+		.errorArchivo {
+			font-size: 16px;
+			font-family: arial;
+			color: #cc0000;
+			text-align: center;
+			font-weight: bold;
+			margin-top: 10px;
+		}
+
+		.delPhoto {
+			color: #FFF;
+			display: -webkit-flex;
+			display: -moz-flex;
+			display: -ms-flex;
+			display: -o-flex;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			width: 25px;
+			height: 25px;
+			background: red;
+			position: absolute;
+			right: -10px;
+			top: -10px;
+			z-index: 10;
+		}
+
+		#tbl_list_productos img {
+			width: 50px;
+		}
+
+		.imgProductoDelete {
+			width: 175px;
+		}
+
+
+
+		.products-list .product-title {
+			font-weight: 600;
+		}
+
+		.products-list {
+			list-style: none;
+		}
+
+		.float-right {
+			float: right !important;
+		}
+
+		.badge-info {
+			color: #fff;
+			background-color: #17a2b8;
+		}
+
+		.badge {
+			display: inline-block;
+			padding: .25em .4em;
+			font-size: 75%;
+			font-weight: 700;
+			line-height: 1;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: baseline;
+			border-radius: .25rem;
+			transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+		}
+
+
+		a {
+			color: #007bff;
+			text-decoration: none;
+			background-color: transparent;
+		}
+
+
+
+
+		.bg_black {
+			background: #000;
+			height: 100vh;
+		}
+
+		.bg_black img {
+			position: absolute;
+			width: 100px;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.alert-dismissible .btn-close {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 2;
+			padding: 1.25rem 1rem;
+		}
+
+
+		a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+		}
+
+
+		div.nav {
+			display: inline-block;
+			padding: 0;
+			margin: 0;
+		}
+
+		.nav.a {
+			display: inline;
+		}
+
+		a.bot {
+			color: black;
+			float: left;
+			padding: 8px 16px;
+			text-decoration: none;
+			border-radius: 5px;
+		}
+
+		.loader-page {
+			position: fixed;
+			z-index: 25000;
+			background: rgb(255, 255, 255);
+			left: 0px;
+			top: 0px;
+			height: 100%;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all .3s ease;
+		}
+
+		.loader-page::before {
+			content: "";
+			position: absolute;
+			border: 2px solid rgb(50, 150, 176);
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			box-sizing: border-box;
+			border-left: 2px solid rgba(50, 150, 176, 0);
+			border-top: 2px solid rgba(50, 150, 176, 0);
+			animation: rotarload 1s linear infinite;
+			transform: rotate(0deg);
+		}
+
+		@keyframes rotarload {
+			0% {
+				transform: rotate(0deg)
+			}
+
+			100% {
+				transform: rotate(360deg)
+			}
+		}
+
+		.loader-page::after {
+			content: "";
+			position: absolute;
+			border: 2px solid rgba(50, 150, 176, .5);
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			box-sizing: border-box;
+			border-left: 2px solid rgba(50, 150, 176, 0);
+			border-top: 2px solid rgba(50, 150, 176, 0);
+			animation: rotarload 1s ease-out infinite;
+			transform: rotate(0deg);
+		}
+	</style>
+
+</body>
+	<div th:replace="template :: footer"></div>
+
+</html>

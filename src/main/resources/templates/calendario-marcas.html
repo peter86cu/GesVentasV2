@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+<script src='assets/js/index.global.js'></script>
+<script>
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var calendarEl = document.getElementById('calendar');
+
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			headerToolbar: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'dayGridMonth,timeGridWeek,timeGridDay'
+			},
+			initialDate: '2023-01-12',
+			navLinks: true, // can click day/week names to navigate views
+			selectable: true,
+			selectMirror: true,
+			select: function (arg) {
+				var title = prompt('Event Title:');
+				if (title) {
+					calendar.addEvent({
+						title: title,
+						start: arg.start,
+						end: arg.end,
+						allDay: arg.allDay
+					})
+				}
+				calendar.unselect()
+			},
+			eventClick: function (arg) {
+				if (confirm('Are you sure you want to delete this event?')) {
+					arg.event.remove()
+				}
+			},
+			editable: true,
+			dayMaxEvents: true, // allow "more" link when too many events
+			events: [
+				{
+					title: 'All Day Event',
+					start: '2023-01-01'
+				},
+				{
+					title: 'Long Event',
+					start: '2023-01-07',
+					end: '2023-01-10'
+				},
+				{
+					groupId: 999,
+					title: 'Repeating Event',
+					start: '2023-01-09T16:00:00'
+				},
+				{
+					groupId: 999,
+					title: 'Repeating Event',
+					start: '2023-01-16T16:00:00'
+				},
+				{
+					title: 'Conference',
+					start: '2023-01-11',
+					end: '2023-01-13'
+				},
+				{
+					title: 'Meeting',
+					start: '2023-01-12T10:30:00',
+					end: '2023-01-12T12:30:00'
+				},
+				{
+					title: 'Lunch',
+					start: '2023-01-12T12:00:00'
+				},
+				{
+					title: 'Meeting',
+					start: '2023-01-12T14:30:00'
+				},
+				{
+					title: 'Happy Hour',
+					start: '2023-01-12T17:30:00'
+				},
+				{
+					title: 'Dinner',
+					start: '2023-01-12T20:00:00'
+				},
+				{
+					title: 'Birthday Party',
+					start: '2023-01-13T07:00:00'
+				},
+				{
+					title: 'Click for Google',
+					url: 'http://google.com/',
+					start: '2023-01-28'
+				}
+			]
+		});
+
+		calendar.render();
+	});
+
+</script>
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i> <strong>GESTIÓN DE
+									CALENDARIO</strong></h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de Pagos</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<div class="dropdown">
+						<div id='calendar'></div>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+
+
+	</main>
+
+
+
+
+
+	<div th:replace="template :: mDiaTemplate"></div>
+
+
+
+</body>
+
+
+<style>
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+</style>
+
+
+
+</html>

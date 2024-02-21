@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: html_head">
+<title>Listado Cuentas</title>
+<!-- CSS only -->
+
+</head>
+<body>
+	<div th:replace="template :: header"></div>
+	<div th:replace="template :: menu"></div>
+	<div class="wrapper">
+
+
+		<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Cuentas</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="inicio">Home</a></li>
+					<li class="breadcrumb-item active">Cuentas</li>
+				</ol>
+			</nav>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3">
+					<a th:href="@{cuenta/nueva}" class="btn btn-primary btn-sm mb3">Agregar
+						Cuenta</a>
+				</div>
+				<br>
+				<table class="table">
+					<thead class="table-dark">
+						<tr>
+							<th>Cuenta</th>
+							<th>Saldo</th>
+							<th>Accion</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cuenta :${cuentas}">
+							<td th:text="${cuenta.cuenta}">Cuenta</td>
+							<td th:text="${cuenta.saldo}">Saldo</td>
+							<td><a th:href="@{/cuenta/editar/{id}(id=${cuenta.id})}"
+								class="btn btn-info">Editar</a> <a
+								th:href="@{/cuenta/{id}(id=${cuenta.id})}"
+								class="btn btn-danger">Eliminar</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		</main>
+</body>
+<div th:replace="template :: footer"></div>
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+
+<a href="#"
+	class="back-to-top d-flex align-items-center justify-content-center"><i
+	class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+
+</html>

@@ -1,0 +1,186 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+	<link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} " />
+</head>
+
+
+
+
+<body>
+
+	<div th:replace="template :: header"></div>
+	<div th:replace="template :: menu"></div>
+
+
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Lista de usuarios</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item">Usuarios</li>
+
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="container">
+			<div class="alert alert-success alert-dismissable" th:if="${success != null}">
+				<label th:text="${success}"></label>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+
+			<div class="alert alert-danger alert-dismissable" th:if="${error != null}">
+				<label th:text="${error}"></label>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+
+			<div class="alert alert-warning alert-dismissable" th:if="${warning != null}">
+				<label th:text="${warning}"></label>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+
+			<div class="alert alert-info alert-dismissable" th:if="${info != null}">
+				<label th:text="${info}"></label>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+
+			<div class="col text-center">
+				<button class="btn btn-primary" style="color: #fff;background-color: #0069d9;border-color: #0062cc"
+					data-toggle="modal" data-target="#addUsuarios"><i class="fas fa-plus"></i>Agregar</button>
+			</div>
+			<br>
+
+			<div class="myForm">
+				<form th:action="@{/adduser}" method="post" id="addEmpleado" name="addEmpleado">
+					<div class="modal fade" id="addUsuarios" tabindex="-1" role="dialog"
+						aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header" style="background: #17a2b8;">
+									<h4 class="modal-title"><strong>NUEVO EMPLEADO</strong></h4>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<div class="card-body">
+
+										<form th:action="@{/addempleado}" th:object="${empleado}"
+											class="row g-3 needs-validation" id="addUser1" name="addUser1" novalidate
+											method="POST">
+
+											<div class="col-12">
+												<label for="yourUsername" class="form-label">Nombre</label>
+												<input type="text" name="nombre" th:field="*{nombre}"
+													class="form-control" id="usuario" required>
+												<div class="invalid-feedback">Please choose a name.</div>
+											</div>
+
+
+											<div class="col-12">
+												<label for="yourUsername" class="form-label">Apellidos</label>
+												<input type="text" name="apellidos" th:field="*{apellidos}"
+													class="form-control" id="usuario" required>
+												<div class="invalid-feedback">Please choose a username.</div>
+											</div>
+
+											<div class="col-12">
+												<label for="yourDocumento" class="form-label">Documento</label>
+												<input type="text" th:field="*{documento}" name="documento"
+													class="form-control" id="documento" required>
+												<div class="invalid-feedback">Entre un numero de cocumento valido</div>
+											</div>
+
+											<div class="col-12">
+												<label for="inputDate" class="form-label">Fecha Ingreso</label>
+												<div class="col-sm-10">
+													<input type="date" class="form-control">
+												</div>
+											</div>
+											
+											<div class="col-12">
+												<label for="inputDate" class="form-label">Fecha Nacimiento</label>
+												<div class="col-sm-10">
+													<input type="date" class="form-control">
+												</div>
+											</div>
+											
+											
+											<div class="row mb-3">
+                      <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                      
+                        <div class="pt-2">
+                        <input class="btn btn-primary btn-sm" type="file"
+       id="avatar" name="avatar"
+       accept="image/png, image/jpeg"><i class="bi bi-upload"></i>
+       
+                          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                        </div>
+                      </div>
+                    </div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-sm btn-secondary btn-space"
+											data-dismiss="modal">Cancelar</button>
+										<input type="submit" class="btn btn-sm btn-primary btn-space" value="Crear" />
+									</div>
+								</div>
+							</div>
+						</div>
+				</form>
+			</div>
+
+
+			<div class="card-block">
+				<table class="table table-bordered table-striped" id="myTable">
+					<thead>
+						<tr style="background: #778899">
+							<th>NOMBRE</th>
+							<th>APELLIDOS</th>
+							<th>DOCUMENTO</th>
+							<th>FECHA INGRESO</th>
+							<th>FECHA NACIMIENTO</th>
+							<th>FOTO</th>
+							<th>Accion</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="emp :${listaEmpleados}">
+							<td th:text="${emp.nombre}"></td>
+							<td th:text="${emp.apellidos}"></td>
+							<td th:text="${emp.documento}"></td>
+							<td th:text="${emp.fechaingreso}"></td>
+							<td th:text="${emp.fechanacimiento}"></td>
+							<td th:text="${emp.foto}"></td>
+							<td><a th:href="@{/buscar/{id}(id=${emp.idempleado})}"
+									class="btn btn-defaul btn-space editBtn"
+									style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+										class="far fa-edit"></i>Editar</a>
+								<a th:href="@{delete/(id=${emp.idempleado})}" class="btn btn-default btn-space delBtn"
+									style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+										class="fas fa-trash"></i>Eliminar</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+		</div>
+
+		</div>
+
+	</main>
+
+
+</body>
+
+
+</html>

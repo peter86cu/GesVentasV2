@@ -1,0 +1,228 @@
+function funciones(){
+		$( "ul#accordion" ).accordion({
+			collapsible: true,
+			active:false,
+			header: 'li a.top_level',
+			autoHeight:false,
+			icons:false
+		});
+			
+		$( "ul.dropdown" ).accordion({
+			collapsible: true,
+			active:false,
+			header: 'li a.has_slide',
+			autoHeight:false,
+			event: 'mousedown',
+			icons:false
+		});
+
+		$("a.toggle").click(function(){
+			$(this).toggleClass("toggle_closed").next().slideToggle("slow");
+			return false;
+		});
+
+		$( ".tabs" ).tabs({ 
+			fx: {opacity: 'toggle', duration: 'fast', height:'toggle'} 
+		});
+
+		$( ".side_tabs" ).tabs({ 
+			fx: {opacity: 'toggle', duration: 'fast', height:'auto'} 
+		});
+
+		$( ".content_accordion" ).accordion({
+			collapsible: true,
+			active:false,
+			header: 'h3.bar',
+			autoHeight:false,
+			event: 'mousedown',
+			icons:false,
+			animated: true
+		});
+			
+		$( ".main_container" ).sortable({
+			handle:'.grabber',
+			items:'div.box',
+			opacity:0.8,
+			revert:true,
+			tolerance:'pointer',
+			helper:'original',
+			forceHelperSize:true,
+			placeholder: 'dashed_placeholder',		
+			forcePlaceholderSize:true
+		});
+	
+		$( ".content_accordion" ).sortable({
+			handle:'a.handle',
+			axis: 'y',
+			revert:true,
+			tolerance:'pointer',
+			forcePlaceholderSize:true
+		});
+
+		$( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });; 
+		$( ".slider" ).slider();
+
+		$( ".slider_range" ).slider({
+			range: true,
+			min: 0,
+			max: 500,
+			values: [ 75, 300 ],
+			slide: function( event, ui ) {
+				$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+			}
+		});
+		
+		$( "#amount" ).val( "$" + $( "#slider_range" ).slider( "values", 0 ) +
+			" - $" + $( "#slider_range" ).slider( "values", 1 ) );
+		
+
+		$( "#dialog" ).dialog({
+			autoOpen: false, 
+			show: "fade",
+			hide: "fade",
+			modal: true 
+		});
+		
+		$( "#opener" ).click(function() {
+			$( "#dialog" ).dialog( "open" );
+			return false;
+		});
+
+		$( "#progressbar" ).progressbar({
+			value: 37
+		});
+		
+		$(".alert").click(function(){
+			$(this).fadeOut('slow');
+		});
+
+       $("input[type='radio'],input[type='checkbox'],input,select,text").not(".noinput input,.noinput select").uniform();
+	
+		/*
+		si queremos tipsi habilitar 
+		@import '../js/uniform/css/uniform.default.css';
+		document.write('<script src="js/tipsy/jquery.tipsy.js" type="text/javascript" charset="utf-8"></script>');
+		$('[title]').tipsy({
+			fade: true,
+			fallback: '',
+			gravity: 's',
+			opacity: 1,
+			title: 'title',
+			trigger: 'hover'  	
+		});  
+
+		$('input[title]').tipsy({
+			trigger: 'focus',  
+			offset:'5',
+			gravity: 'w'
+		});*/
+		
+	$("input[type='text']:first", document.forms[0]).focus();
+	//http://old.nabble.com/jQuery-UI-Support-on-the-iPhone-td22011162s27240.html)
+		$('.main_container').sortable();
+		$('.grabber').addTouch();
+		$('ul.content_accordion').sortable();
+		$('a.handle').addTouch();
+		$('.ui-slider-handle').addTouch();
+		var oTable = $('.table').dataTable( {
+					"bJQueryUI": true,
+					"sScrollX": "",
+					"bSortClasses": false,
+					"aaSorting": [[0,'asc']],
+					"bAutoWidth": true,
+					"bInfo": true,
+					"sScrollY": "100%",	
+					"sScrollX": "100%",
+					"bScrollCollapse": true,
+					"sPaginationType": "full_numbers",
+					"bRetrieve": true,
+					"iDisplayLength": 30
+					
+					} );
+					
+		var oTable = $('.ajax').dataTable( {
+					"bJQueryUI": true,
+					"sScrollX": "",
+					"bSortClasses": false,
+					"aaSorting": [[0,'asc']],
+					"bAutoWidth": true,
+					"bInfo": true,
+					"sScrollY": "100%",	
+					"sScrollX": "100%",
+					"bScrollCollapse": true,
+					"sPaginationType": "full_numbers",
+					"bRetrieve": true,
+					"iDisplayLength": 30,
+					 "bProcessing": true,
+       				 "bServerSide": true,
+					 "sAjaxSource": "tabla",
+					} );
+		
+		$(".tabs").tabs( {
+			"show": function(event, ui) {
+				var oTable = $('div.dataTables_scrollBody>.table', ui.panel).dataTable();
+				if ( oTable.length > 0 ) {
+					oTable.fnAdjustColumnSizing();
+				}
+			}
+		} );
+		
+		$( ".content_accordion" ).accordion( {
+			"change": function(event, ui) {
+				var oTable = $('div.dataTables_scrollBody>.table', ui.panel).dataTable();
+				if ( oTable.length > 0 ) {
+					oTable.fnAdjustColumnSizing();
+				}
+			}
+		} );
+
+		$(".gallery ul li a").fancybox({
+        'overlayColor':'#000' 
+			
+		});
+		$("a img.fancy").fancybox();
+	
+}
+
+$(document).ready(function() {
+	funciones();
+});
+function number_format (number, decimals, dec_point, thousands_sep) {
+    number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+    var n = !isFinite(+number) ? 0 : +number,
+        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s = '',
+        toFixedFix = function (n, prec) {
+            var k = Math.pow(10, prec);
+            return '' + Math.round(n * k) / k;
+        };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '').length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1).join('0');
+    }
+    return s.join(dec);
+}
+var contar=0;
+
+document.onkeyup = keyS;
+function keyS(e){
+	var KeyID =e || window.event;
+   	KeyID= KeyID.keyCode;
+	if(KeyID == 27){//escape
+	   	$("#pantalla_grande").remove();
+		contar=1;
+   }	
+}
+function solonumeros(evt){
+        var keyPressed = (evt.which) ? evt.which : event.keyCode
+        return !(keyPressed > 31 && (keyPressed < 48 || keyPressed > 57));
+      }
+function showLoadingOverlay(){$("#loading_overlay .loading_message").show();$("#loading_overlay").show()}
+function hideLoadingOverlay(){$("#loading_overlay .loading_message").delay(200).fadeOut(function(){});$("#loading_overlay").delay(300).fadeOut()}

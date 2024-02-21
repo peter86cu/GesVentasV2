@@ -1,0 +1,474 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+
+<body>
+
+	<div th:replace="template :: header"></div>
+	<div th:replace="template :: menu"></div>
+
+
+
+	<main id="main" class="main">
+
+
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1><i class="fas fa-tasks" style="color:#218838"></i>
+							<strong>LISTA DE USUARIOS</strong>
+						</h1>
+					</div>
+
+				</div>
+			</div><!-- /.container-fluid -->
+		</section>
+
+
+		<div class="col-sm-6">
+			<ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+				<li class="breadcrumb-item active">Usuarios</li>
+			</ol>
+		</div>
+
+		<div class="card">
+			<div class="card-header">
+				<button class="btn btn-primary"
+					style="color: #fff;background-color: #0069d9;border-color: #0062cc; justify-content:right;"
+					onclick="crearUsuario(); return false"><i class="fas fa-plus"></i>Agregar</button>
+
+
+			</div>
+		</div>
+
+
+		<div class="myForm">
+			<form th:action="@{/adduser}" method="post" id="addUser" name="addUser">
+				<div class="modal fade" id="addUsuarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+					aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header" style="background: #17a2b8;">
+								<h4 class="modal-title"><strong>NUEVO USUARIO</strong></h4>
+								<button type="button" class="close" onclick="cerrarModal('addUsuarios'); return false" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="card-body">
+
+									<form th:action="@{/registrar}" th:object="${usuario}"
+										class="row g-3 needs-validation" id="addUser1" name="addUser1" novalidate
+										method="POST">
+
+										<div class="col-md-8">
+											<label class="form-label">Nombre Empleado</label>
+											<select id="idempleado" name="idempleado" class="form-select">
+												<option th:each="empleado : ${empleadosNuevos}"
+													th:value="${empleado.idempleado}" th:text="${empleado.toString()}">
+												</option>
+											</select>
+										</div>
+
+
+										<div class="col-12">
+											<label class="form-label">Usuario</label>
+											<input type="text" name="usuario" th:field="*{usuario}" class="form-control"
+												id="usuario" required>
+											<div class="invalid-feedback">Please choose a username.</div>
+										</div>
+
+										<div class="col-12">
+											<label class="form-label">Password</label>
+											<input type="password" th:field="*{password}" name="password"
+												class="form-control" id="password" required>
+											<div class="invalid-feedback">Please enter your password!</div>
+										</div>
+
+										<div class="col-12">
+											<label class="form-label">Email</label>
+											<div class="input-group has-validation">
+												<span class="input-group-text" id="inputGroupPrepend">@</span>
+												<input type="email" name="email" th:field="*{email}"
+													class="form-control" id="email" required>
+											</div>
+											<div class="invalid-feedback">Please enter a valid Email adddress!</div>
+										</div>
+
+										<div class="col-md-8">
+											<label class="form-label">Rol</label>
+											<select id="idrol" name="idrol" class="form-select">
+												<option th:each="rol : ${roles}" th:value="${rol.idrol}"
+													th:text="${rol.descripcion}"></option>
+
+											</select>
+										</div>
+
+										<div class="col-md-8">
+											<label class="form-label">Estado</label> <select id="estados" name="estados"
+												class="form-select">
+												<option th:each="estado : ${estados}" th:value="${estado.id}"
+													th:text="${estado.estado}"></option>
+
+											</select>
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-danger" onclick="cerrarModal('addUsuarios'); return false">Cancelar</button>
+									<button type="submit"  class="btn btn-success" href="javascript:;"  onclick="guardarUsuario('add'); return false" >Crear</button>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="card-body">
+
+			<div align="right" class="form-group">
+				<input type="text" class="form-control pull-right" style="width:20%;" id="searchusuarios"
+					placeholder="Type to search table...">
+			</div>
+			<br>
+
+
+			<div class="card-block">
+				<table class="table table-bordered table-striped" id="userst">
+					<thead>
+						<tr style="background: #778899">
+							<th>USUARIO</th>
+							<th>NOMBRE</th>
+							<th>APELLIDOS</th>
+							<th>ROL</th>
+							<th>ESTADO</th>
+							<th>ACCIÓN</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="user :${listaUser}">
+							<td th:text="${user.usuario}"></td>
+							<td th:text="${user.getEmpleado().nombre}"></td>
+							<td th:text="${user.getEmpleado().apellidos}"></td>
+							<td th:text="${user.getIdrol().descripcion}"></td>
+							<td>
+								<span th:each="estadoUser :${estados}">
+									<span th:if="${estadoUser.id}==${user.estado}"
+										th:text="${estadoUser.estado}"></span>
+								</span>
+							</td>
+							<td>									
+								<button class="btn btn-primary "
+											th:onclick="editarUsuario('[(${user.idusuario})]')"
+											style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+										
+								<button class="btn btn-default btnEliminarOrden"
+											th:onclick="eliminarProducto('[(${user.idusuario})]'"
+											style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+											class="fas fa-trash"></i></button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+		</div>
+		</div>
+		</div>
+
+	</main>
+	
+	
+		
+				<div class="modal fade" id="editarUsuarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+					aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header" style="background: #17a2b8;">
+								<h4 class="modal-title"><strong>NUEVO USUARIO</strong></h4>
+								<button type="button" class="close" onclick="cerrarModal('editarUsuarios'); return false" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="card-body">
+										<div class="col-md-8">
+											<label class="form-label">Nombre Empleado</label>
+											<input type="hidden" name="idempleadoEdit"  id="idempleadoEdit" >
+											<input type="text" name="nombreEdit"  class="form-control"
+												id="nombreEdit" disabled>
+										</div>
+
+
+										<div class="col-12">
+											<label class="form-label">Usuario</label>
+											<input type="hidden" name="idUsuarioEdit"  id="idUsuarioEdit" >
+											<input type="text" name="usuarioEdit"  class="form-control"
+												id="usuarioEdit" required>
+											<div class="invalid-feedback">Please choose a username.</div>
+										</div>
+
+										<div class="col-12">
+											<label class="form-label">Password</label>
+											<input type="password"  name="passwordEdit"
+												class="form-control" id="passwordEdit" required>
+											<div class="invalid-feedback">Please enter your password!</div>
+										</div>
+
+										<div class="col-12">
+											<label class="form-label">Email</label>
+											<div class="input-group has-validation">
+												<span class="input-group-text" id="inputGroupPrepend">@</span>
+												<input type="email" name="emailEdit"
+													class="form-control" id="emailEdit" required>
+											</div>
+											<div class="invalid-feedback">Please enter a valid Email adddress!</div>
+										</div>
+
+										<div class="col-md-8">
+											<label class="form-label">Rol</label>
+											<select id="idrolEdit" name="idrolEdit" class="form-select">
+												<option th:each="rol : ${roles}" th:value="${rol.idrol}"
+													th:text="${rol.descripcion}"></option>
+
+											</select>
+										</div>
+
+										<div class="col-md-8">
+											<label class="form-label">Estado</label> <select id="estadosEdit" name="estadosEdit"
+												class="form-select">
+												<option th:each="estado : ${estados}" th:value="${estado.id}"
+													th:text="${estado.estado}"></option>
+
+											</select>
+										</div>
+								
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-danger" onclick="cerrarModal('editarUsuarios'); return false">Cancelar</button>
+									<button type="submit"  class="btn btn-success" href="javascript:;"  onclick="guardarUsuario('edit'); return false" >Crear</button>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+	
+	
+	
+
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/modal.user.js"></script>
+
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+</body>
+
+<!-- **************************MODAL PARA ABRIR EL DIA ************************************-->
+<div class="myForm">
+	<div class="modal fade" id="abrirDia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h4 class="modal-title"><strong>APERTURA DE DIA</strong></h4>
+					<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+						<div class="col-md-10">
+							<label class="form-label">Fecha Apertura:</label>
+							<div class="col-sm-4">
+								<input id="fechaapertura" name="fechaapertura" type="date" required
+									class="form-control">
+							</div>
+						</div>
+						<br>
+						<table>
+							<thead>
+								<tr>
+									<th align="left" style="width: 4%">MONEDA</th>
+									<th align="center" style="width: 4%">VALOR COMPRA</th>
+									<th align="center" style="width: 4%">VALOR VENTA</th>
+									<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo" value="">
+									<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+									<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+								</tr>
+							</thead>
+							<input type="hidden" id="sizeMonedas" name="sizeMonedas" th:value="${listaMoneda.size()}">
+							<div:block th:each="moneda :${listaMoneda}">
+								<tbody>
+									<tr>
+										<td class="cantidad" th:text="${moneda.moneda}"></td>
+										<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
+												th:id="@{${'valorcompra_' + moneda.id}}" value=""
+												title="${moneda.moneda}" placeholder="" required /></td>
+										<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
+												th:id="@{${'valorventa_' + moneda.id}}" value=""
+												title="${moneda.moneda}" placeholder="" required /></td>
+
+										<!--<div th:text="${historico.add(cambio)}"></div> -->
+									</tr>
+								</tbody>
+							</div:block>
+							<table>
+								<tr>
+									<td>
+										<!--	<button type="button" class="btn btn-primary" href="javascript:;"
+												onclick="guardarArqueo()" value="Abrir">Abrir Día</button> -->
+
+										<div class="modal-footer">
+											<button type="button" class="btn btn-danger" 
+												onclick="cerrarModal('abrirDia'); return false">Cancelar</button>
+											<button type="submit" href="javascript:;"
+												onclick="guardarArqueo(); return false" class="btn btn-success">Abrir
+												Día</button>
+										</div>
+									</td>
+								</tr>
+						 </table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!--*******************************************FIN APERTURA DIA*************************************************-->
+
+
+<style type="text/css">
+	.text_verde {
+		color:#006400;
+		font-weight: bold;
+	}
+	
+	.text_rojo {
+		color: #C40000;
+		font-weight: bold;
+	}
+
+	.text_verde {
+		color: #060;
+		font-weight: bold;
+	}
+
+	.text_azul {
+		color: #00F;
+		font-weight: bold;
+	}
+
+	.text_naranja {
+		color: #F60;
+		font-weight: bold;
+	}
+
+	.text_negro {
+		color: #000000;
+		font-weight: bold;
+	}
+
+	.text_normal {
+		color: inherit;
+
+	}
+
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>
+
+</html>

@@ -1,0 +1,60 @@
+<html>
+<head th:replace="template :: html_head">
+</head>
+
+
+<body
+	class="bg-info d-flex justify-content-center align-items-center vh-100">
+	<div class="bg-white p-5 rounded-5 text-secondary shadow"
+		style="width: 25rem">
+		<div class="d-flex justify-content-center">
+			<img src="assets/login/login-icon.svg" alt="login-icon"
+				style="height: 7rem" />
+		</div>
+		<div class="text-center fs-1 fw-bold">GesVentas</div>
+
+		<form class="row g-3 needs-validation" novalidate method="post">
+
+			<div class="input-group mt-4">
+				<div class="input-group-text bg-info">
+					<img src="assets/login/username-icon.svg" alt="username-icon"
+						style="height: 1rem" />
+				</div>
+				<input class="form-control bg-light" type="text" id="username"
+					autofocus name="username" value="MASTER" placeholder="Username" />
+			</div>
+			<div class="input-group mt-1">
+				<div class="input-group-text bg-info">
+					<img src="assets/login/password-icon.svg" alt="password-icon"
+						style="height: 1rem" />
+				</div>
+				<input class="form-control bg-light" type="password" id="password"
+					name="password" value="admin" placeholder="Password" />
+			</div>
+			<div class="d-flex justify-content-around mt-1">
+				<div class="d-flex align-items-center gap-1">
+					<input class="form-check-input" type="checkbox" />
+					<div class="pt-1" style="font-size: 0.9rem">Remember me</div>
+				</div>
+				<div class="pt-1">
+					<a href="#"
+						class="text-decoration-none text-info fw-semibold fst-italic"
+						style="font-size: 0.9rem">Forgot your password?</a>
+				</div>
+			</div>
+
+
+
+			<div>
+				<button
+					class="btn btn-info text-white w-100 mt-4 fw-semibold shadow-sm"
+					href="javascript:;" onclick="inicioSession(); return false"
+					id="login">Login</button>
+			</div>
+		</form>
+	</div>
+	</div>
+
+		<div th:replace="template :: loadingTemplate"></div>
+
+</body>

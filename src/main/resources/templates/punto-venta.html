@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.6/tinymce.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.6/jquery.tinymce.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+
+</head>
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header id="header" class="header fixed-top d-flex align-items-center">
+
+		<span class="brand-link navbar-info">
+			<h1 id="HoraActual"> </h1>
+		</span>
+
+	</header><!-- End Header -->
+
+	<!-- ======= Sidebar ======= -->
+	<aside id="sidebar" class="sidebar main-sidebar elevation-4 sidebar-dark-indigo">
+
+		<div class="form-inline">
+
+			<p style="float: right;">
+			<p class="color"><strong>CÓDIGO VENTA:</strong>
+				<input type="text" name="txt" id="txtVenta" style=" border: 0; color: #000000;" disabled="true">
+			</p>
+			<p class="color"><strong>APERTURA CAJA:</strong>
+				<input type="text" name="txt" id="txtApertura" style=" border: 0;color: #000000;" disabled="true">
+			</p>
+			<p class="color"><strong> # TICKET:</strong>
+				<input type="text" name="txt" id="txtOrden" style=" border: 0;color: #000000;" disabled="true">
+			</p>
+
+			<input type="hidden" id="idCliente" name="idCliente" value="">
+			<!--<label id="idCliente"></label> -->
+
+
+
+		</div>
+
+		<div>
+
+			<p class="color"><strong> CLIENTE PLUS:</strong>
+				<input type="search" id="buscar_cliente" placeholder="Documento">
+				<input type="hidden" id="id_cliente" name="id_cliente" value="">
+				<input type="hidden" id="sumaDevuelto" name="sumaDevuelto" value="0">
+
+			</p>
+
+		</div>
+
+	</aside><!-- End Sidebar-->
+
+
+	<main id="main" class="main">
+		<div class="content">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-5">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-8">
+										<div class="card class=" col-3"">
+											<h5>CÓDIGO PRODUCTO:</h5>
+										</div>
+										<div class="card class=" col-3"">
+											<input type="hidden" id="estado" name="estado" value="">
+											<input type="hidden" id="devolucion" name="devolucion" value="">
+
+
+											<!--<input type="text" name="txtProductoV" id="txtProductoV" style=" border: 0;">-->
+											<input style="width :400px;" type="text" class="form-control"
+												name="txtProductoV" id="txtProductoV" placeholder="">
+										</div>
+									</div>
+
+									<div class="col-4">
+										<div class="card class=" col-3"">
+											<h5>CANTIDAD:</h5>
+										</div>
+										<div class="card class=" col-3"">
+											<input type="text" name="txtCantP" id="txtCantP" class="form-control"
+												value="1">
+										</div>
+									</div>
+								</div>
+
+								<!--INCLUYO PARTE 1 DE JS-->
+								<script type="text/javascript" src="js/parte1.js"></script>
+
+							</div>
+						</div>
+
+						<div class="card card-primary card-outline">
+							<div class="card-body">
+								<div class="prevPhoto ">
+
+
+									<img id="idImagenP" src="productos/img_producto.png" width="400" height="300">
+								</div>
+
+								<div>
+									<p>
+									<h2 style="color:#218838" ;><label id="nombreProductoV"></label> </h2>
+									</p>
+									<p>
+									<h6><label id="paraCodigo"></label><label id="codigoProdV"></label> </h6>
+									</p>
+									<p>
+									<h1><strong><label id="precioP"> </label> <label id="monedaV">
+											</label></strong> </h1>
+									</p>
+
+								</div>
+
+
+
+							</div>
+						</div><!-- /.card -->
+					</div>
+					<!-- /.col-md-6 -->
+					<div class="col-lg-6">
+						<div id="div1" class="card">
+							<div class="card-header">
+								<h5 class="m-0">ITEMS</h5>
+							</div>
+							<div class="card-body">
+								<table id="g-table" class="table">
+									<thead>
+										<tr>
+											<th width="5%" align="center" valign="middle">Cant</th>
+											<th width="12%" align="center" valign="middle">&nbsp;Codigo</th>
+											<th width="34%" align="center" valign="middle">Descripción</th>
+											<th width="12%" align="center" valign="middle">Precio&nbsp;U.</th>
+											<th width="12%" align="center" valign="middle">Monto</th>
+
+										</tr>
+
+									</thead>
+
+
+									<tbody id="cuerpo-items">
+										<tr style="background: #ccffcc">
+
+										</tr>
+									</tbody>
+
+								</table>
+
+
+								<table width="100%" border="0" cellspacing="3" cellpadding="2" class="display"
+									id="h-table">
+									<tfoot id="result">
+
+									</tfoot>
+								</table>
+
+							</div>
+						</div>
+
+					</div>
+
+					<!--OTRAS COSAS -->
+
+
+
+					<script type="text/javascript" src="js/ventas.js"></script>
+				</div>
+
+
+
+			</div>
+		</div>
+		<div class="col-lg-5">
+			<div id="div2" class="card">
+				<div class="card-header">
+					<h5 class="m-0">RESUMEN DE PAGO</h5>
+				</div>
+				<div class="card-body">
+					<table id="t-table" class="table2">
+						<thead>
+
+
+						</thead>
+
+
+						<tbody id="cuerpo">
+							<tr style="background: #ccffcc">
+
+							</tr>
+						</tbody>
+					</table>
+
+
+					<table width="100%" border="0" cellspacing="3" cellpadding="2" class="display" id="h-table-saldos">
+						<tfoot id="resulttotal">
+
+						</tfoot>
+					</table>
+
+					<button type="submit" id="btCancelar" class="btn btn-danger" style="float:center"
+						href="javascript:;" onclick="cancelarVenta(); return false">CANCELAR VENTA</button>
+					<button type="submit" id="btDevolver" class="btn btn-warning" style="float:none" visible="false"
+						href="javascript:;" onclick="abrirModal('ModalDevolucion'); return false" >AUTORIZAR</button>
+					<button type="submit" id="btPagar" class="btn btn-info" style="float:right" href="javascript:;"
+						onclick="abrir(); return false">CONFIRMAR</button>
+					<input type="hidden" value="" id="total_venta" name="total_venta" />
+				</div>
+			</div>
+
+		</div>
+	</main>
+</body>
+
+</html>
+
+<form class="form-horizontal" name="apertura" id="apertura">
+	<!-- Modal -->
+	<div class="modal fade bs-example-modal-lg" id="modalInicioCaja" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+
+				</div>
+				<div class="modal-body">
+
+					<div class="row">
+						<div class="col-lg-6 col-md-6 col-sm-6">
+							<select class="producto form-control" name="producto" id="producto" required>
+								<option value="">Selecciona el producto</option>
+							</select>
+						</div>
+
+						<div class="col-md-12">
+							<label>Producto</label>
+							<input class="form-control" id="descripcion" name="descripcion" required
+								disabled="false"></input>
+							<input type="hidden" id="idCompra1" name="idCompra1" value="">
+							<input type="hidden" class="form-control" id="action" name="action" value="ajax">
+						</div>
+
+					</div>
+
+					<div class="row">
+						<div class="col-md-4">
+							<label>Cantidad</label>
+							<input type="text" class="form-control" id="cantidadC" name="cantidadC" required>
+						</div>
+
+						<div class="col-md-4">
+							<label>Ultimo Precio</label>
+							<input type="text" class="form-control" id="precioC" name="precioC" required>
+						</div>
+
+					</div>
+
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<button type="submit" class="btn btn-info">Guardar</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript" src="js/parte2.js"></script>
+
+<input type="hidden" id="iva" name="iva" value="">
+<input type="hidden" id="iva10" name="iva10" value="">
+<input type="hidden" id="redondeo" value="">
+<input type="hidden" id="id_autoriza" name="id_autoriza" value="">
+<input type="hidden" id="idVenta" name="idVenta" value="">
+
+
+
+<!--<div id="confirm-form" title="CONFIRMAR VENTA" style="display: none">
+	<fieldset>
+		<h2 id="total_venta_confirmar"></h2>
+		<hr />
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" id="tablita">
+			<tr>
+				<td width="40%"><select class="pago" onchange="chang1(this)">
+						<option th:each="forma : ${formaCobros}" th:value="${forma.simbolo}"
+						th:text="${forma.descripcion}"></option>
+					</select></td>
+				<td width="1%" id="de"></td>
+				<td width="60%"><input type="text" name="cantidad" id="cantidad" autofocus class="cantidad"
+						onkeypress="cargar(event,this)" /></td>
+			</tr>
+		</table>
+		<div id="credito_html" style="display:none">
+			<table width="100%" style="border:1px solid #999; margin-top:5px;">
+				<tr>
+					<td width="56%"><strong>Cantidad Meses:</strong></td>
+					<td width="44%"><input name="meses" value="2" type="text" class="small" id="meses" size="5"
+							onkeypress="cargar(event,this)" /></td>
+				</tr>
+				<tr>
+					<td><strong>% Interes Anual:</strong></td>
+					<td><input name="interes_venta" type="text" class="small" id="interes_venta" size="5"
+							th:value="${claves[10].getValor()}" onkeypress="cargar(event,this)" />
+						%</td>
+				</tr>
+			</table>
+			<script>
+			       // document.querySelector(".pago").style.width = "200px";
+					//document.querySelector(".pago").style.fontSize = "30px";
+					
+					 //document.querySelector(".cantidad").style.width = "50px";
+					//document.querySelector(".cantidad").style.fontSize = "30px";
+			</script>
+		</div>
+		<br>
+		<h2>El Vuelto es:<label id="vuelto"></label></h2>
+		<div style="position:absolute; bottom:1px;">Usted genero <label id="puntos"></label> puntos en esta compra
+		</div>
+
+		<button id="finalizar" class="skin_colour round_all" style="float:right; display:none"
+			onclick="guardar(event,this)"> <i class="fas fa-money-bill-wave"></i> <span>Finalizar</span></button>
+	</fieldset>
+</div>-->
+
+<!--******************************************NUEVO MODAL DE PAGO************************************** -->
+
+<div class="modal" id="pagarVenta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">CONFIRMAR VENTA</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h2 id="total_venta_confirmar"></h2>
+				<div class="card-body">
+					<div class="row">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0" id="tablita">
+							<td width="40%">
+								<div class="imput-group col-md-7">
+
+									<select style="width :300px;" id="selectFormaPago" name="selectFormaPago"
+										class="pago" onchange="chang1(this)" required>
+
+										<option th:each="forma : ${formaCobros}" th:value="${forma.simbolo}"
+											th:text="${forma.descripcion}"></option>
+									</select>
+								</div>
+							</td>
+							<td width="10%" id="de"></td>
+							<td><input style="width :300px;" type="text" class="form-control cantidad"
+									name="cantidad" id="cantidad" placeholder=""
+									onkeypress="cargar(event,this)"></td>
+						</table>
+						<div id="credito_html" style="display:none">
+							<table width="100%" style="border:1px solid #999; margin-top:5px;">
+								<tr>
+									<td width="56%"><strong>Cantidad Meses:</strong></td>
+									<td width="44%"><input name="meses" value="2" type="text" class="small" id="meses"
+											size="5" onkeypress="cargar(event,this)" /></td>
+								</tr>
+								<tr>
+									<td><strong>% Interes Anual:</strong></td>
+									<td><input name="interes_venta" type="text" class="small" id="interes_venta"
+											size="5" th:value="${claves[10].getValor()}"
+											onkeypress="cargar(event,this)" />
+										%</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+
+				</div>
+				<br>
+				<h2>El Vuelto es:<label id="vuelto"></label></h2>
+
+				<script>
+					/*var input = document.querySelector('#cantidad')
+					var fontSize = 30
+					// Tamaño inicial
+					input.style.fontSize = `${fontSize}px`
+
+					input.addEventListener('input', () => {
+						var l = input.value.length
+						var s = (l / 5) | 0 // Disminuimos 1px cada 5 caracteres
+						input.style.fontSize = `${(fontSize - s) || 1}px`
+					})*/
+
+					document.querySelector(".cantidad").style.width = "400px";
+					document.querySelector(".cantidad").style.fontSize = "30px";
+
+					var input = document.querySelector(".pago").style.width = "300px";
+					document.querySelector(".pago").style.fontSize = "30px";
+					/*var fontSize = 30
+					// Tamaño inicial
+					input.style.fontSize = `${fontSize}px`
+
+					input.addEventListener('select', () => {
+						var l = input.value.length
+						var s = (l / 5) | 0 // Disminuimos 1px cada 5 caracteres
+						input.style.fontSize = `${(fontSize - s) || 1}px`
+					})*/
+					
+					
+				</script>
+
+				<div class="modal-footer">
+
+					<div style="position:absolute; bottom:1px;">Usted genero <label id="puntos"></label> puntos en esta
+						compra
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<!--******************************************FIN******************************************************-->
+
+
+
+
+	<div class="modal" id="ModalNuevoClientes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<form role="form" method="POST" enctype="multipart/form-data">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title"><strong>NUEVO CLIENTE</strong></h4>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+
+						<div class="col-md-10">
+							<label for="txt_nombre_cliente">Nombre y Apellidos:</label>
+							<input type="text" id="txt_nombre_cliente" name="txt_nombre_cliente" class="form-control"
+								placeholder="Nombre y Apellidos" required>
+						</div>
+
+
+						<div class="col-md-10 ">
+							<label for="txt_ruc">Dcoumento / RUC:</label>
+							<input type="text" id="txt_ruc" name="txt_ruc" class="form-control"
+								placeholder="Dcoumento / RUC" required></input>
+						</div>
+
+						<div class="col-md-10 ">
+							<label for="fecha_nac">Fecha Nacimiento:</label>
+							<label id="fecha_nac" value=""></label>
+							<div class="col-md-10"><input type="text" id="datepicker_cliente" placeholder="YYYY-MM-DD"
+									required></input></div>
+						</div>
+
+						<div class="col-md-10 ">
+							<label for="txt_direccion">Dirección:</label>
+							<input type="text" id="txt_direccion" name="txt_direccion" class="form-control"
+								placeholder="Dirección" required></input>
+						</div>
+
+						<div class="col-md-10 ">
+							<label for="txt_telefono">Teléfono:</label>
+							<input type="text" id="txt_telefono" name="txt_telefono" class="form-control"
+								placeholder="Teléfono" required></input>
+						</div>
+
+						<div class="col-md-10 ">
+							<label for="txt_email">Email:</label>
+							<input type="text" id="txt_email" name="txt_email" class="form-control" placeholder="Email"
+								required></input>
+						</div>
+
+
+						<div class="col-md-10 ">
+							<label for="txt_tipo_cliente">Tipo Cliente</label>
+							<select id="txt_tipo_cliente" name="txt_tipo_cliente" class="form-control custom-select">
+								<option selected disabled>Seleccione</option>
+								
+							</select>
+						</div>
+
+						<!-- Modal footer -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger"
+								onclick="salir('ModalNuevoClientes'); return false">Cerrar</button>
+							<button type="submit" class="btn btn-success" href="javascript:;"
+								onclick="agregarCliente(2); return false">Guardar</button>
+						</div>
+
+
+
+					</div>
+
+
+					<!---OK-->
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!--MODAL PARA LAS DEVOLUCIONES -->
+
+	<div class="modal" id="ModalDevolucion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+
+				<form role="form" method="POST" enctype="multipart/form-data">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title"><strong>SELECCIONAR TIPO DEVOLUCIÓN</strong></h4>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+
+						<div class="col-md-10 ">
+							<label for="txt_tipo_cliente">Tipo Devolución:</label>
+							<select id="txt_tipo_estado_dev" name="txt_tipo_cliente" class="form-control custom-select"
+								onchange="habilitar_combo();">
+								<option selected disabled>Seleccionar</option>
+								<option value="2">PARCIAL</option>
+								<option value="1">COMPLETA</option>
+							</select>
+						</div>
+
+						<div class="col-md-10 ">
+							<label id="txt_causa" style="display: none;">Causa:</label>
+							<select id="txt_tipo_causa" name="txt_tipo_cliente" class="form-control custom-select"
+								style="display: none;" onchange="habilitar_btAutorizar()">
+								<option selected disabled>Seleccionar</option>
+								<option th:each="estado : ${estadoDevueltos}" th:value="${estado.id_causa_devuelto}"
+									th:text="${estado.descripcion}"></option>
+							</select>
+						</div>
+
+
+						<!-- Modal footer -->
+						<div class="modal-footer">
+							<div class="col-lg-12 col-md-12 col-sm-12">
+								<button type="button" id="btAutorizar" class="btn btn-info"
+									onclick="autorizarLogin(); return false" style="float: left;"
+									disabled>Autorizado<b><label id="autorizar"></label></button>
+								<button type="button" id="btExit" class="btn btn-danger" style="margin-left: 40px"
+									ref="javascript:;" onclick="cerrarModal('ModalDevolucion'); return false">Cerrar</button>
+							</div><button type="submit" id="btAceptar" class="btn btn-success" href="javascript:;"
+								onclick="devolverVenta(1); return false" disabled
+								style="float: right;">Devolver</button>
+
+						</div>
+
+
+						<div>
+
+							<label id="txt_autorizado"></label>
+						</div>
+
+
+					</div>
+
+
+					<!---OK-->
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+<!--FIN MODAL DEVOLUCIONES-->
+
+<!--MODAL PARA ACTUALIZAR ID DE TRANSACCION DE PAGO -->
+
+	<div class="modal" id="ModalActualizaIdPago" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title"><strong>ACTUALIZAR NUMERO FACTURA TARJETA</strong></h4>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+
+							<div class="col-md-10 ">
+							<label for="txtfac">Número de Factura:</label>
+							<input type="text" id="txtfac" name="txtfac" class="form-control"
+								placeholder="Número de Factura" onkeypress="actualizarNumeroFacturaTarjeta(event)" required >
+						</div>
+						
+					</div>
+
+
+			</div>
+
+		</div>
+
+	</div>
+
+<!--FIN MODAL actualizacion id de pago-->
+
+	<div class="modal" id="ModalAutorizar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+
+				<form role="form" method="POST" enctype="multipart/form-data">
+
+
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="box-body">
+
+							<div class="card">
+								<div class="card-body login-card-body">
+									<p class="login-box-msg">Autorizar Devoluciones o cambios
+									<p>
+
+									<form method="post">
+										<div class="input-group mb-2">
+											<input type="text" name="txt_usuario" id="txt_usuario" class="form-control"
+												placeholder="Usuario">
+											<div class="input-group-append">
+												<div class="input-group-text">
+													<span class="fas fa-user"></span>
+												</div>
+											</div>
+										</div>
+										<div class="input-group mb-2">
+											<input type="password" class="form-control" placeholder="Contraseña"
+												name="txt_contra" id="txt_contra">
+											<div class="input-group-append">
+												<div class="input-group-text">
+													<span class="fas fa-lock"></span>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+
+											<button type="submit" class="btn btn-primary btn-block" href="javascript:;"
+												onclick="autorizarCambiosDevoluciones(); return false">Entrar</button>
+
+
+										</div>
+
+
+
+									</form>
+
+
+								</div>
+								<!-- /.login-card-body -->
+							</div>
+
+
+						</div>
+					</div>
+
+
+					<!---OK-->
+				</form>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+
+
+
+	<style>
+		.fullscreen-modal .modal-dialog {
+			margin: 0;
+			margin-right: auto;
+			margin-left: auto;
+			width: 100%;
+		}
+
+		@media (min-width: 768px) {
+			.fullscreen-modal .modal-dialog {
+				width: 750px;
+			}
+		}
+
+		@media (min-width: 992px) {
+			.fullscreen-modal .modal-dialog {
+				width: 970px;
+			}
+		}
+
+		@media (min-width: 1200px) {
+			.fullscreen-modal .modal-dialog {
+				width: 1170px;
+			}
+		}
+	</style>
+
+	<!-- Template Main JS File -->
+	<script src="assets/js/main.js"></script>

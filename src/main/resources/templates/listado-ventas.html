@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+
+
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i> <strong>GESTIÓN DE
+									VENTAS</strong></h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de ventas</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc;;" href="javascript:;"
+						th:onclick="abrirCaja(); return false"><i class="fas fa-filter"></i>Filtrar</button>
+
+
+				</div>
+			</div>
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right" style="width:20%;" id="searchlistadoventas"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+				<div th:if="${success != null}">
+					<label th:text="${success}"></label>
+				</div>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="listaventasops">
+						<thead>
+							<tr style="background: #778899">
+								<th style="text-align: center; width: 10%"><strong>FECHA VENTA</strong></th>
+								<th style="text-align: center; width: 10%"><strong>FECHA HORA CERRADO</strong></th>
+								<th style="text-align: center; width: 5%"><strong>ID APERTURA</strong></th>							
+
+								<th style="text-align: center; width: 12%"><strong>VENDEDOR</strong></th>
+								<th style="text-align: center; width: 10%"><strong>MONTO TOTAL VENTAS</strong></th>
+								<th style="text-align: center; width: 12%"><strong>AUTORIZADO</strong></th>							
+								<th style="text-align: center; width: 10%"><strong>ESTADO</strong></th>
+								<th style="width: 9%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="venta :${listaVentas}">
+								<td style="text-align: center;" th:text="${venta.fecha_hora}"></td>
+								<td style="text-align: center;" th:text="${venta.fecha_hora_cerrado}"></tdstyle="text-align: center;">
+								<td style="text-align: center;" th:text="${venta.id_apertura_cajero}"></td>
+								<td style="text-align: center;">
+								<span th:each="usuarios :${listaUsuarios}">
+										<span th:if="${usuarios.idusuario}==${venta.id_usuario}"
+											th:text="${usuarios.usuario}"></span>
+									</span>
+								</td>
+								<td style="text-align: center;" th:text="${venta.monto_total}"></td>
+								<td style="text-align: center;">
+								<span th:each="usuarios :${listaUsuarios}">
+										<span th:if="${usuarios.idusuario}==${venta.id_usuario_autoriza}"
+											th:text="${usuarios.usuario}"></span>
+									</span>
+								</td>
+								<td style="text-align: center;">
+									<span th:each="estado :${estadoVenta}">
+										<span th:if="${venta.estado}==${estado.id_venta_estado}"
+											th:text="${estado.descripcion}"></span>
+									</span>
+								</td>
+								<td>
+
+									<button class="btn btn-primary ModalEditarCompras"
+										th:onclick="abrirWEB('[(${venta.id_venta})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+
+
+</body>
+
+<!-- **************************MODAL PARA ABRIR EL DIA ************************************-->
+<div class="myForm">
+	<div class="modal fade" id="abrirDia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h4 class="modal-title"><strong>APERTURA DE DIA</strong></h4>
+					<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+						<div class="col-md-10">
+							<label class="form-label">Fecha Apertura:</label>
+							<div class="col-sm-4">
+								<input id="fechaapertura" name="fechaapertura" type="date" required
+									class="form-control">
+							</div>
+						</div>
+						<br>
+						<table>
+							<thead>
+								<tr>
+									<th align="left" style="width: 4%">MONEDA</th>
+									<th align="center" style="width: 4%">VALOR COMPRA</th>
+									<th align="center" style="width: 4%">VALOR VENTA</th>
+									<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo" value="">
+									<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+									<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+								</tr>
+							</thead>
+							<input type="hidden" id="sizeMonedas" name="sizeMonedas" th:value="${listaMoneda.size()}">
+							<div:block th:each="moneda :${listaMoneda}">
+								<tbody>
+									<tr>
+										<td class="cantidad" th:text="${moneda.moneda}"></td>
+										<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
+												th:id="@{${'valorcompra_' + moneda.id}}" value=""
+												title="${moneda.moneda}" placeholder="" required /></td>
+										<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
+												th:id="@{${'valorventa_' + moneda.id}}" value=""
+												title="${moneda.moneda}" placeholder="" required /></td>
+
+										<!--<div th:text="${historico.add(cambio)}"></div> -->
+									</tr>
+								</tbody>
+							</div:block>
+							<table>
+								<tr>
+									<td>
+										<!--	<button type="button" class="btn btn-primary" href="javascript:;"
+												onclick="guardarArqueo()" value="Abrir">Abrir Día</button> -->
+
+										<div class="modal-footer">
+											<button type="button" class="btn btn-danger" 
+												onclick="cerrarModal('abrirDia'); return false">Cancelar</button>
+											<button type="submit" href="javascript:;"
+												onclick="guardarArqueo(); return false" class="btn btn-success">Abrir
+												Día</button>
+										</div>
+									</td>
+								</tr>
+						 </table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!--*******************************************FIN APERTURA DIA*************************************************-->
+
+	<style type="text/css">
+	.text_verde {
+		color:#006400;
+		font-weight: bold;
+	}
+	
+	.text_rojo {
+		color: #C40000;
+		font-weight: bold;
+	}
+
+	.text_verde {
+		color: #060;
+		font-weight: bold;
+	}
+
+	.text_azul {
+		color: #00F;
+		font-weight: bold;
+	}
+
+	.text_naranja {
+		color: #F60;
+		font-weight: bold;
+	}
+
+	.text_negro {
+		color: #000000;
+		font-weight: bold;
+	}
+
+	.text_normal {
+		color: inherit;
+
+	}
+
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>

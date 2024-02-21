@@ -1,0 +1,143 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+</head>
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+
+<div class="pagetitle">
+	<h1><i class="fas fa-tasks" style="color:#218838"></i>Lista de usuarios</h1>
+	<nav>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+			<li class="breadcrumb-item">Usuarios</li>
+
+		</ol>
+	</nav>
+</div><!-- End Page Title -->
+
+<div class="container">
+	<div class="alert alert-success alert-dismissable" th:if="${success != null}">
+		<label th:text="${success}"></label>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+
+	<div class="alert alert-danger alert-dismissable" th:if="${error != null}">
+		<label th:text="${error}"></label>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+
+	<div class="alert alert-warning alert-dismissable" th:if="${warning != null}">
+		<label th:text="${warning}"></label>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+
+	<div class="alert alert-info alert-dismissable" th:if="${info != null}">
+		<label th:text="${info}"></label>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+<main id="main" class="main">
+
+	<div class="pagetitle">
+		<h1>Abrir día</h1>
+		<nav>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+				<li class="breadcrumb-item">Abrir día</li>
+			</ol>
+		</nav>
+	</div><!-- End Page Title -->
+
+	<section class="section">
+		<div class="row">
+			<div class="col-lg-6">
+
+				<div class="card">
+					<tab class="card-body">
+						<h5 class="card-title"></h5>
+
+						<!-- No Labels Form -->
+						<form class="row g-3" action="#" th:object="${listaMoneda2}" method="post">
+							<div class="col-md-10">
+
+								<label for="inputDate" class="form-label">Fecha Ingreso</label>
+								<div class="col-sm-4">
+									<input id="fechaapertura" name="fechaapertura" type="date" required
+										class="form-control">
+								</div>
+							</div>
+
+							<table>
+
+
+								<thead>
+									<tr>
+										<th align="left" style="width: 4%">MONEDA</th>
+										<th align="center" style="width: 4%">VALOR COMPRA</th>
+										<th align="center" style="width: 4%">VALOR VENTA</th>
+										<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo" value="">
+										<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+										<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+									</tr>
+								</thead>
+								<input type="hidden" id="sizeMonedas" name="sizeMonedas"
+									th:value="${listaMoneda.size()}">
+								<div:block th:each="moneda :${listaMoneda}">
+									<tbody>
+										<tr>
+											<td class="cantidad" th:text="${moneda.moneda}"></td>
+											<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
+													th:id="@{${'valorcompra_' + moneda.id}}" value=""
+													title="${moneda.moneda}" placeholder="" required /></td>
+											<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
+													th:id="@{${'valorventa_' + moneda.id}}" value=""
+													title="${moneda.moneda}" placeholder="" required /></td>
+
+											<!--<div th:text="${historico.add(cambio)}"></div> -->
+										</tr>
+
+
+									</tbody>
+
+
+								</div:block>
+
+								<table>
+									<tr>
+										<td>
+											<button type="button" class="btn btn-primary" href="javascript:;"
+												onclick="guardarArqueo()" value="Abrir">Abrir Día</button>
+										</td>
+									</tr>
+
+								</table>
+
+
+						</form><!-- End No Labels Form -->
+
+				</div>
+			</div>
+		</div>
+		</div>
+
+
+	</section>
+
+</main><!-- End #main -->
+

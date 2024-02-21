@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+
+
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i> <strong>GESTIÓN DE
+									DIAS</strong></h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de días</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc;;" href="javascript:;"
+						th:onclick="abrirCaja(); return false"><i
+							class="fas fa-plus"></i>Agregar</button>
+
+
+				</div>
+			</div>
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right" style="width:20%;" id="searchordenes"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+				<div th:if="${success != null}">
+					<label th:text="${success}"></label>
+				</div>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="ordenes">
+						<thead>
+							<tr style="background: #778899">
+								<th style="text-align: center;"><strong>FECHA APERTURA</strong></th>
+								<th style="text-align: center;"><strong>FECHA CIERRE</strong></th>
+								<th style="text-align: center;"><strong>USUARIO APERTURA</strong></th>
+								<th style="text-align: center;"><strong>TOTAL VENTAS</strong></th>
+								<th style="text-align: center;"><strong>TOTAL VENTAS EFECTIVO</strong></th>
+								<th style="text-align: center;"><strong>TOTAL VENTAS TARJETAS</strong></th>
+								<th style="text-align: center;"><strong>TOTAL VENTAS OTROS</strong></th>
+								<th style="text-align: center;"><strong>ESTADO</strong></th>
+								<th style="width: 9%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="apertura :${listaAperturaMes}">
+								<td th:text="${arqueo.fechaapertura}"></td>
+								<td th:text="${arqueo.fecha}"></td>
+								<td th:text="${arqueo.id_apertura_cajero}"></td>
+								<td>
+									<span th:each="turno :${listaTurnos}">
+										<span th:if="${turno.id_turno}==${arqueo.id_turno}"
+											th:text="${turno.descripcion}"></span>
+									</span>
+								</td>
+								<td>
+									<span th:each="caja :${listaCajas}">
+										<span th:if="${caja.idcaja}==${arqueo.id_caja}" th:text="${caja.nombre}"></span>
+									</span>
+								</td>
+								<td th:text="${arqueo.descripcion}"></td>
+								<td th:text="${arqueo.nombre}"></td>
+								<td>
+									<span th:each="cuadre :${listaTipoCuadre}">
+										<span th:if="${cuadre.id_cuadre}==${arqueo.id_cuadre}"
+											th:text="${cuadre.descripcion}"></span>
+									</span>
+								</td>
+								<td>
+
+									<button class="btn btn-primary ModalEditarCompras"
+										th:onclick="editarFacturaCompra('[(${arqueo.id_arqueo})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="fas fa-print"></i></button>
+
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+
+		<div th:replace="template :: loadingTemplate"></div>
+
+
+
+</body>
+
+
+	

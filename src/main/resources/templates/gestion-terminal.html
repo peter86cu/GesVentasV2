@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i> <strong>GESTIÓN DE
+									TERMINALES</strong></h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de Terminales</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+				<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc; float: right;" href="javascript:;"
+						th:onclick="irPosVenta(); return false"><i class="fa-solid fa-link"></i> POS VENTA</button>
+						
+				
+				<button class="btn btn-primary"
+						style="color: #fff;background-color: #0069d9;border-color: #0062cc;;" href="javascript:;"
+						th:onclick="abrirCaja(); return false"><i class="fas fa-plus"></i> Gestionar</button>
+				
+				
+				<span th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==2 or ${user.getIdrol().idrol}==4">	
+			    <button class="btn btn-primary"
+						style="color: #fff;background-color: rgb(64, 128, 128);border-color: rgb(64, 128, 128);;" href="javascript:;"
+						th:onclick="cerrarDia(); return false"><i class="fa-solid fa-circle-dollar-to-slot"></i> Cerrar Día</button>
+                  </span>
+                  
+				</div>
+			</div>
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right" style="width:20%;" id="searchordenes"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+				<div th:if="${success != null}">
+					<label th:text="${success}"></label>
+				</div>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="ordenes">
+						<thead>
+							<tr style="background: #778899">
+								<th style="text-align: center;"><strong># ARQUEO</strong></th>
+								<th style="text-align: center;"><strong>FECHA</strong></th>
+								<th style="text-align: center;"><strong># APERTURA</strong></th>
+								<th style="text-align: center;"><strong>TURNO</strong></th>
+								<th style="text-align: center;"><strong>CAJA</strong></th>
+								<th style="text-align: center;"><strong>TIPO DE ARQUE</strong></th>
+								<th style="text-align: center;"><strong>CAJERO</strong></th>
+								<th style="text-align: center;"><strong>ESTADO</strong></th>
+								<th style="width: 12%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="arqueo :${listaArqueos}">
+								<td th:text="${arqueo.id_arqueo}"></td>
+								<td th:text="${arqueo.fecha}"></td>
+								<td th:text="${arqueo.id_apertura_cajero}"></td>
+								<td>
+									<span th:each="turno :${listaTurnos}">
+										<span th:if="${turno.id_turno}==${arqueo.id_turno}"
+											th:text="${turno.descripcion}"></span>
+									</span>
+								</td>
+								<td>
+									<span th:each="caja :${listaCajas}">
+										<span th:if="${caja.idcaja}==${arqueo.id_caja}" th:text="${caja.nombre}"></span>
+									</span>
+								</td>
+								<td th:text="${arqueo.descripcion}"></td>
+								<td th:text="${arqueo.nombre}"></td>
+								<td>
+									<span th:each="cuadre :${listaTipoCuadre}">
+										<span th:if="${cuadre.id_cuadre}==2 and (${arqueo.id_tipo_arqueo}==3 or ${arqueo.id_tipo_arqueo}==2)">
+											<span span class="text_azul"
+												th:if="${cuadre.id_cuadre}==${arqueo.id_cuadre}"
+												th:text="${cuadre.descripcion}"></span></span>
+										<span th:if="${cuadre.id_cuadre}==1 and (${arqueo.id_tipo_arqueo}==1 or ${arqueo.id_tipo_arqueo}==2)">
+											<span span class="text_verde"
+												th:if="${cuadre.id_cuadre}==${arqueo.id_cuadre}"
+												th:text="${cuadre.descripcion}"></span></span>
+										<span th:if="${cuadre.id_cuadre}==3">
+											<span span class="text_rojo"
+												th:if="${cuadre.id_cuadre}==${arqueo.id_cuadre}"
+												th:text="${cuadre.descripcion}"></span></span>
+									</span>
+								</td>
+								<td>
+
+
+
+									<span th:if="${arqueo.id_tipo_arqueo}==3">
+										<button class="btn btn-primary"
+											th:onclick="listarArqueosPorUsuarioCierre('[(${arqueo.id_usuario})]','[(${arqueo.fecha})]')"
+											style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+												class="fa-solid fa-list"></i></button>
+									</span>
+									
+									<span th:if="${arqueo.id_cuadre}==3">
+									<button class="btn btn-primary " title="Editar arqueo"
+										th:onclick="buscarVentasJs('[(${arqueo.id_apertura_cajero})]','','[(${arqueo.id_arqueo})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+									</span>
+									
+									<span th:if="${arqueo.id_cuadre}==3 or (${arqueo.id_cuadre}==2 and ${arqueo.id_tipo_arqueo}==1)">
+									<button class="btn btn-default" th:onclick="eliminaAperturaInicio(2,'[(${arqueo.id_arqueo})]','[(${arqueo.id_apertura_cajero})]','[(${arqueo.id_usuario})]','[(${arqueo.fecha})]');"
+										style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+											class="fas fa-trash"></i></button>
+										</span>
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+
+	<!-- Modal -->
+	<div class="modal fade bs-example-modal-lg" id="modalInicioCaja">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+
+				</div>
+				<div class="modal-body">
+
+					<div class="row">
+						<input type="hidden" value="" id="fechaCierre" name="fechaCierre">
+
+						<div class="col-md-6">
+							<label for="txtTurno">Turno</label>
+							<select id="txtTurno" name="txtTurno" class="form-control custom-select">
+								<option selected disabled>Seleccionar</option>
+								<option th:each="turno : ${listaTurnos}" th:value="${turno.id_turno}"
+									th:text="${turno.descripcion}"></option>
+							</select>
+
+						</div>
+						<div class="col-md-6">
+							<label for="txtCaja">Caja</label>
+							<select id="txtCaja" name="txtCaja" class="form-control custom-select" disabled="true">
+								<option selected disabled>Seleccionar</option>
+								<option th:each="caja : ${listaCajas}" th:value="${caja.idcaja}"
+									th:text="${caja.nombre}"></option>
+							</select>
+
+						</div>
+
+					</div>
+					<input type="hidden" id="idApertura" name="idApertura" value="">
+
+					<div class="row">
+						<div class="col-md-6">
+							<label>Consecutivo</label>
+							<input type="text" class="form-control" id="txtConsecutivo" name="txtConsecutivo" required
+								disabled="true">
+						</div>
+
+						<div class="col-md-6">
+
+							<label for="txtTipo">Tipo Arqueo</label>
+							<select id="txtTipo" name="txtTipo" class="form-control custom-select">
+								<option selected disabled>Seleccionar</option>
+								<option th:each="arqueo : ${listaTipoArqueo}" th:value="${arqueo.id}"
+									th:text="${arqueo.descripcion}"></option>
+							</select>
+
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" href="javascript:;"
+							onclick="eliminaAperturaInicio(1); return false">Eliminar</button>
+						<button type="submit" id="btAbrir" class="btn btn-info" href="javascript:;"
+							th:onclick="abrirTurno(1); return false">Abrir Turno</button>
+						<button type="submit" id="btEjecutar" class="btn btn-info" href="javascript:;" visible=false
+							th:onclick="abrirTurno(2); return false">Ejecutar Arqueo</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--******************************************NUEVO MODAL PARA LISTAR VENTAS POR ARQUEO DE USUARIOS************************************** -->
+
+	<div class="modal" id="listaVentasArqueoUsuario" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+									
+					<
+						<h4 class="modal-title">DETALLE DE VENTAS DEL ARQUEO</h4>
+
+					
+					
+					<button type="button" class="close" onclick="cerrarModal('listaVentasArqueoUsuario'); return false"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+				</div>
+				<div class="modal-body">
+					<h2 id="total_venta_confirmar"></h2>
+					<div class="card-body">
+						<div class="row">
+							<table style="width: 40%;" class="table" id="tabla1">
+								<thead>
+									<tr style="background: rgb(64, 128, 128)">
+										<th style="text-align: center; width: 10%"><strong># APERTURA</strong></th>
+										<th style="text-align: center; width: 10%"><strong>FECHA</strong></th>
+									</tr>
+								</thead>
+								<tbody id="tabla1-item">
+									<tr>
+										<td style="text-align: center;">123455</td>
+										<td style="text-align: center;">123455</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<br>
+						<div class="row">
+							<table class="table table-bordered table-striped" id="tabla2">
+								<thead>
+									<tr style="background: #778899">
+										<th><strong>ID VENTA</strong></th>
+										<th><strong>TIPO COBRO</strong></th>
+										<th><strong>TOTAL</strong></th>
+									</tr>
+								</thead>
+								<tbody id="tabla2-item">
+
+								</tbody>
+							</table>
+
+						</div>
+
+					</div>
+					<br>
+
+					<div class="row">
+						<table style="width: 40%;" class="table" id="tabla3">
+							<thead>
+								<tr style="background: rgb(64, 128, 128)">
+									<th style="text-align: center; width: 10%"></th>
+									<th style="text-align: center; width: 10%"></th>
+								</tr>
+							</thead>
+							<tbody id="tabla3-item">
+
+							</tbody>
+						</table>
+					</div>
+
+
+					<div class="modal-footer">
+
+						<div style="position:absolute; bottom:1px;">Usted genero <label id="puntos"></label> puntos en
+							esta
+							compra
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--******************************************FIN******************************************************-->
+
+	<!-- Modal apara arqueo de billetes -->
+	<div class="modal" id="arqueoCaja" data-backdrop="static" data-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal body -->
+				<div class="modal-body">
+
+					<form action="?" method="post" id="form1" name="form1">
+						<input type="hidden" value="" name="apertura">
+
+						<div class="modal-header" style="background: #17a2b8;">
+							<h4 class="modal-title"><strong>LISTADO DE BILLETES</strong></h4>
+
+						</div>
+
+						<div class="box grid_16 round_all">
+
+							<div class="toggle_container">
+								<div class="block">
+
+									<p>
+									<table width="100%" border="2" cellspacing="2" cellpadding="0">
+										<br>Usuario:<span th:text="${user.usuario}"></span>
+
+										<br>Caja:<label id="nombreCaja"></label>
+										<br>Moneda: <span></span>
+										<label id="moneda"></label>
+										</p><br style=" font-weight: bold;">APERTURA DE CUENTA: <h2><label
+												id="_saldo_inicial"></label> </h2>
+
+										<thead>
+											<tr>
+												<th align="left" style="width: 4%">BILLETES/MONEDAS</th>
+												<th align="center" style="width: 4%">CANTIDAD</th>
+												<th align="center" style="width: 4%">VALOR</th>
+												<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo"
+													value="">
+												<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+												<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+											</tr>
+										</thead>
+
+										<tbody>
+											<div th:each="billete :${listaBilletes}">
+												<tr>
+
+													<td class="cantidad" th:text="${billete.descripcion}"></td>
+													<td align="center" class="productoCaja"><input
+															th:name="@{${'moneda_' + billete.id_billete}}" type="text"
+															value="" th:id="@{${'moneda_' + billete.id_billete}}"
+															title="<?=$lista['descripcion'] ?>"
+															th:placeholder="${billete.monto}" autofocus
+															th:onBlur="sumar('[(${billete.id_billete})]',this)" /></td>
+													<td align="right" style="width: 4%" class="precio"><label
+															class="total">0</label></td>
+
+												</tr>
+											</div>
+											<tr>
+												<td class="cantidad"></td>
+												<td class="productoCaja">
+													<h2>TOTAL</h2>
+												</td>
+												<td valign="top">
+													<h2 id="_total_arqueo">$ 0</h2>
+												</td>
+
+											</tr>
+										</tbody>
+										<tr>
+
+
+
+										</tr>
+									</table>
+								</div>
+
+							</div>
+						</div>
+
+					</form>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger"
+							onclick="cerrarModal('arqueoCaja'); return false">Cancelar</button>
+						<button type="button" class="btn btn-success" href="javascript:;"
+							onclick="guardarArqueoTerminal()">Guardar</button>
+					</div>
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+
+
+	<!-- **************************MODAL PARA ABRIR EL DIA ************************************-->
+	<div class="myForm">
+		<div class="modal fade" id="abrirDia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #17a2b8;">
+						<h4 class="modal-title"><strong>APERTURA DE DIA</strong></h4>
+						<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="card-body">
+							<div class="col-md-10">
+								<label class="form-label">Fecha Apertura:</label>
+								<div class="col-sm-4">
+									<input id="fechaapertura" name="fechaapertura" type="date" required
+										class="form-control">
+								</div>
+							</div>
+							<br>
+							<table>
+								<thead>
+									<tr>
+										<th align="left" style="width: 4%">MONEDA</th>
+										<th align="center" style="width: 4%">VALOR COMPRA</th>
+										<th align="center" style="width: 4%">VALOR VENTA</th>
+										<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo" value="">
+										<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+										<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+									</tr>
+								</thead>
+								<input type="hidden" id="sizeMonedas" name="sizeMonedas"
+									th:value="${listaMoneda.size()}">
+								<div:block th:each="moneda :${listaMoneda}">
+									<tbody>
+										<tr>
+											<td class="cantidad" th:text="${moneda.moneda}"></td>
+											<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
+													th:id="@{${'valorcompra_' + moneda.id}}" value=""
+													title="${moneda.moneda}" placeholder="" required /></td>
+											<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
+													th:id="@{${'valorventa_' + moneda.id}}" value=""
+													title="${moneda.moneda}" placeholder="" required /></td>
+
+											<!--<div th:text="${historico.add(cambio)}"></div> -->
+										</tr>
+									</tbody>
+								</div:block>
+								<table>
+									<tr>
+										<td>
+											<!--	<button type="button" class="btn btn-primary" href="javascript:;"
+												onclick="guardarArqueo()" value="Abrir">Abrir Día</button> -->
+
+											<div class="modal-footer">
+												<button type="button" class="btn btn-danger"
+													onclick="cerrarModal('abrirDia'); return false">Cancelar</button>
+												<button type="submit" href="javascript:;"
+													onclick="guardarArqueo(); return false"
+													class="btn btn-success">Abrir
+													Día</button>
+											</div>
+										</td>
+									</tr>
+								</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!--*******************************************FIN APERTURA DIA*************************************************-->
+	
+	
+	
+	
+	<!-- **************************MODAL PARA CERRAR EL DIA ************************************-->
+	<div class="myForm">
+		<div class="modal fade" id="cerrarDia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #17a2b8;">
+						<h4 class="modal-title"><strong>APERTURA DE DIA</strong></h4>
+						<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="card-body">
+							<p>Prueba</p>
+								
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!--*******************************************FIN APERTURA CIERRE DE DIA*************************************************-->
+		<div th:replace="template :: loadingTemplate"></div>
+
+	<div th:replace="template :: footer"></div>
+
+</body>
+
+
+
+<style type="text/css">
+	.text_verde {
+		color: #006400;
+		font-weight: bold;
+	}
+
+	.text_rojo {
+		color: #C40000;
+		font-weight: bold;
+	}
+
+	.text_verde {
+		color: #060;
+		font-weight: bold;
+	}
+
+	.text_azul {
+		color: #00F;
+		font-weight: bold;
+	}
+
+	.text_naranja {
+		color: #F60;
+		font-weight: bold;
+	}
+
+	.text_negro {
+		color: #000000;
+		font-weight: bold;
+	}
+
+	.text_normal {
+		color: inherit;
+
+	}
+
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>
+
+
+
+</html>

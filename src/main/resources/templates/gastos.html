@@ -1,0 +1,397 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+<body>
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>
+								<i class="fas fa-file-invoice-dollar" style="color: #218838"></i>
+								<strong>GESTIÓN DE GASTOS</strong>
+							</h1>
+						</div>
+
+					</div>
+				</div>
+				<!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Gestión de Gastos</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Gastos</button>
+						<div class="dropdown-content">
+							<a href="#" onclick="abrirModal('gastosNuevoModal')">Nuevo
+								Gasto</a> <a href="#" onclick="abrirModal('asistenciaModal')">Calendario</a>
+							<a href="https://www.youtube.com/user/hubspot">YouTube</a>
+						</div>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Ingresos</button>
+						<div class="dropdown-content">
+							<a href="#" onclick="abrirModal('asistenciaModal')">Nuevo
+								Gasto</a> <a href="#" onclick="abrirModal('asistenciaModal')">Calendario</a>
+							<a href="https://www.youtube.com/user/hubspot">YouTube</a>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="card-body">
+			<div class="card-block">
+				<table class="table table-bordered table-striped" id="empleadost">
+					<thead id="cabeza-items">
+
+					</thead>
+
+
+					<tbody>
+
+					</tbody>
+
+				</table>
+
+
+			</div>
+
+		</div>
+
+	</main>
+
+
+
+	<div id="myModalCalendario" class="modal">
+		<div class="modal-content">
+			<h2>Filtrar por Número de Empleado</h2>
+
+			<div class="form-group">
+				<label for="numeroEmpleado">Número de Empleado:</label> <input
+					type="text" id="numeroEmpleado"
+					placeholder="Ingrese el número de empleado">
+			</div>
+
+			<div class="form-group">
+				<button onclick="filterByNumeroEmpleado()">Filtrar</button>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" th:id="empleadoId" name="empleadoId" value="">
+
+
+
+
+	<!--******************************************NUEVO MODAL PARA GESTIONAR MARCA************************************** -->
+	<div class="modal" id="gastosNuevoModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">FILTRAR MARCAS A PROCESAR</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('asistenciaModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h2 id="total_venta_confirmar"></h2>
+					<div class="card-body">
+
+						<div class="row">
+							<input type="hidden" id="idTipoGasto" name="idTipoGasto" value="">
+							<input type="hidden" th:id="userId" name="userId" th:value="${user.idusuario}">
+							<div class="imput-group col-md-4">
+								<select style="width: 100%" class="gastos form-control"
+									name="gasto" id="gasto" required>
+									<option value="">Tipo de Gasto</option>
+								</select>
+							</div>
+
+							<label class="col-md-1 col-lg-1 col-form-label">Moneda</label>
+							<div class="imput-group col-md-3">
+								<select style="width: 100%" id="idMoneda" name="idMoneda"
+									class="form-control custom-select"
+									onchange="validarChange(this,'idMoneda');">
+									<option value="0" selected disabled>Seleccionar</option>
+									<option th:each="mony : ${listaMoneda}" th:value="${mony.id}"
+										th:text="${mony.moneda}"></option>
+								</select>
+							</div>
+							<label class="col-md-1 col-lg-1 col-form-label">Saldo</label>
+							<div class="imput-group col-md-2">
+								<input style="width: 100%" type="text" id="inputValor"
+									name="inputValor" class="form-control">
+							</div>
+
+							<div class="imput-group col-md-1">
+								<button type="submit" class="btn btn-primary"
+									href="javascript:;"
+									onclick="insertar(); return false">
+									<i class="fa-solid fa-circle-plus"></i>
+								</button>
+							</div>
+
+						</div>
+						<br>
+
+						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
+						<div class="card-block">
+							<table class="table table-bordered table-striped" id="productost">
+								<thead>
+									<tr style="background: #778899">
+										<th>GASTO</th>
+										<th>MONEDA</th>
+										<th>CANTIDAD</th>
+										<th>RECIBO</th>
+										<th>ESTADO</th>
+										<th>FECHA</th>
+										<th>USUARIO</th>
+									</tr>
+								</thead>
+								<tbody id="cuerpo-items">
+
+								</tbody>
+							</table>
+
+
+						</div>
+						<!--FIN-->
+
+
+
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+
+	<style>
+/* Style The Dropdown Button */
+.dropbtn {
+	background-color: #4CAF50;
+	color: white;
+	padding: 16px;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f9f9f9;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+	background-color: #f1f1f1
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+	background-color: #3e8e41;
+}
+</style>
+
+	<!--******************************************FIN******************************************************-->
+
+
+
+
+
+
+
+
+
+	<div th:replace="template :: mDiaTemplate"></div>
+
+	<div th:replace="template :: loadingTemplate"></div>
+
+	<div th:replace="template :: footer"></div>
+
+</body>
+
+
+<style type="text/css">
+.text_verde {
+	color: #006400;
+	font-weight: bold;
+}
+
+.text_rojo {
+	color: #C40000;
+	font-weight: bold;
+}
+
+.text_verde {
+	color: #060;
+	font-weight: bold;
+}
+
+.text_azul {
+	color: #00F;
+	font-weight: bold;
+}
+
+.text_naranja {
+	color: #F60;
+	font-weight: bold;
+}
+
+.text_negro {
+	color: #000000;
+	font-weight: bold;
+}
+
+.text_normal {
+	color: inherit;
+}
+
+a.active {
+	background-color: #4CAF50;
+	color: white;
+	border-radius: 5px;
+}
+
+div.nav {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
+
+.nav.a {
+	display: inline;
+}
+
+a.bot {
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.loader-page {
+	position: fixed;
+	z-index: 25000;
+	background: rgb(255, 255, 255);
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all .3s ease;
+}
+
+.loader-page::before {
+	content: "";
+	position: absolute;
+	border: 2px solid rgb(50, 150, 176);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s linear infinite;
+	transform: rotate(0deg);
+}
+
+.loader-page::after {
+	content: "";
+	position: absolute;
+	border: 2px solid rgba(50, 150, 176, .5);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s ease-out infinite;
+	transform: rotate(0deg);
+}
+
+/*NUEVO PARA PROBAR*/
+.dropdown {
+	display: inline-block;
+	position: relative;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	width: 100%;
+	overflow: auto;
+	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+.dropdown-content a {
+	display: block;
+	color: #000000;
+	padding: 5px;
+	text-decoration: none;
+}
+
+.dropdown-content a:hover {
+	color: #FFFFFF;
+	background-color: #00A4BD;
+}
+</style>
+
+
+</html>

@@ -1,0 +1,89 @@
+  <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Crear nuevo usuario</h5>
+                    <p class="text-center small">Entre los detalle del usuario nuevo</p>
+                  </div>
+
+                  <form  th:action="@{/registrar}" th:object="${usuario}" class="row g-3 needs-validation" id="addUser"
+				name="addUser" novalidate method="POST">
+                    <div class="col-12">
+                      <label for="nombre" class="form-label">Nombre</label>
+                      <input type="text" name="nombre" id="nombre" th:field="*{nombre}" class="form-control"  required>
+                      <div class="invalid-feedback">Please, enter your name!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label  class="form-label">Email</label>
+                      <div class="input-group has-validation"> 
+                      <span class="input-group-text" id="inputGroupPrepend">@</span>
+                      <input type="email"  name="email" th:field="*{email}" class="form-control" id="email" required>
+                      </div>
+                      <div class="invalid-feedback">Please enter a valid Email adddress!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="yourUsername" class="form-label">Username</label>                                             
+                        <input type="text" name="usuario" th:field="*{usuario}" class="form-control" id="usuario" required>
+                        <div class="invalid-feedback">Please choose a username.</div>                      
+                    </div>
+
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">Password</label>
+                      <input type="password" th:field="*{password}" name="password" class="form-control" id="password" required>
+                      <div class="invalid-feedback">Please enter your password!</div>
+                    </div>
+                    
+                    <div class="col-md-8">
+						<label for="inputState" class="form-label">Rol</label> <select
+							id="rol" name="rol" class="form-select">
+							<option th:each="rol : ${roles}"
+								th:value="${rol.idRol}"
+								 th:text="${rol.descripcion}"></option>
+
+						</select>
+					</div>                   
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                    </div>
+  <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>                  
+ 	<script type="text/javascript">
+		$(function() {
+			$("form[name='addUser']").validate({
+				rules : {
+					// The key name on the left side is the name attribute
+					// of an input field. Validation rules are defined
+					// on the right side
+					nombre : "required",
+					usuario : "required",
+					email : {
+						required : true,
+						// Specify that email should be validated
+						// by the built-in "email" rule
+						email : true
+					},
+					password : {
+						required : true,
+						minlength : 6,
+						maxlength : 10,
+					},
+					rol:"required"	
+					},
+				// Specify validation error messages
+				messages : {
+					nombre : "Please enter your firstname",
+					usuario : "Please enter your lastname",
+					email : "Please enter a valid email address",
+					password : "Please enter a valid address",
+					rol : "Please enter a valid address"
+				},
+				// Make sure the form is submitted to the destination defined
+				// in the "action" attribute of the form when valid
+				submitHandler : function(form) {
+					form.submit();
+				}
+			});
+		});
+	</script>

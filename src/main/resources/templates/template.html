@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="html_head">
+	<meta charset="utf-8">
+	<!--  <meta content="width=device-width, initial-scale=1.0" name="viewport"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>GesVentas 1.0</title>
+	<link rel="shortcut icon" href="iconos/favicon.png">
+	<meta content="" name="description">
+	<meta content="" name="keywords">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.gstatic.com" rel="preconnect">
+	<link
+		href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+		rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+		integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+		crossorigin="anonymous"></script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!--Agregados nuevos -->
+	<link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+	<link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+	<!-- Styles -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+	<!-- Or for RTL support -->
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- Scripts -->
+	<!--<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>-->
+	
+
+	<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+	<!--<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" rel="stylesheet" />
+
+	<script th:src="@{assets/vendor/bower_components/chart.js/Chart.js}"></script>
+
+
+	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+	<!-- Google Fonts -->
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+		integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+		integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+		crossorigin="anonymous"></script>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+	<script th:src="@{assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+
+	<!--JS de las paginas-->
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
+
+
+
+
+	<!-- Template Main CSS File -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<script type="text/javascript" src="js/caja.js"></script>
+	<script type="text/javascript" src="js/ordenes-compras.js"></script>
+	<script type="text/javascript" src="js/facturas-compras.js"></script>
+	<script type="text/javascript" src="js/administracion.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript" src="js/productos.js"></script> 
+	<script type="text/javascript" src="js/funciones.js"></script>
+	<script type="text/javascript" src="js/usuarios.js"></script>
+	<script type="text/javascript" src="js/ventas.js"></script>
+	<script type="text/javascript" src="js/empleados.js"></script>
+	<script type="text/javascript" src="js/contable.js"></script>
+	
+
+
+</head>
+
+<body>
+
+
+
+
+	<div th:fragment="header">
+		<!-- ======= Header ======= -->
+		<header id="header" class="header fixed-top d-flex align-items-center">
+
+			<div class="d-flex align-items-center justify-content-between">
+				<a href="inicio" class="logo d-flex align-items-center">
+					<img src="assets/img/logo.png" alt="">
+					<span class="d-none d-lg-block">GesVentas</span>
+				</a>
+				<i class="bi bi-list toggle-sidebar-btn"></i>
+			</div><!-- End Logo -->
+
+			<div class="search-bar">
+				<form class="search-form d-flex align-items-center" method="POST" action="#" th:object="${session}">
+					<input type="text" name="query" placeholder="Search" title="Enter search keyword">
+					<button type="submit" title="Search"><i class="bi bi-search"></i></button>
+				</form>
+			</div><!-- End Search Bar -->
+
+
+			<nav class="header-nav ms-auto">
+				<ul class="d-flex align-items-center">
+
+					<li class="nav-item d-block d-lg-none">
+						<a class="nav-link nav-icon search-bar-toggle " href="#">
+							<i class="bi bi-search"></i>
+						</a>
+					</li><!-- End Search Icon-->
+
+					<li class="nav-item dropdown">
+
+						<a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+							<i class="bi bi-bell"></i>
+							<span class="badge bg-primary badge-number">4</span>
+						</a><!-- End Notification Icon -->
+
+						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+							<li class="dropdown-header">
+								You have 4 new notifications
+								<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item">
+								<i class="bi bi-exclamation-circle text-warning"></i>
+								<div>
+									<h4>Lorem Ipsum</h4>
+									<p>Quae dolorem earum veritatis oditseno</p>
+									<p>30 min. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item">
+								<i class="bi bi-x-circle text-danger"></i>
+								<div>
+									<h4>Atque rerum nesciunt</h4>
+									<p>Quae dolorem earum veritatis oditseno</p>
+									<p>1 hr. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item">
+								<i class="bi bi-check-circle text-success"></i>
+								<div>
+									<h4>Sit rerum fuga</h4>
+									<p>Quae dolorem earum veritatis oditseno</p>
+									<p>2 hrs. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item">
+								<i class="bi bi-info-circle text-primary"></i>
+								<div>
+									<h4>Dicta reprehenderit</h4>
+									<p>Quae dolorem earum veritatis oditseno</p>
+									<p>4 hrs. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li class="dropdown-footer">
+								<a href="#">Show all notifications</a>
+							</li>
+
+						</ul><!-- End Notification Dropdown Items -->
+
+					</li><!-- End Notification Nav -->
+
+					<li class="nav-item dropdown">
+
+						<a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+							<i class="bi bi-chat-left-text"></i>
+							<span class="badge bg-success badge-number">3</span>
+						</a><!-- End Messages Icon -->
+
+						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+							<li class="dropdown-header">
+								You have 3 new messages
+								<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="message-item">
+								<a href="#">
+									<img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+									<div>
+										<h4>Maria Hudson</h4>
+										<p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+										<p>4 hrs. ago</p>
+									</div>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="message-item">
+								<a href="#">
+									<img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+									<div>
+										<h4>Anna Nelson</h4>
+										<p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+										<p>6 hrs. ago</p>
+									</div>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="message-item">
+								<a href="#">
+									<img src="assets/img/messages-3.jpg" alt="" class="rounded-circle">
+									<div>
+										<h4>David Muldon</h4>
+										<p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+										<p>8 hrs. ago</p>
+									</div>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="dropdown-footer">
+								<a href="#">Show all messages</a>
+							</li>
+
+						</ul><!-- End Messages Dropdown Items -->
+
+					</li><!-- End Messages Nav -->
+
+					<li class="nav-item dropdown pe-3">
+
+						<a class="nav-link nav-profile d-flex align-items-center pe-0" href="users-profile"
+							data-bs-toggle="dropdown">
+							<img th:src="@{${'empleados/' + user.empleado.foto}}" alt="Profile" class="rounded-circle">
+							<span th:text="${user.usuario}"></span>
+							<span class="d-none d-md-block dropdown-toggle ps-2"></span>
+						</a><!-- End Profile Iamge Icon -->
+
+						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+							<li class="dropdown-header">
+								<h6 th:text="${user.getEmpleado().nombre}+ ' '+ ${user.getEmpleado().apellidos}"></h6>
+								<span th:text="${user.getIdrol().descripcion}"></span>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li>
+								<a class="dropdown-item d-flex align-items-center" href="users-profile">
+									<i class="bi bi-person"></i>
+									<span>Mi Perfil</span>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li>
+								<a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+									<i class="bi bi-gear"></i>
+									<span>Account Settings</span>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li>
+								<a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+									<i class="bi bi-question-circle"></i>
+									<span>Need Help?</span>
+								</a>
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li>
+								<a class="dropdown-item d-flex align-items-center" href="logout" th:href="@{/logout}">
+									<i class="bi bi-box-arrow-right"></i>
+									<span>Salir</span>
+								</a>
+							</li>
+
+						</ul><!-- End Profile Dropdown Items -->
+					</li><!-- End Profile Nav -->
+
+				</ul>
+			</nav><!-- End Icons Navigation -->
+
+
+		</header><!-- End Header -->
+
+
+	</div>
+
+
+
+
+	<aside id="sidebar" class="sidebar" th:fragment="menu">
+
+		<ul class="sidebar-nav" id="sidebar-nav">
+
+
+
+
+			<li class="nav-item" th:if="${user.getIdrol().idrol == 1}">
+				<a class="nav-link collapsed" data-bs-target="#tables-nav1" data-bs-toggle="collapse" href="inicio">
+					<img src="iconos/config.png" alt=""><span>ADMINISTRACIÓN</span><i
+						class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="tables-nav1" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="administracion" th:if="${user.getIdrol().idrol == 1}">
+							<img src="iconos/comando.png" alt=""> <span>Administración</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+
+			<li class="nav-item" th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==2">
+				<a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="inicio">
+					<img src="iconos/administracion.png" alt=""><span> CONFIGURACIÓN</span><i
+						class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="perfil-empresa" th:if="${user.getIdrol().idrol == 1}">
+							<img src="iconos/empresa.png" alt=""><span>Empresa</span>
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('productos')">
+							<img src="iconos/producto.png" alt=""><span>Productos</span>
+
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('user-registrados')">
+							<img src="iconos/sistema-de-seguridad.png" alt=""><span> Usuarios</span>
+						</a>
+					</li>
+
+
+				</ul>
+			</li><!-- End Tables Nav -->
+
+			<li class="nav-item"
+				th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==4 or ${user.getIdrol().idrol}==5">
+				<a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="inicio">
+					<img src="iconos/pos.png" alt=""><span>TPV</span><i class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==4">
+						<a href="javaScript:validarServer('abrir-caja')" id="ModalAbirDia">
+							<img src="iconos/punto-de-venta.png" alt=""><span>Abrir Día</span>
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('gestion-terminal')">
+							<img src="iconos/terminal.png" alt=""><span>Gestión de Teminal</span>
+						</a>
+					</li>
+					<li>
+						<!--<a onclick="abrirWEB(); return false">
+							<img src="iconos/orden-ventas.png" alt=""><span>Punto de Venta</span>
+						</a>-->
+						<a href="javaScript:validarServer('punto-venta')">
+							<img src="iconos/orden-ventas.png" alt=""><span>Punto de Venta</span>
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('listado-ventas')">
+							<img src="iconos/ventas.png" alt=""><span>Gestión de Ventas</span>
+						</a>
+					</li>
+				</ul>
+			</li><!-- End Components Nav -->
+
+			<li class="nav-item"
+				th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==2 or ${user.getIdrol().idrol}==4">
+				<a class="nav-link collapsed" data-bs-target="#components-nav-ordenes" data-bs-toggle="collapse"
+					href="inicio">
+					<img src="iconos/pedidos.png" alt=""><span>ORDENES</span><i class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav-ordenes" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="javaScript:validarServer('orden-compra')">
+							<img src="iconos/orden-compras.png" alt=""><span>Ordenes de Compras</span>
+
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('facturas-compra')">
+							<img src="iconos/orden-ventas.png" alt=""><span>Facturas de compra</span>
+						</a>
+					</li>
+
+				</ul>
+			</li><!-- End Components Nav -->
+			
+			<!-- CONTABILIDAD-->
+			<li class="nav-item"
+				th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==2 or ${user.getIdrol().idrol}==7">
+				<a class="nav-link collapsed" data-bs-target="#components-nav-contable" data-bs-toggle="collapse"
+					href="inicio">
+					<img src="iconos/presupuesto.png" alt=""><span>CONTABILIDAD</span><i class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav-contable" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+				<li>
+						<a href="javaScript:validarServer('gastos')">
+							<img src="iconos/gastos.png" alt=""><span>Gestión de Gastos</span>
+
+						</a>
+					</li>
+					<li>
+						<a href="javaScript:validarServer('contabilidad')">
+							<img src="iconos/dinero.png" alt=""><span>Contabilidad</span>
+
+						</a>
+					</li>
+				</ul>
+			</li><!-- End CoNTABILIDAD -->
+
+			<li class="nav-item">
+				<a class="nav-link collapsed" data-bs-target="#components-nav-mail" data-bs-toggle="collapse"
+					href="inicio">
+					<img src="iconos/gmail.png" alt=""><span> MAILBOX</span><i class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav-mail" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="javaScript:validarServer('mailbox')">
+							<img src="iconos/email.png" alt=""><span>Correo</span>
+
+						</a>
+					</li>
+
+				</ul>
+			</li><!-- End Components Nav -->
+
+			<li class="nav-item" th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==6">
+				<a class="nav-link collapsed" data-bs-target="#components-nav-rh" data-bs-toggle="collapse"
+					href="inicio">
+					<img src="iconos/rh.png" alt=""><span> RECURSOS HUMANOS</span><i
+						class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav-rh" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="javaScript:validarServer('empleados')">
+							<img src="iconos/empleados.png" alt=""><span>Empleados</span>
+
+						</a>
+					</li>
+						<li>
+						<a href="javaScript:abrirFiltroCalendario('calendarioModal')">
+							<img src="iconos/calendario.png" alt=""><span>Calendario</span>
+
+						</a>
+					</li>
+
+					<li>
+						<a href="javaScript:validarServer('pagos')">
+							<img src="iconos/metodo-de-pago.png" alt=""><span>Pagos</span>
+
+						</a>
+
+					</li>
+
+				</ul>
+			</li><!-- End Components Nav -->
+
+		</ul>
+
+
+
+	</aside><!-- End Sidebar-->
+
+
+
+	<!-- Control Sidebar -->
+	<aside class="control-sidebar control-sidebar-dark">
+		<!-- Control sidebar content goes here -->
+	</aside>
+	<!-- /.control-sidebar -->
+   <!--******************************************NUEVO MODAL DE FILTRAR CALENDARIO************************************** -->
+	<div id="calendariTemplate" th:fragment="calendariTemplate">
+	
+
+	<div class="modal" id="calendarioModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">CALENDARIO </h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"
+						onclick="cerrarModal('asistenciaModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h2 id="total_venta_confirmar"></h2>
+					<div class="card-body">
+
+					<div class="form-group">
+                <label for="numeroEmpleado">Número de Empleado:</label>
+                <input type="text" id="numeroEmpleado" placeholder="Ingrese el número de empleado">
+            </div>
+            
+            	<div class="form-group">
+                <label for="numeroEmpleado">Número de Empleado:</label>
+                <input type="text" id="numeroEmpleado" placeholder="Ingrese el número de empleado">
+            </div>
+
+					</div>
+
+
+
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="procesarCalendarioPorEmpleado(); return false">Buscar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--******************************************FIN******************************************************-->
+
+	
+	</div>
+<!--********************************fin del modal*************************************-->
+	<div id="mDiaTemplate" th:fragment="mDiaTemplate">
+		<!-- **************************MODAL PARA ABRIR EL DIA ************************************-->
+		<div class="myForm">
+			<div class="modal fade" id="abrirDia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header" style="background: #17a2b8;">
+							<h4 class="modal-title"><strong>APERTURA DE DIA</strong></h4>
+							<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="card-body">
+								<div class="col-md-10">
+									<label class="form-label">Fecha Apertura:</label>
+									<div class="col-sm-4">
+										<input id="fechaapertura" name="fechaapertura" type="date" required
+											class="form-control">
+									</div>
+								</div>
+								<br>
+								<table>
+									<thead>
+										<tr>
+											<th align="left" style="width: 4%">MONEDA</th>
+											<th align="center" style="width: 4%">VALOR COMPRA</th>
+											<th align="center" style="width: 4%">VALOR VENTA</th>
+											<input type="hidden" id="txtId_tipo_arqueo" name="txtId_tipo_arqueo"
+												value="">
+											<input type="hidden" id="saldo_inicial" name="saldo_inicial" value="">
+											<input type="hidden" id="txtId_arqueo" name="txtId_arqueo" value="">
+										</tr>
+									</thead>
+									<input type="hidden" id="sizeMonedas" name="sizeMonedas"
+										th:value="${listaMoneda.size()}">
+									<div:block th:each="moneda :${listaMoneda}">
+										<tbody>
+											<tr>
+												<td class="cantidad" th:text="${moneda.moneda}"></td>
+												<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
+														th:id="@{${'valorcompra_' + moneda.id}}" value=""
+														title="${moneda.moneda}" placeholder="" required /></td>
+												<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
+														th:id="@{${'valorventa_' + moneda.id}}" value=""
+														title="${moneda.moneda}" placeholder="" required /></td>
+
+												<!--<div th:text="${historico.add(cambio)}"></div> -->
+											</tr>
+										</tbody>
+									</div:block>
+									<table>
+										<tr>
+											<td>
+												<!--	<button type="button" class="btn btn-primary" href="javascript:;"
+												onclick="guardarArqueo()" value="Abrir">Abrir Día</button> -->
+
+												<div class="modal-footer">
+													<button type="button" class="btn btn-danger"
+														onclick="cerrarModal('abrirDia'); return false">Cancelar</button>
+													<button type="submit" href="javascript:;"
+														onclick="guardarArqueo(); return false"
+														class="btn btn-success">Abrir
+														Día</button>
+												</div>
+											</td>
+										</tr>
+									</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<!--*******************************************FIN APERTURA DIA*************************************************-->
+	</div>
+
+
+
+<!--********************************Loadin modal*************************************-->
+	<div id="loadingTemplate" th:fragment="loadingTemplate">
+		<!-- Modal Loadin -->
+	<div class="modal fade" id="loadingModal" data-bs-backdrop="static"
+		data-bs-keyboard="false" tabindex="-1" aria-labelledby="loadingModal"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div id="loadingContent" class="modal-content">
+
+				<div class="modal-body text-center mt-5 mb-5 ">
+					<div class="spinner-border text-success" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+					
+					<div class="mt-4" >
+						<span>Cargando...</span>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+
+		<!--*******************************************FIN loading************************************************-->
+
+	<footer id="footer" class="footer" th:fragment="footer">
+		<div class="copyright">
+			&copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+		</div>
+		<div class="credits">
+			<!-- All the links in the footer should remain intact. -->
+			<!-- You can delete the links only if you purchased the pro version. -->
+			<!-- Licensing information: https://bootstrapmade.com/license/ -->
+			<!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+			Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+		</div>
+
+	</footer><!-- End Footer -->
+
+
+
+	<!-- Vendor JS Files -->
+	<script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="assets/vendor/chart.js/chart.umd.js"></script>
+	<script src="assets/vendor/echarts/echarts.min.js"></script>
+	<script src="assets/vendor/quill/quill.min.js"></script>
+	<script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="assets/vendor/tinymce/tinymce.min.js"></script>
+	<script src="assets/vendor/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="assets/js/main.js"></script>
+
+
+
+
+</body>
+<style>
+	html {
+		min-height: 100%;
+		position: relative;
+	}
+
+	body {
+		margin: 0;
+		margin-bottom: 40px;
+	}
+
+	footer {
+		background-color: black;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 40px;
+		color: white;
+	}
+</style>
+<!-- Funciones -->
+<script src="js/caja.js"></script>
+<script src="js/funciones.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+</html>

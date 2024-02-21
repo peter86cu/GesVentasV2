@@ -1,0 +1,207 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: html_head">
+
+
+</head>
+
+<body>
+
+	<div th:replace="template :: header"></div>
+	<div th:replace="template :: menu"></div>
+
+
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Lista de empresas</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item">Empresas</li>
+
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="container">
+
+			<div class="col text-center">
+				<button class="btn btn-sm btn-success newAddBookBtn btn-space">Nueva empresa</button>
+			</div>
+			<br>
+			<div class="myForm">
+				<form th:action="@{/addempresa}" method="post" id="addEmpresa" name="addEmpresa">
+					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+						aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="card-title text-center pb-0 fs-4" id="exampleModalLabel">Datos de la
+										empresa
+									</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<div class="card-body">
+
+										<form th:action="@{/addempresa}" th:object="${empresa}"
+											class="row g-3 needs-validation" id="addEmpresa" name="addEmpresa"
+											novalidate method="POST">
+											<div class="col-12">
+												<label for="nombre" class="form-label">Nombre:</label>
+												<input type="text" name="nombre" id="nombre" th:field="*{nombre}"
+													class="form-control" required>
+												<div class="invalid-feedback">Please, enter your name!</div>
+											</div>
+
+											<div class="col-12">
+												<label for="rut" class="form-label">RUT:</label>
+												<input type="text" name="rut" id="rut" th:field="*{rut}"
+													class="form-control" required>
+												<div class="invalid-feedback">Por favor entre un numero de RUT</div>
+											</div>
+
+											<div class="col-12">
+												<label for="telefono" class="form-label">Telefono:</label>
+												<input type="text" name="telefono" id="telefono" th:field="*{telefono}"
+													class="form-control" required>
+												<div class="invalid-feedback">Por favor entre un numero de telefono
+												</div>
+											</div>
+
+											<div class="col-12">
+												<label for="direccion" class="form-label">Dirección:</label>
+												<input type="text" name="direccion" id="direccion"
+													th:field="*{direccion}" class="form-control" required>
+												<div class="invalid-feedback">Por favor entre una dirección</div>
+											</div>
+
+											<div class="col-12">
+												<label class="form-label">Email</label>
+												<div class="input-group has-validation">
+													<span class="input-group-text" id="inputGroupPrepend">@</span>
+													<input type="email" name="email" th:field="*{email}"
+														class="form-control" id="email" required>
+												</div>
+												<div class="invalid-feedback">Please enter a valid Email adddress!</div>
+											</div>
+
+											<div class="col-md-8">
+												<label for="inputState" class="form-label">Tipo de Empresa:</label>
+												<select id="idTipoEmpresa" name="idTipoEmpresa" class="form-select">
+													<option th:each="tipo : ${tEmpresas}" th:value="${tipo.id}"
+														th:text="${tipo.descripcion}"></option>
+
+												</select>
+											</div>
+
+											<div class="col-md-8">
+												<label for="inputState" class="form-label">Sucursal:</label> <select
+													id="sucur" name="sucur" class="form-select">
+													<option value=true selected="selected">SI</option>
+													<option value=false selected="selected">NO</option>
+												</select>
+											</div>
+
+									</div>
+																			
+									<div class="modal-footer">
+										<button type="button" class="btn btn-sm btn-secondary btn-space"
+											data-dismiss="modal">Close</button>
+										<input type="submit" class="btn btn-sm btn-primary btn-space" value="Save" />
+									</div>
+								</div>
+							</div>
+						</div>
+				</form>
+			</div>
+
+	
+				<table class="table table-hover table_morecondensed" id="myTable">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>RUT</th>
+							<th>Télefono</th>
+							<th>Dirección</th>
+							<th>Email</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="empr :${listaEmpresa}">
+							<td th:text="${empr.nombre}"></td>
+							<td th:text="${empr.rut}"></td>
+							<td th:text="${empr.telefono}"></td>
+							<td th:text="${empr.direccion}"></td>
+							<td th:text="${empr.email}"></td>
+							<td><a th:href="@{delete/(id=${empr.id_empresa})}"
+									class="btn-sm btn-danger btn-space delBtn">Delete</a><a
+									th:href="@{/buscar/{id}(id=${empr.id_empresa})}"
+									class="btn-sm btn-warning btn-space editBtn">Editar</a></td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+		</div>
+
+		</div>
+
+	</main>
+
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" src="js/modal.user.js"></script>
+
+	<script type="text/javascript">
+		$(function () {
+			$("form[name='addUser']").validate({
+				rules: {
+					// The key name on the left side is the name attribute
+					// of an input field. Validation rules are defined
+					// on the right side
+					nombre: "required",
+					usuario: "required",
+					email: {
+						required: true,
+						// Specify that email should be validated
+						// by the built-in "email" rule
+						email: true
+					},
+					password: {
+						required: true,
+						minlength: 6,
+						maxlength: 10,
+					},
+					rol: "required"
+				},
+				// Specify validation error messages
+				messages: {
+					nombre: "Please enter your firstname",
+					usuario: "Please enter your lastname",
+					email: "Please enter a valid email address",
+					password: "Please enter a valid address",
+					rol: "Please enter a valid address"
+				},
+				// Make sure the form is submitted to the destination defined
+				// in the "action" attribute of the form when valid
+				submitHandler: function (form) {
+					form.submit();
+				}
+			});
+		});
+		
+		$("#addEmpresa").on("hidden.bs.modal", function () {
+    alert("Holaaa");
+});
+	</script>
+
+</body>
+
+</html>
