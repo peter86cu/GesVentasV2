@@ -45,7 +45,9 @@ function inicioSession() {
 
 
 		}
+		
 	});
+	desactivarLoading();
 	}
 
 
