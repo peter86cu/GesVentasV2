@@ -556,10 +556,10 @@ public class EmpleadosController {
 				}
 
 				if (marcaEntrada) {
-					marcas.setMarcaentrada(Utils.obtenerFechaPorFormato(FormatoFecha.H24.getFormato()));
+					marcas.setMarcaentrada(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
 				}
 				if (marcaSalida) {
-					marcas.setMarcasalida(Utils.obtenerFechaPorFormato(FormatoFecha.H24.getFormato()));
+					marcas.setMarcasalida(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
 				}
 				marcas.setTipo("MANUAL");
 				marcas.setProceso("SIN PROCESAR");
