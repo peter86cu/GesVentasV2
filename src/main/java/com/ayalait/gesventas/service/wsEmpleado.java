@@ -454,10 +454,20 @@ public class wsEmpleado {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (org.springframework.web.client.HttpClientErrorException e) {
-			ErrorState data = new ErrorState();
+			/*ErrorState data = new ErrorState();
 			data.setCode(e.getStatusCode().value());
 			data.setMenssage(MessageCodeImpl.getMensajeServiceTerminal(String.valueOf(e.getStatusCode().value() )));
 			responseResult.setCode(e.getStatusCode().value());
+			responseResult.setError(data);*/
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
 			responseResult.setError(data);
 		}
 		 
