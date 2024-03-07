@@ -21,12 +21,15 @@
 				<div class="container-fluid">
 					<div class="row mb-2">
 						<div class="col-sm-6">
-							<h1><i class="fas fa-file-invoice-dollar" style="color:#218838"></i> <strong>GESTIÓN DE
-									PAGOS</strong></h1>
+							<h1>
+								<i class="fas fa-file-invoice-dollar" style="color: #218838"></i>
+								<strong>GESTIÓN DE PAGOS</strong>
+							</h1>
 						</div>
 
 					</div>
-				</div><!-- /.container-fluid -->
+				</div>
+				<!-- /.container-fluid -->
 			</section>
 			<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
@@ -39,14 +42,19 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="dropdown">
-						<button class="btn btn-primary" style='width:170px; height:50px'>Asistencia</button>
+						<button class="btn btn-primary" style="width: 170px; height: 50px">Asistencia</button>
 						<div class="dropdown-content">
-							<a href="#" onclick="abrirModal('asistenciaModal')">Procesar Marcas</a>
-							<a href="#" onclick="abrirModal('asistenciaModal')">Calendario</a>
-							<a href="https://www.youtube.com/user/hubspot">YouTube</a>
+							<a href="#" onclick="abrirModal('procesarAsistenciaModal')">Procesar
+								Marcas</a> <a href="#" onclick="abrirModal('asistenciaModal')">Procesar
+								Marcas Empleado</a> <a href="#"
+								onclick="abrirModal('marcasEmpleado')">Marcas Empleado</a>
 						</div>
 					</div>
 
+					<button id="btnExportar" class="btn btn-success"
+						style="float: right;" onclick="exportTableToExcel('#marcasProcessEmpl', 'table_data.xlsx')" disabled>
+						<i class="fas fa-file-excel"></i> Exportar
+					</button>
 
 				</div>
 			</div>
@@ -54,14 +62,14 @@
 		</div>
 		<div class="card-body">
 			<div class="card-block">
-				<table class="table table-bordered table-striped" id="empleadost">
+				<table class="table table-bordered table-striped" id="marcasProcessEmpl">
 					<thead id="cabeza-items">
 
 					</thead>
 
 
 					<tbody id="cuerpo-items">
-						
+
 					</tbody>
 
 				</table>
@@ -75,21 +83,22 @@
 
 
 
-	<div id="myModalCalendario" class="modal">
+	<!-- <div id="marcasEmpleado" class="modal">
 		<div class="modal-content">
 			<h2>Filtrar por Número de Empleado</h2>
 
 			<div class="form-group">
-				<label for="numeroEmpleado">Número de Empleado:</label>
-				<input type="text" id="numeroEmpleado" placeholder="Ingrese el número de empleado">
+				<label for="numeroEmpleado">Número de Empleado:</label> <input
+					type="text" id="numeroEmpleado"
+					placeholder="Ingrese el número de empleado">
 			</div>
 
 			<div class="form-group">
 				<button onclick="filterByNumeroEmpleado()">Filtrar</button>
 			</div>
 		</div>
-	</div>
-<input type="hidden" th:id="empleadoId" name="empleadoId" value="">
+	</div> -->
+	<input type="hidden" th:id="empleadoId" name="empleadoId" value="">
 
 	<!--******************************************NUEVO MODAL DE PAGO************************************** -->
 
@@ -97,8 +106,9 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header" style="background: #17a2b8;">
-					<h5 class="modal-title">FILTRAR MARCAS A PROCESAR </h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"
+					<h5 class="modal-title">FILTRAR MARCAS A PROCESAR</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
 						onclick="cerrarModal('asistenciaModal'); return false">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -112,14 +122,15 @@
 							<div class="col-md-4 col-lg-4">
 								<select id="mes" name="mes" class="form-control custom-select">
 									<option selected disabled>Seleccionar</option>
-									<option th:each="mes : ${meses}" th:value="${mes.mes}" th:text="${mes.valor}">
-									</option>
+									<option th:each="mes : ${meses}" th:value="${mes.mes}"
+										th:text="${mes.valor}"></option>
 								</select>
 							</div>
 
 							<label for="Mes" class="col-md-4 col-lg-2 col-form-label">Estado</label>
 							<div class="col-md-8 col-lg-4">
-								<select id="estado" name="estado" class="form-control custom-select">
+								<select id="estado" name="estado"
+									class="form-control custom-select">
 									<option selected disabled>Seleccionar</option>
 									<option value="MARCA">GENERADA</option>
 									<option value="CORRECTA">PROCESADAS CORRECTAS</option>
@@ -149,15 +160,17 @@
 
 
 
-<!--******************************************NUEVO MODAL PARA GESTIONAR MARCA************************************** -->
+	<!--******************************************NUEVO MODAL PARA PROCESAR TODAS LAS MARCA************************************** -->
 
-	<div class="modal" id="gestionarAsistenciaModal" tabindex="-1" role="dialog">
+	<div class="modal" id="procesarAsistenciaModal" tabindex="-1"
+		role="dialog">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header" style="background: #17a2b8;">
-					<h5 class="modal-title">FILTRAR MARCAS A PROCESAR </h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"
-						onclick="cerrarModal('asistenciaModal'); return false">
+					<h5 class="modal-title">PROCESAR MARCAS DE EMPLEADOS</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('procesarAsistenciaModal'); return false">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -166,22 +179,14 @@
 					<div class="card-body">
 
 						<div class="row mb-3">
-							<label for="Mes" class=" col-lg-2 col-form-label">Mes</label>
+							<label for="Mes" class=" col-lg-2 col-form-label">Mes a
+								procesar:</label>
 							<div class="col-md-4 col-lg-4">
-								<select id="mes" name="mes" class="form-control custom-select">
+								<select id="mesProceso" name="mesProceso"
+									class="form-control custom-select">
 									<option selected disabled>Seleccionar</option>
-									<option th:each="mes : ${meses}" th:value="${mes.mes}" th:text="${mes.valor}">
-									</option>
-								</select>
-							</div>
-
-							<label for="Mes" class="col-md-4 col-lg-2 col-form-label">Estado</label>
-							<div class="col-md-8 col-lg-4">
-								<select id="estado" name="estado" class="form-control custom-select">
-									<option selected disabled>Seleccionar</option>
-									<option value="OK">GENERADA</option>
-									<option value="CORRECTA">PROCESADA OK</option>
-									<option value="INCONSISTENTE">INCONSISTENTE</option>
+									<option th:each="mes : ${meses}" th:value="${mes.mes}"
+										th:text="${mes.valor}"></option>
 								</select>
 							</div>
 						</div>
@@ -193,7 +198,7 @@
 					<div class="modal-footer">
 						<div class="text-center">
 							<button type="submit" class="btn btn-primary" href="javascript:;"
-								onclick="mesAProcesarMarcas('${listaEmpleados}'); return false">Buscar</button>
+								onclick="mesAProcesarTodasMarcas(); return false">Procesar</button>
 						</div>
 
 					</div>
@@ -201,53 +206,113 @@
 			</div>
 		</div>
 	</div>
-	
+	<!--******************************************FIN******************************************************-->
+
+	<!--******************************************NUEVO MODAL PARA OBTENER MARCAS POR EMPLEADOS************************************** -->
+
+	<div class="modal" id="marcasEmpleado" tabindex="-1"
+		role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">PROCESAR MARCAS DE EMPLEADOS</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('marcasEmpleado'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h2 id="total_venta_confirmar"></h2>
+					<div class="card-body">
+
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Mes a
+								procesar:</label>
+							<div class="col-md-4 col-lg-4">
+								<select id="mesMarca" name="mesMarca"
+									class="form-control custom-select">
+									<option selected disabled>Seleccionar</option>
+									<option th:each="mes : ${meses}" th:value="${mes.mes}"
+										th:text="${mes.valor}"></option>
+								</select>
+							</div>
+							
+							
+						<label for="Mes" class=" col-lg-2 col-form-label">Documento:</label>						
+							<div class="col-md-8 col-lg-4">								
+								 <input	type="text" id="numeroEmpleado" name="numeroEmpleado">
+							</div>
+
+
+						</div>
+
+					</div>
+
+
+
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="filterByNumeroEmpleado(); return false">Buscar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--******************************************FIN******************************************************-->
+
+
 	<style>
 /* Style The Dropdown Button */
 .dropbtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
+	background-color: #4CAF50;
+	color: white;
+	padding: 16px;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
 }
 
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
-  position: relative;
-  display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+	display: none;
+	position: absolute;
+	background-color: #f9f9f9;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
 }
 
 /* Links inside the dropdown */
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content a:hover {
+	background-color: #f1f1f1
+}
 
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
-  display: block;
+	display: block;
 }
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
-  background-color: #3e8e41;
+	background-color: #3e8e41;
 }
 </style>
 
@@ -257,12 +322,9 @@
 	<script th:inline="javascript">
 		// Obtén el valor de la lista del modelo y asígnalo a una variable de JavaScript
 
-
 		var listaModelo = /*[[${listaEmpleados}]]*/[];
 
-  //mesAProcesarMarcas(listaModelo);
-
-
+		//mesAProcesarMarcas(listaModelo);
 	</script>
 
 
@@ -274,7 +336,7 @@
 
 	<div th:replace="template :: mDiaTemplate"></div>
 
-		<div th:replace="template :: loadingTemplate"></div>
+	<div th:replace="template :: loadingTemplate"></div>
 
 	<div th:replace="template :: footer"></div>
 
@@ -282,151 +344,136 @@
 
 
 <style type="text/css">
-	
-	.text_verde {
-		color: #006400;
-		font-weight: bold;
-	}
+.text_verde {
+	color: #006400;
+	font-weight: bold;
+}
 
-	.text_rojo {
-		color: #C40000;
-		font-weight: bold;
-	}
+.text_rojo {
+	color: #C40000;
+	font-weight: bold;
+}
 
-	.text_verde {
-		color: #060;
-		font-weight: bold;
-	}
+.text_verde {
+	color: #060;
+	font-weight: bold;
+}
 
-	.text_azul {
-		color: #00F;
-		font-weight: bold;
-	}
+.text_azul {
+	color: #00F;
+	font-weight: bold;
+}
 
-	.text_naranja {
-		color: #F60;
-		font-weight: bold;
-	}
+.text_naranja {
+	color: #F60;
+	font-weight: bold;
+}
 
-	.text_negro {
-		color: #000000;
-		font-weight: bold;
-	}
+.text_negro {
+	color: #000000;
+	font-weight: bold;
+}
 
-	.text_normal {
-		color: inherit;
+.text_normal {
+	color: inherit;
+}
 
-	}
+a.active {
+	background-color: #4CAF50;
+	color: white;
+	border-radius: 5px;
+}
 
-	a.active {
-		background-color: #4CAF50;
-		color: white;
-		border-radius: 5px;
-	}
+div.nav {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
 
+.nav.a {
+	display: inline;
+}
 
-	div.nav {
-		display: inline-block;
-		padding: 0;
-		margin: 0;
-	}
+a.bot {
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	border-radius: 5px;
+}
 
-	.nav.a {
-		display: inline;
-	}
+.loader-page {
+	position: fixed;
+	z-index: 25000;
+	background: rgb(255, 255, 255);
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all .3s ease;
+}
 
-	a.bot {
-		color: black;
-		float: left;
-		padding: 8px 16px;
-		text-decoration: none;
-		border-radius: 5px;
-	}
-
-	.loader-page {
-		position: fixed;
-		z-index: 25000;
-		background: rgb(255, 255, 255);
-		left: 0px;
-		top: 0px;
-		height: 100%;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all .3s ease;
-	}
-
-	.loader-page::before {
-		content: "";
-		position: absolute;
-		border: 2px solid rgb(50, 150, 176);
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-		box-sizing: border-box;
-		border-left: 2px solid rgba(50, 150, 176, 0);
-		border-top: 2px solid rgba(50, 150, 176, 0);
-		animation: rotarload 1s linear infinite;
-		transform: rotate(0deg);
-	}
-
-	@keyframes rotarload {
-		0% {
-			transform: rotate(0deg)
-		}
-
-		100% {
-			transform: rotate(360deg)
-		}
-	}
-
-	.loader-page::after {
-		content: "";
-		position: absolute;
-		border: 2px solid rgba(50, 150, 176, .5);
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-		box-sizing: border-box;
-		border-left: 2px solid rgba(50, 150, 176, 0);
-		border-top: 2px solid rgba(50, 150, 176, 0);
-		animation: rotarload 1s ease-out infinite;
-		transform: rotate(0deg);
-	}
+.loader-page::before {
+	content: "";
+	position: absolute;
+	border: 2px solid rgb(50, 150, 176);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s linear infinite;
+	transform: rotate(0deg);
+}
 
 
-	/*NUEVO PARA PROBAR*/
-	.dropdown {
-		display: inline-block;
-		position: relative;
-	}
+.loader-page::after {
+	content: "";
+	position: absolute;
+	border: 2px solid rgba(50, 150, 176, .5);
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	box-sizing: border-box;
+	border-left: 2px solid rgba(50, 150, 176, 0);
+	border-top: 2px solid rgba(50, 150, 176, 0);
+	animation: rotarload 1s ease-out infinite;
+	transform: rotate(0deg);
+}
 
-	.dropdown-content {
-		display: none;
-		position: absolute;
-		width: 100%;
-		overflow: auto;
-		box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
-	}
+/*NUEVO PARA PROBAR*/
+.dropdown {
+	display: inline-block;
+	position: relative;
+}
 
-	.dropdown:hover .dropdown-content {
-		display: block;
-	}
+.dropdown-content {
+	display: none;
+	position: absolute;
+	width: 100%;
+	overflow: auto;
+	box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+}
 
-	.dropdown-content a {
-		display: block;
-		color: #000000;
-		padding: 5px;
-		text-decoration: none;
-	}
+.dropdown:hover .dropdown-content {
+	display: block;
+}
 
-	.dropdown-content a:hover {
-		color: #FFFFFF;
-		background-color: #00A4BD;
-	}
-	
+.dropdown-content a {
+	display: block;
+	color: #000000;
+	padding: 5px;
+	text-decoration: none;
+}
 
+.dropdown-content a:hover {
+	color: #FFFFFF;
+	background-color: #00A4BD;
+}
 </style>
 
 

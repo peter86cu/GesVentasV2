@@ -2,6 +2,7 @@ package com.ayalait.gesventas.controller;
 
 import com.ayalait.gesventas.imprimir.ImprimirUtils;
 import com.ayalait.gesventas.imprimir.ResponseOrdenImprimir;
+import com.ayalait.gesventas.imprimir.ResponsePrefacturamprimir;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -17,7 +18,12 @@ import com.ayalait.gesventas.request.*;
 import com.ayalait.gesventas.utils.*;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
+import com.ayalait.utils.ResponsePrefactura;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.multishop.modelo.Prefactura;
+import com.multishop.modelo.PrefacturaDetalle;
+import com.multishop.modelo.PrefacturaModificaciones;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,6 +96,58 @@ public class OrdenesFacturasController {
 
 	}*/
 
+	@GetMapping({ "/prefactura" })
+	public String inicioPrefactura(Model modelo) throws SQLException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponseListaPrefactura response = LoginController.conStock.listadoPrefactura();
+			ResponseListaPrefAprobadas lstOCAprobadas = LoginController.conStock.listadoPrefacturaAprobadas();
+			OrdenCompra ordenCompra = new OrdenCompra();
+			if(response.isStatus()){
+				modelo.addAttribute("listaPrefactura", response.getLstPrefacturas());
+			}else{
+				modelo.addAttribute("listaPrefactura", new ArrayList<ResponsePrefactura>());
+			}
+			
+			ResponseMonedas responseM = LoginController.conParam.listarMonedas();
+			if (responseM.isStatus()) {
+				modelo.addAttribute("listaMoneda",  responseM.getMonedas() );
+			}else {
+				modelo.addAttribute("listaMoneda", new ArrayList<Moneda>());
+
+			}
+			
+
+
+			if(lstOCAprobadas.isStatus()){
+				modelo.addAttribute("lstAprobadas", lstOCAprobadas.getPrefacAprobadas());
+			}else{
+				modelo.addAttribute("lstAprobadas", new ArrayList<OCAprobadas>());
+			}
+			if(ordenCompra!=null){
+				modelo.addAttribute("ordenCompra", ordenCompra);
+			}
+			modelo.addAttribute("itemsCompra", new ArrayList<ItemsOrdenCompra>());
+			ResponseFormasPagos responseFP = LoginController.conParam.listarFormasPagos();
+			if (responseFP.isStatus()) {
+				modelo.addAttribute("formasPagos",  responseFP.getFormasPagos() );
+			} else {
+				modelo.addAttribute("formasPagos", new FormasPago());
+			}
+
+			ResponsePlazos responsePlazos = LoginController.conParam.listarPlazos();
+			if (responsePlazos.isStatus()) {
+				modelo.addAttribute("plazos",  responsePlazos.getPlazos() );
+			} else {
+				modelo.addAttribute("plazos", new Plazos());
+			}
+
+			return "/prefactura";
+		} else {
+			return "redirect:/";
+		}
+	}
+	
 	@GetMapping({ "/facturas-compra" })
 	public String inicioOrdenVenta(Model modelo) throws SQLException {
 		if (LoginController.session.getToken() != null) {
@@ -179,6 +237,47 @@ public class OrdenesFacturasController {
 
 			}
 	}
+	
+	
+	@PostMapping({LoginController.ruta+ "/imprimir-prefactura" })
+	public void imprimirPrefactura(@ModelAttribute("idPrefactura") int idPrefactura,@ModelAttribute("idCliente") int idCliente,Model modelo,HttpServletResponse responseHttp) throws IOException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponseResultado resultado= new ResponseResultado();
+			ResponsePrefacturamprimir response= new ResponsePrefacturamprimir();
+			String pathOrden=LoginController.rutaPDFPrefacturas+"prefactura_"+idPrefactura+".pdf";
+
+			File archivo = new File(pathOrden);
+			if (!archivo.exists()) {
+				response = ImprimirUtils.imprimirPrefactura(idPrefactura,idCliente);
+
+				if(response.isStatus()) {
+					OutputStream fileOutputStream = new FileOutputStream(pathOrden);
+					HtmlConverter.convertToPdf(ImprimirUtils.armarPDFPrefactura(response), fileOutputStream);
+				}else{
+					resultado.setResultado("No se pudo generar el PDF de la orden "+idPrefactura);
+					resultado.setCode(400);
+					resultado.setStatus(false);
+					String json = (new Gson()).toJson(resultado);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
+				}
+			}
+				resultado.setResultado(pathOrden);
+				resultado.setCode(200);
+				resultado.setStatus(true);
+
+				String json = (new Gson()).toJson(resultado);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+
+
+
+			}
+	}
+	
 	@PostMapping({ LoginController.ruta+"/crear-factura-compra" })
 	public void crearFacturaCompra(@ModelAttribute("accion") String accion, @ModelAttribute("idCompra") int idCompra,
 								   @ModelAttribute("idProveedor") int idProveedor, @ModelAttribute("estado") int estado,
@@ -446,6 +545,172 @@ public class OrdenesFacturasController {
 		}
 
 	}
+	
+	
+	@PostMapping({ LoginController.ruta+"/crear-prefactura-venta" })
+	public void crearPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("id") int id,
+								 @ModelAttribute("idCliente") int idCliente, @ModelAttribute("estado") int estado,
+								 @ModelAttribute("fecha") String fecha, @ModelAttribute("plazo") int plazo,
+								 @ModelAttribute("forma_pago") int forma_pago, @ModelAttribute("prefactura") Prefactura prefactura,
+								 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			//RequestCrearOrdenCompra request = new RequestCrearOrdenCompra();
+			//Prefactura request= new Prefactura();
+			ResponsePrefactClient response = new ResponsePrefactClient();
+			if (accion.equalsIgnoreCase("uCliente")) {
+				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				if (response.isStatus()) {
+					prefactura.setId_usuario(response.getPrefactura().getId_usuario());
+					prefactura.setId_prefactura(id);
+					prefactura.setId_cliente(idCliente);
+					prefactura.setId_forma_pago(response.getPrefactura().getId_forma_pago());
+					prefactura.setId_plazo(response.getPrefactura().getId_plazo());
+					prefactura.setEstado(response.getPrefactura().getEstado());
+					prefactura.setFecha_hora(response.getPrefactura().getFecha_hora());
+					prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
+				}
+			}
+
+			if (accion.equalsIgnoreCase("inicial")) {
+				prefactura.setId_usuario(LoginController.session.getUser().getIdusuario());
+				prefactura.setEstado(1);
+				prefactura.setId_prefactura(id);
+				prefactura.setId_forma_pago(1);
+				prefactura.setId_cliente(idCliente);
+				prefactura.setId_plazo(1);
+				//Calendar calendar = Calendar.getInstance();
+				//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				prefactura.setFecha_hora_creado(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+				prefactura.setFecha_hora(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+				//prefactura.setId_sucursal(LoginController.session.getUser().getEmpleado().getIdsucursal());
+			}
+
+			if (accion.equalsIgnoreCase("update")) {
+				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				if (response.isStatus()) {
+					prefactura.setId_usuario(response.getPrefactura().getId_usuario());
+					prefactura.setEstado(estado);
+					prefactura.setId_prefactura(response.getPrefactura().getId_prefactura());
+					prefactura.setId_forma_pago(forma_pago);
+					prefactura.setId_cliente(idCliente);
+					prefactura.setId_plazo(plazo);
+					prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
+					prefactura.setFecha_hora(fecha);
+					//prefactura.setId_sucursal(LoginController.session.getUser().getEmpleado().getIdsucursal());
+				}
+			}
+
+			if (estado == 5) {
+				ResponseMofPorIdPrefactura responseM= LoginController.conStock.obtenerModificacionPorIdPrefactura(id);
+				if(responseM.isStatus()) {
+					PrefacturaModificaciones modif = responseM.getModificaciones();
+					modif.setId_prefactura(modif.getId_prefactura());
+					modif.setId_prefactura_modif(modif.getId_prefactura_modif());
+					//modif.setId_usuario_autorizo(LoginController.session.getUser().getIdusuario());
+					modif.setId_usuario_cancela(LoginController.session.getUser().getIdusuario());
+					//Calendar calendar = Calendar.getInstance();
+					//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+					//modif.setFecha_autorizo(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+					modif.setFecha_cancela(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+					ResponseResultado responseTemp = LoginController.conStock.addModificacionPrefactura(modif);
+					if (!responseTemp.isStatus()) {
+						String json = (new Gson()).toJson(responseTemp);
+						responseHttp.setContentType("application/json");
+						responseHttp.setCharacterEncoding("UTF-8");
+						responseHttp.getWriter().write(json);
+					}
+				}else {
+					PrefacturaModificaciones modif = new PrefacturaModificaciones();
+					modif.setId_prefactura(id);
+					modif.setId_prefactura_modif(0);
+					modif.setId_usuario_cancela(LoginController.session.getUser().getIdusuario());
+					//Calendar calendar = Calendar.getInstance();
+					//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+					modif.setFecha_cancela(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+					ResponseResultado responseTemp = LoginController.conStock.addModificacionPrefactura(modif);
+					if (!responseTemp.isStatus()) {
+						String json = (new Gson()).toJson(responseTemp);
+						responseHttp.setContentType("application/json");
+						responseHttp.setCharacterEncoding("UTF-8");
+						responseHttp.getWriter().write(json);
+					}
+				}
+				
+
+				
+			}else if (estado == 3){
+				PrefacturaModificaciones modif = new PrefacturaModificaciones();
+				modif.setId_prefactura(id);
+				modif.setId_prefactura_modif(0);
+				modif.setId_usuario_autorizo(LoginController.session.getUser().getIdusuario());
+				//Calendar calendar = Calendar.getInstance();
+				//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				modif.setFecha_autorizo(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+				ResponseResultado responseTemp = LoginController.conStock.addModificacionPrefactura(modif);
+				if (!responseTemp.isStatus()) {
+					String json = (new Gson()).toJson(responseTemp);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
+				}
+				
+				String pathPrefactura=LoginController.rutaPDFPrefacturas+"\\prefactura_"+id+".pdf";
+
+				File archivo = new File(pathPrefactura);
+				//if (archivo.exists()) {
+				ResponsePrefacturamprimir responsePDF = ImprimirUtils.imprimirPrefactura(id, idCliente);
+
+					if (responsePDF.isStatus()) {
+						OutputStream fileOutputStream = new FileOutputStream(pathPrefactura);
+						HtmlConverter.convertToPdf(ImprimirUtils.armarPDFPrefactura(responsePDF), fileOutputStream);
+					}
+				//}
+			}
+
+			if (accion.equalsIgnoreCase("delete")) {
+				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				if (response.isStatus()) {
+					prefactura = response.getPrefactura();
+					//Calendar calendar = Calendar.getInstance();
+					//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+					prefactura.setFecha_baja(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+				}
+			}
+
+			//request.set (prefactura);
+			ResponseResultado responseTemp = LoginController.conStock.crearPrefactura(prefactura);
+			String json = "";
+			if (responseTemp.isStatus()) {
+				if (accion.equalsIgnoreCase("inicial")) {
+					ResponseResultado responseN = LoginController.conStock.obtenerNumeroPrefactura(
+							prefactura.getFecha_hora(), LoginController.session.getUser().getIdusuario());
+					if (responseN.isStatus()) {
+						json = (new Gson()).toJson(responseN);
+						responseHttp.setContentType("application/json");
+						responseHttp.setCharacterEncoding("UTF-8");
+						responseHttp.getWriter().write(json);
+					}
+				} else if (accion.equalsIgnoreCase("update") || accion.equalsIgnoreCase("delete")) {
+					json = (new Gson()).toJson(responseTemp);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
+				}
+			} else {
+				json = (new Gson()).toJson(responseTemp);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
+		} else {
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write("LoginController.session caducada");
+		}
+
+	}
+
 
 	@PostMapping({ LoginController.ruta+"/detalle-orden-compra" })
 	public void insertarDetalleOrden(@ModelAttribute("accion") String accion, @ModelAttribute("idOrden") int idOrden,
@@ -481,6 +746,39 @@ public class OrdenesFacturasController {
 
 	}
 
+	@PostMapping({ LoginController.ruta+"/detalle-prefactura" })
+	public void insertarDetallePrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("id") int id,
+									 @ModelAttribute("idProducto") String idProducto, @ModelAttribute("cantidad") int cantidad,
+									 @ModelAttribute("importe") double importe, Model modelo, HttpServletResponse responseHttp)
+			throws IOException, ParseException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			PrefacturaDetalle request = new PrefacturaDetalle();
+			PrefacturaDetalle detalle = new PrefacturaDetalle();
+			if (accion.equalsIgnoreCase("insert")) {
+				ResponseResultado responseIdMoneda = LoginController.conParam.monedaPorDefecto();
+				detalle.setCantidad(cantidad);
+				detalle.setImporte(importe);
+				detalle.setId_prefactura_detalle(0);
+				detalle.setId_producto(idProducto);
+				detalle.setId_moneda(Integer.parseInt(responseIdMoneda.getResultado()));
+				detalle.setId_prefactura(id);
+				ResponseResultado response = LoginController.conStock.addDetallePrefactura(detalle);
+
+				String json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+
+			}
+		} else {
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write("LoginController.session caducada");
+		}
+
+	}
+	
 	@PostMapping({ LoginController.ruta+"/detalle-factura-compra" })
 	public void insertarDetalleFacturaCompra(@ModelAttribute("accion") String accion,
 											 @ModelAttribute("idCompra") int idCompra, @ModelAttribute("idProducto") String idProducto,
@@ -536,7 +834,29 @@ public class OrdenesFacturasController {
 		}
 
 	}
+	
+	@PostMapping({ LoginController.ruta+"/editar-prefactura" })
+	public void buscarPrefacturaPorID(@ModelAttribute("accion") String accion, @ModelAttribute("id") int id,
+									Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponsePrefactClient response = LoginController.conStock.obtenerPrefacturaPorID(id);
+			String json;
+			if (response.isStatus()) {
+				json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			} else {
+				json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
+		}
 
+	}
+	
 	@PostMapping({ LoginController.ruta+"/editar-factura-compra" })
 	public void buscarFacturaCompraID(@ModelAttribute("accion") String accion, @ModelAttribute("idCompra") int idCompra,
 									  Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
@@ -581,6 +901,28 @@ public class OrdenesFacturasController {
 		}
 
 	}
+	
+	@PostMapping({ LoginController.ruta+"/buscar-cliente" })
+	public void buscarClientePorId(@ModelAttribute("accion") String accion, @ModelAttribute("idCliente") int id,
+									 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponseCliente response = LoginController.conParam.obtenerClientePorId(id);
+			String json;
+			if (response.isStatus()) {
+				json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			} else {
+				json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
+		}
+
+	}
 
 
 	@PostMapping({ LoginController.ruta+"/items-compra" })
@@ -609,6 +951,11 @@ public class OrdenesFacturasController {
 
 			if (evento.equalsIgnoreCase("orden")) {
 				itemsCompra = Utils.listadoItemsCompras(idOrden);
+				modal = "addItem";
+			}
+			
+			if (evento.equalsIgnoreCase("prefactura")) {
+				itemsCompra = Utils.listadoItemsPrefactura(idOrden);
 				modal = "addItem";
 			}
 
@@ -686,6 +1033,24 @@ public class OrdenesFacturasController {
 		if (LoginController.session.getToken() != null) {
 			modelo.addAttribute("user", LoginController.session.getUser());
 			List<ItemsProveedore> itemsCompra = Utils.listadoItemsProveedores(busqueda);
+			String json = (new Gson()).toJson(itemsCompra);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);
+		} else {
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write("LoginController.session caducada");
+		}
+
+	}
+	
+	@PostMapping({ LoginController.ruta+"/items-cliente" })
+	public void itemsCliente(@ModelAttribute("accion") String accion, @ModelAttribute("q") String busqueda,
+								 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			List<ItemsProveedore> itemsCompra = Utils.listadoItemsClientes(busqueda);
 			String json = (new Gson()).toJson(itemsCompra);
 			responseHttp.setContentType("application/json");
 			responseHttp.setCharacterEncoding("UTF-8");

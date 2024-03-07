@@ -509,6 +509,42 @@ public class Utils {
 
 		return lstOrden;
 	}
+	
+	
+	public static List<ResponseOrdenes> listadoPrefactura() throws SQLException {
+		List<ResponseOrdenes> lstOrden = new ArrayList<ResponseOrdenes> ();
+		ResultSet compra=null;
+		try {
+			compra = Conexion.getConexion(
+					"SELECT oc.id_orden_compra, DATE_FORMAT(oc.fecha_hora, '%d-%m-%Y')   as fecha, p.descripcion as plazo,f.descripcion as forma_pago, (select count(*) from ordenes_de_compras_detalle where id_orden_compra=oc.id_orden_compra) as items, e.descripcion as estado," +
+							" e.id_orden_compra_estado as id_estado, CONCAT(emp.nombre,' ',emp.apellidos) nombre, pro.razon_social as proveedor, pro.id_proveedor     FROM plazos p, formas_pagos f, ordenes_de_compras_estados e,usuarios u,empleado emp,ordenes_de_compras oc\r\n        left join proveedores  as pro on oc.id_proveedor=pro.id_proveedor\r\n        WHERE oc.id_plazo=p.id_plazo and oc.id_forma_pago = f.id_forma_pago and e.id_orden_compra_estado = oc.estado and u.idusuario=oc.id_usuario and oc.fecha_baja is NULL AND emp.idempleado=u.idempleado order by id_orden_compra desc");
+           if(compra!=null){
+			   while (compra.next()) {
+				   ResponseOrdenes orden = new ResponseOrdenes();
+				   orden.setEstado(compra.getString("estado"));
+				   orden.setFecha(compra.getString("fecha"));
+				   orden.setForma_pago(compra.getString("forma_pago"));
+				   orden.setPlazo(compra.getString("plazo"));
+				   orden.setItems(compra.getString("items"));
+				   orden.setId_estado(compra.getString("id_estado"));
+				   orden.setNombre(compra.getString("nombre"));
+				   orden.setProveedor(compra.getString("proveedor"));
+				   orden.setId_orden_compra(compra.getString("id_orden_compra"));
+				   orden.setId_proveedor(compra.getInt("id_proveedor"));
+				   lstOrden.add(orden);
+			   }}else{
+			   return lstOrden;
+		   }
+		} catch (SQLException var3) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var3);
+			return lstOrden;
+		}finally {
+			if(compra!=null)
+				compra.close();
+		}
+
+		return lstOrden;
+	}
 
 	
 	public static List<VentasPorArqueoUsuario> listadoVentasPorArqueoUsuario(String idUsuario, String fecha) throws SQLException {
@@ -603,6 +639,37 @@ public class Utils {
 				items.setTotal((double) items.getCatidad() * items.getImporte());
 				lstItems.add(items);
 			}
+		} catch (SQLException var4) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var4);
+		}finally {
+			if(ordenes!=null)
+				ordenes.close();
+		}
+
+		return lstItems;
+	}
+	
+	
+	public static List<ItemsOrdenCompra> listadoItemsPrefactura(int idOrden) throws SQLException {
+		List<ItemsOrdenCompra> lstItems = new ArrayList<ItemsOrdenCompra>();
+		ResultSet ordenes=null;
+		try {
+			ordenes = Conexion.getConexion(
+					"select o.id_prefactura_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre from prefactura_detalle o inner join producto p \r\n"
+					+ " on (o.id_producto=p.id) and o.id_prefactura="+idOrden+"  group by p.codigo");
+			if(ordenes!=null) {
+				while (ordenes.next()) {
+					ItemsOrdenCompra items = new ItemsOrdenCompra();
+					items.setCatidad(ordenes.getInt("cantidad"));
+					items.setCodigo(ordenes.getString("codigo"));
+					items.setId_detalle(ordenes.getInt("id_detalle"));
+					items.setImporte(ordenes.getDouble("importe"));
+					items.setNombre(ordenes.getString("nombre"));
+					items.setTotal((double) items.getCatidad() * items.getImporte());
+					lstItems.add(items);
+				}
+			}
+			
 		} catch (SQLException var4) {
 			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var4);
 		}finally {
@@ -815,6 +882,37 @@ public class Utils {
 					ItemsProveedore items = new ItemsProveedore();
 					items.setText(proveedor.getString("razon_social"));
 					items.setId(proveedor.getInt("id_proveedor"));
+					items.setDireccion(proveedor.getString("direccion"));
+					items.setEmail(proveedor.getString("email"));
+					items.setTelefono(proveedor.getString("telefono"));
+					lstItems.add(items);
+				}
+			}else{
+				return lstItems;
+			}
+
+		} catch (SQLException var4) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var4);
+		}finally {
+			if(proveedor!=null)
+				proveedor.close();
+		}
+
+		return lstItems;
+	}
+	
+	
+	public static List<ItemsProveedore> listadoItemsClientes(String search) throws SQLException {
+		List<ItemsProveedore> lstItems = new ArrayList<ItemsProveedore>();
+		ResultSet proveedor =null;
+		try {
+			 proveedor = Conexion.getConexion("SELECT * FROM clientes WHERE nombres LIKE '%" + search
+					+ "%' and fecha_baja is null and id_tipo_cliente=3 LIMIT 40");
+			if(proveedor!=null){
+				while (proveedor.next()) {
+					ItemsProveedore items = new ItemsProveedore();
+					items.setText(proveedor.getString("nombres"));
+					items.setId(proveedor.getInt("id_cliente"));
 					items.setDireccion(proveedor.getString("direccion"));
 					items.setEmail(proveedor.getString("email"));
 					items.setTelefono(proveedor.getString("telefono"));

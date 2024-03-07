@@ -30,8 +30,8 @@ public class Conexion {
         try {
             if(LoginController.desarrollo){
                 this.userBD = "root";
-                this.passBD = "admin";
-                this.url="jdbc:mysql://localhost:3306/ayalaitcm_gesventas_test?serverTimezone=UTC";
+                this.passBD = "QTOoxf67270";
+                this.url="jdbc:mysql://node3698-gesventas-bd.web.elasticloud.uy:3306/gesventas_test?serverTimezone=UTC";
                 this.driver="com.mysql.cj.jdbc.Driver";
             }else{
                 cargarServer();

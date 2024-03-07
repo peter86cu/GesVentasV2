@@ -598,6 +598,42 @@ public class EmpleadosController {
 		}
 	}
 	
+
+	@PostMapping({ LoginController.ruta + "/obtener-marcas-procesadas" })
+	public void obtenerMarcasEmpleado(@ModelAttribute("mes") String mes, @ModelAttribute("documento") String documento, Model modelo,
+							   HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			String[] data = mes.split("-");
+			int mesF = Integer.parseInt(data[0]);
+			int anio = Integer.parseInt(data[1]);
+			
+			ResponseMarcasProcessEmpl response = LoginController.conEmpl.obtenerMarcasProcesadasEmpleado(documento,mesF, anio);
+			String json = (new Gson()).toJson(response);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);
+
+		}
+	}
+	
+	@PostMapping({ LoginController.ruta + "/procesar-marcas-all" })
+	public void procesarMarcasAll(@ModelAttribute("mes") String mes, Model modelo,
+							   HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			String[] data = mes.split("-");
+			int mesF = Integer.parseInt(data[0]);
+			int anio = Integer.parseInt(data[1]);
+						
+			ResponseResultado response = LoginController.conEmpl.procesoMarcasAsistencia(mesF, anio);
+			String json = (new Gson()).toJson(response);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);
+
+		}
+	}
 	
 	@PostMapping({ LoginController.ruta + "/procesar-marcas-empleado" })
 	public void procesarMarcasEmpleado(@ModelAttribute("idEmpleado") String idEmpleado,@ModelAttribute("entrada") String entrada,

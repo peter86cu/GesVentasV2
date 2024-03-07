@@ -76,8 +76,8 @@ public class ProductosController {
 	public ProductosController() {
 		try {
 			this.cargarServer();
-			//responseMarcas= LoginController.conParam.listadoMarcasProducto();
-			//responseModelo= LoginController.conParam.listadoModelosProducto();
+			responseMarcas= LoginController.conParam.listadoMarcasProducto();
+			responseModelo= LoginController.conParam.listadoModelosProducto();
 		} catch (IOException var2) {
 			Logger.getLogger(Session.class.getName()).log(Level.SEVERE, (String) null, var2);
 		}
@@ -118,7 +118,7 @@ public class ProductosController {
 				String fileName = codigo+"_" + producto.getId() + ".jpg";
 
 				modelo.addAttribute("user", LoginController.session.getUser());
-				producto.setFoto(fileName);
+				producto.setFoto(imageProd.get(0).getNombre());
 				producto.setCodigo(codigo);
 				producto.setNombre(nombre);
 				producto.setPrecioventa(precioV);
@@ -131,7 +131,7 @@ public class ProductosController {
 				producto.setUm(unidad_medida);
 				producto.setMarca(marca);
 				producto.setModelo(modeloMarca);
-				
+				producto.setImagen(imageProd.get(0).getImagen());
 				/*Path path = Paths.get(LoginController.rutaDowloadProducto + fileName, new String[0]);
 				Files.copy(file.getInputStream(), path, new CopyOption[] { StandardCopyOption.REPLACE_EXISTING });
 

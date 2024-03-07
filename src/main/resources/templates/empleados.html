@@ -84,10 +84,10 @@
 								<td th:text="${emp.fechanacimiento}"></td>
 								<td>
 									<img class="rounded-circle" alt="Empleado" th:if="${emp.foto !=null}"
-										th:src="@{${'empleados/' + emp.foto}}" width="50" height="35">
+										th:src="@{${'/empleados/' + emp.foto}}" width="50" height="35">
 
 									<img class="rounded-circle" alt="Empleado" th:unless="${emp.foto !=null}"
-										th:src="@{${'empleados/img_empleado.png'}}" width="60" height="50">
+										th:src="@{${'/empleados/img_empleado.png'}}" width="60" height="50">
 								</td>
 								<td>
 

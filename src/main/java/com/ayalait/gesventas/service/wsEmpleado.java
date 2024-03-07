@@ -21,6 +21,7 @@ import com.ayalait.modelo.UnidadMedida;
 import com.ayalait.modelo.User;
 import com.ayalait.response.*;
 import com.ayalait.utils.ErrorState;
+import com.ayalait.utils.MarcaEmpleadoProcess;
 import com.ayalait.utils.MessageCodeImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -611,6 +612,56 @@ public class wsEmpleado {
 	}
 	
 	
+	public ResponseResultado procesoMarcasAsistencia(int mes, int anio)   {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostRecursosHumanos + "/empleado/marcas/procesar?mes="+mes+"&anio="+anio;
+			 
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceMarcasEmpleados(myJson.get("code").getAsString() ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			return responseResult;	
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
 	public ResponseResultado procesarMarcaEmpleado(MarcasEmpleado marca)   {
 		 
 		ResponseResultado responseResult = new ResponseResultado();
@@ -627,6 +678,57 @@ public class wsEmpleado {
 				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceMarcasEmpleados(myJson.get("code").getAsString() ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			return responseResult;	
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
+	
+	public ResponseMarcasProcessEmpl obtenerMarcasProcesadasEmpleado(String documento, int mes, int anio)   {
+		 
+		ResponseMarcasProcessEmpl responseResult = new ResponseMarcasProcessEmpl();
+		
+		try {
+
+			String url = this.hostRecursosHumanos + "/empleado/marcas/obtener-marcas-empleado?documento="+documento+"&mes="+mes+"&anio="+anio;
+
+			URI uri = new URI(url);
+			ResponseEntity<List<MarcaEmpleadoProcess>> response = restTemplate.exchange(uri , HttpMethod.POST, null,new ParameterizedTypeReference<List<MarcaEmpleadoProcess>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setProcess(response.getBody());
 			}
 
 		} catch (org.springframework.web.client.HttpServerErrorException e) {

@@ -215,6 +215,169 @@ function mesAProcesarMarcas() {
 
 }
 
+
+function mesAProcesarTodasMarcas() {
+	var mes = $("#mesProceso").val();
+	
+	if (mes == null) {
+		Swal.fire({
+			icon: "error",
+			text: "Debe selecionar el mes a procesar."
+		})
+	} else {
+
+		var datos = new FormData();
+		datos.append("mes", mes);
+		
+			$.ajax({
+			url: globalPath + "/procesar-marcas-all",
+			method: "POST",
+			data: datos,
+			chache: false,
+			contentType: false,
+			processData: false,
+			dataType: "json",
+			success: function(respuesta) {
+				var response = JSON.stringify(respuesta, null, '\t');
+				var data = JSON.parse(response);
+				if (data.status) {
+					Swal.fire({
+						icon: "warning",
+						text: data.resultado
+					})
+			
+			  }
+			}
+		})
+
+	}
+
+
+
+
+}
+
+function filterByNumeroEmpleado(){
+		var mes = $("#mesMarca").val();
+		var empleado = $("#numeroEmpleado").val();
+		
+	if (mes == null || empleado =="") {
+		Swal.fire({
+			icon: "error",
+			text: "Debe completar los campos."
+		})
+	} else {
+		var datos = new FormData();
+		datos.append("mes", mes);
+		datos.append("documento",empleado);
+		$.ajax({
+			url: globalPath + "/obtener-marcas-procesadas",
+			method: "POST",
+			data: datos,
+			chache: false,
+			contentType: false,
+			processData: false,
+			dataType: "json",
+			success: function(respuesta) {
+				var response = JSON.stringify(respuesta, null, '\t');
+				var data = JSON.parse(response);
+				if (data.status) {
+					$('#empleadost > tbody').empty();
+					$('#cuerpo-items > tfoot').empty();
+					$('#cabeza-items > tfoot').empty();
+
+					// Obtén la referencia al elemento <thead>
+					var thead = document.querySelector('thead');
+
+					// Elimina todos los elementos hijos del <thead>
+					while (thead.firstChild) {
+						thead.removeChild(thead.firstChild);
+					}
+
+					if (data.code == 200) {
+						$('#marcasEmpleado').modal('hide');
+ 					const boton = document.getElementById("btnExportar");
+ 					 boton.removeAttribute('disabled');
+						//Generar tabla con datos
+						var encabezado = `<tr style="background: #778899">
+										<th>DOCUMENTO</th>
+										<th>NOMBRE Y APELLIDOS</th> 
+										<th>FECHA</th>
+										<th>ESTADO</th> 
+										<th>HORAS</th> 
+										<th>MINUTOS</th> 
+										`;
+
+						$("#cabeza-items").append(encabezado);
+						for (var i = 0; i < data.process.length; i++) {
+							
+							var tr2 = `<tr>                                       
+                                        <td style="width: 10%">` + data.process[i].documento + `</td>
+                                        <td style="width: 15%">` + data.process[i].nombreEmpleado + `</td>
+                                        <td style="width: 15%">` + data.process[i].fecha + `</td>
+                                        <td style="width: 12%">` + data.process[i].estado + `</td>
+                                        <td style="width: 10%">` + data.process[i].horas + `</td>
+                                        <td style="width: 10%">` + data.process[i].minutos + `</td>
+                                       <tr>`;
+
+
+							$("#cuerpo-items").append(tr2);
+
+						}
+					} else {
+						Swal.fire({
+							icon: "error",
+							text: data.resultado
+						})
+					}
+				} else {
+					Swal.fire({
+						icon: "warning",
+						text: data.error.menssage
+					})
+				}
+
+			}
+		})
+		
+		
+}
+}
+
+
+function exportar(value){
+	if(value==1){
+		 $("#marcasProcessEmpl").table2excel({
+      filename: "file.xls"
+    });
+    }
+}
+
+
+function exportTableToExcel(tableElement, filename) {
+  const table = document.querySelector(tableElement);
+  const tableData = [];
+
+  // Extract table data
+  table.querySelectorAll('tr').forEach(row => {
+    const rowData = [];
+    row.querySelectorAll('th, td').forEach(cell => {
+      rowData.push(cell.textContent);
+    });
+    tableData.push(rowData);
+  });
+
+  // Create worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(tableData);
+
+  // Create workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, $("#mesMarca").val());
+
+  // Export the workbook to Excel file
+  XLSX.writeFile(workbook, $("#numeroEmpleado").val()+".xlsx");
+}
+
 function gestionarMarcaEmpleado(idEmpleado) {
 
 	var entrada = document.getElementById('empleadost').tBodies[0].rows[0].cells[3].innerHTML

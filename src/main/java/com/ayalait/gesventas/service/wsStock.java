@@ -10,8 +10,17 @@ import com.ayalait.gesventas.request.RequestGuardarModifOC;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
 import com.ayalait.utils.ErrorState;
+import com.ayalait.utils.MarcaEmpleadoProcess;
+import com.ayalait.utils.MessageCodeImpl;
+import com.ayalait.utils.OCAprobadas;
+import com.ayalait.utils.ResponsePrefactura;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.multishop.modelo.Prefactura;
+import com.multishop.modelo.PrefacturaDetalle;
+import com.multishop.modelo.PrefacturaModificaciones;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -205,11 +214,11 @@ public final class wsStock {
 
 			String url = this.hostStock + "/orden/compras/numero-orden?fecha=" + fecha + "&idusuario=" + idusuario;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.GET, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(200);
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  
@@ -222,10 +231,47 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
+		}/* catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		 
+
+		return responseResult;
+
+		 
+
+	}
+	
+	public ResponseResultado obtenerNumeroPrefactura(String fecha, String idusuario) {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/numero-orden?fecha=" + fecha + "&idusuario=" + idusuario;
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		}/* catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		 
 
 		return responseResult;
@@ -341,6 +387,45 @@ public final class wsStock {
 
 		 
 	}
+	
+	
+	
+	public ResponsePrefactClient obtenerPrefacturaPorID(int id) {
+		 
+		ResponsePrefactClient responseResult = new ResponsePrefactClient();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/id?id=" + id;
+			 
+			URI uri = new URI(url);
+			ResponseEntity<Prefactura> response = restTemplate.exchange(uri , HttpMethod.GET, null,Prefactura.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setPrefactura(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
 
 	public ResponseFacturaCompra obtenerFacturaCompraPorID(int id) {
 		 
@@ -424,7 +509,7 @@ public final class wsStock {
 			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
-
+			    responseResult.setCode(200);
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  
@@ -630,6 +715,43 @@ public final class wsStock {
 
 		 
 	}
+	
+	public ResponseResultado addModificacionPrefactura(PrefacturaModificaciones request) {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/modificaciones";
+			HttpHeaders headers = new HttpHeaders();
+ 			HttpEntity<PrefacturaModificaciones> requestEntity = new HttpEntity<>(request, headers);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
 
 	public ResponseResultado addDetalleOC(RequestGuardarDetalleOC request) {
 		 
@@ -640,6 +762,43 @@ public final class wsStock {
 			String url = this.hostStock + "/orden/compras/detalle";
 			HttpHeaders headers = new HttpHeaders();
  			HttpEntity<RequestGuardarDetalleOC> requestEntity = new HttpEntity<>(request, headers);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	public ResponseResultado addDetallePrefactura(PrefacturaDetalle request) {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/detalle";
+			HttpHeaders headers = new HttpHeaders();
+ 			HttpEntity<PrefacturaDetalle> requestEntity = new HttpEntity<>(request, headers);
 			URI uri = new URI(url);
 			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
 
@@ -734,6 +893,210 @@ public final class wsStock {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	public ResponseResultado crearPrefactura(Prefactura request) {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/add";
+			HttpHeaders headers = new HttpHeaders();
+ 			HttpEntity<Prefactura> requestEntity = new HttpEntity<>(request, headers);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
+	public ResponseMofPorIdPrefactura obtenerModificacionPorIdPrefactura(int id) {
+		 
+		ResponseMofPorIdPrefactura responseResult = new ResponseMofPorIdPrefactura();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/modificaciones/obtener?id="+id;
+			URI uri = new URI(url);
+			ResponseEntity<PrefacturaModificaciones> response = restTemplate.exchange(uri , HttpMethod.POST, null,PrefacturaModificaciones.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setModificaciones(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	public ResponseListaPrefactura listadoPrefactura() {
+		 
+		ResponseListaPrefactura responseResult = new ResponseListaPrefactura();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/lista";
+			URI uri = new URI(url);
+			ResponseEntity<List<ResponsePrefactura>> response = restTemplate.exchange(uri , HttpMethod.POST, null,new ParameterizedTypeReference<List<ResponsePrefactura>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setLstPrefacturas(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString() );
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			responseResult.setStatus(false);
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			responseResult.setStatus(false);
+			return responseResult;	
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
+	public ResponseListaPrefAprobadas listadoPrefacturaAprobadas() {
+		 
+		ResponseListaPrefAprobadas responseResult = new ResponseListaPrefAprobadas();
+		
+		try {
+
+			String url = this.hostStock + "/prefactura/aprobadas";
+			URI uri = new URI(url);
+			ResponseEntity<List<OCAprobadas>> response = restTemplate.exchange(uri , HttpMethod.POST, null,new ParameterizedTypeReference<List<OCAprobadas>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setPrefacAprobadas(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceMarcasEmpleados(myJson.get("code").getAsString() ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			return responseResult;	
 		}
 		 
 

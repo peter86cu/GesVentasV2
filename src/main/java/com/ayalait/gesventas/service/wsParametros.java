@@ -789,6 +789,41 @@ public final class wsParametros {
 		 
 
 	}
+	
+	public ResponseCliente obtenerClientePorId(int id) {		 
+
+		ResponseCliente responseResult = new ResponseCliente();
+		try {
+
+			String url = this.hostStock + "/parametros/clientes/id?id=" + id;		 
+			URI uri = new URI(url);
+			 
+			ResponseEntity<Cliente> response = restTemplate.exchange(uri, HttpMethod.GET, null,Cliente.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);
+				responseResult.setStatus(true);
+				responseResult.setCliente(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		return responseResult;
+
+		 
+
+	}
 
 	 public ResponseResultado addLogAdmin(AdministracionLog request) {
 		 
