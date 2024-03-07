@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: html_head">
+
+
+</head>
+
+
+
+<div th:replace="template :: header"></div>
+<div th:replace="template :: menu"></div>
+
+<body>
+
+
+	<main id="main" class="main">
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1><i class="fas fa-shipping-fast" style="color:#218838"></i> <strong>ORDENES DE COMPRAS</strong></h1>
+						</div>
+
+					</div>
+				</div><!-- /.container-fluid -->
+			</section>
+			<div class="col-sm-6">
+				<ol class="breadcrumb float-sm-right">
+					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
+					<li class="breadcrumb-item active">Ordenes de compras</li>
+				</ol>
+			</div>
+
+			<!-- Default box -->
+			<div class="card">
+				<div class="card-header">
+					<button class="btn btn-primary" style="color: #fff;background-color: #0069d9;border-color: #0062cc;;" href="javascript:;"
+						onclick="agregarPrefacturaInicial(); return false"><i class="fas fa-plus"></i> Nueva</button>
+
+
+				</div>
+			</div>
+
+			<div class="card-body">
+
+				<div align="right" class="form-group">
+					<input type="text" class="form-control pull-right" style="width:20%;" id="searchordenes"
+						placeholder="Type to search table...">
+				</div>
+				<br>
+
+			<div  th:if="${success != null}">
+				<label th:text="${success}"></label>				
+			</div>
+
+				<div class="card-block">
+					<table class="table table-bordered table-striped" id="ordenes">
+						<thead>
+							<tr style="background: #778899">
+								<th><strong>NÚMERO</strong></th>
+								<th><strong>FECHA</strong></th>
+								<th><strong>FORMA DE PAGO</strong></th>
+								<th><strong>ITEMS</strong></th>
+								<th><strong>SOLICITADO POR</strong></th>
+								<th><strong>APROBADO POR</strong></th>
+								<th><strong>PROVEEDOR</strong></th>
+								<th><strong>ESTADO</strong></th>
+								<th style="width: 15%"><strong>ACCIÓN</strong></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr  th:each="prefactura :${listaPrefactura}">
+								<td class="text_naranja" th:text="${prefactura.id_prefactura}"></td>
+								<td th:text="${prefactura.fecha}"></td>
+								<td th:text="${prefactura.forma_pago}"></td>
+								<td th:text="${prefactura.items}"></td>
+								<td th:text="${prefactura.nombre}"></td>
+								<td >
+								<span th:each="aprobado :${lstAprobadas}">
+								<span th:if="${aprobado.id}==${prefactura.id_prefactura}" th:text="${aprobado.nombre}"></span>
+								</span>
+								</td>	
+								<td th:if="${prefactura.cliente ==null}" ><span  class="text_naranja" >Sin Proveedor</span></td>
+								<td th:if="${prefactura.cliente !=null}" ><span  th:text="${prefactura.cliente}" ></span></td>
+
+								
+								
+								
+								<td th:if="${prefactura.id_estado}==2" ><span  class="text_naranja" th:text="${prefactura.estado}"></span></td>
+								<td th:if="${prefactura.id_estado}==3" ><span  class="text_azul" th:text="${prefactura.estado}"></span></td>
+								<td th:if="${prefactura.id_estado}==4" ><span  class="text_verde" th:text="${prefactura.estado}"></span></td>
+								<td th:if="${prefactura.id_estado}==5" ><span  class="text_rojo" th:text="${prefactura.estado}"></span></td>
+								<td th:if="${prefactura.id_estado}!=2 and ${prefactura.id_estado}!=3 and ${prefactura.id_estado}!=4 and ${prefactura.id_estado}!=5" ><span  class="text_negro" th:text="${prefactura.estado}"></span></td>
+								<td>
+								<span th:if="${prefactura.id_estado}!=1">								
+									<button class="btn btn-primary ModalEditarPrefactura" 	th:onclick="editarPrefactura('[(${prefactura.id_prefactura})]','[(${prefactura.id_estado})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+								</span>
+								<span th:if="${prefactura.id_estado}==1">
+								<button class="btn btn-primary ModalADDPrefactura" th:onclick="addPrefactura('[(${prefactura.id_prefactura})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
+											class="far fa-edit"></i></button>
+								</span>
+
+									<span th:if="${prefactura.id_estado}>2">
+								<button class="btn btn-success" th:onclick="datosImprimir('[(${prefactura.id_prefactura})]','[(${prefactura.id_cliente})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa fa-file-pdf-o"></i></button>
+								</span>
+									<button class="btn btn-default btnEliminarOrden" th:onclick="eliminarOrdenCompra('[(${prefactura.id_prefactura})]')" style="color: #fff;background-color: #8B0000;border-color: #800000"><i
+											class="fas fa-trash"></i></button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+
+	<!-- The Modal Add Ordenes -->
+	<div class="modal" id="ModalADDPrefactura" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<form th:action="@{/crear-prefactura-venta}" th:object="${prefactura}" class="form-horizontal" role="form"
+					id="datos_presupuesto" method="post">
+
+					<div class="modal-header" style="background: #17a2b8;">
+						<h4 class="modal-title">NUEVA ORDEN DE COMPRA</h4>
+
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="box-body">
+							<div class="row ">
+								<hr />
+								<div class="col-lg-6 col-md-6 col-sm-6">
+									<h2>Detalles del cliente :</h2>
+									<select style="width: 50%" class="cliente form-control" name="cliente"
+										id="cliente">
+										<option value="" required>Selecciona el cliente</option>
+										
+										<input type="hidden" id="id_cliente" name="id_cliente" value="">
+										<h4><strong>Cliente: </strong><span id="clienteN"></span></h4>
+										<h4><strong>Teléfono: </strong><span id="telefono"></span></h4>
+										<h4><strong>Email: </strong><span id="email"></span></h4>
+										<h4><strong>Dirección: </strong><span id="direccion"></span></h4>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6">
+									<h2>Detalles de la prefactura :</h2>
+									<div class="row">
+										<div class="col-lg-6">
+											<h4><strong>Prefactura #: </strong><label id="idPrefactura" value=""></label></h4>
+											<input type="hidden" id="idPrefacturaT" name="idPrefacturaT" value="">
+										</div>
+										<div class="col-lg-6">
+											<h4><strong>Fecha emitida: </strong>
+												<label id="fecha" value=""></label>
+												<input type="date" class="form-control" id="datepicker" required>
+										</div>
+
+									</div>
+									<div class="row">
+										<div class="col-lg-6">
+
+											<label for="txtFormaPago">Forma de Pago</label>
+											<select id="txtFormaPago" name="txtFormaPago"
+												class="form-control custom-select" required>
+												<option selected disabled>Seleccines</option>
+												<option th:each="fp : ${formasPagos}" th:value="${fp.id_forma_pago}"
+													th:text="${fp.descripcion}"></option>
+											</select>
+
+										</div>
+
+
+										<div class="col-lg-6">
+											<label for="txtEnvio">Método de envío</label>
+											<select id="txtEnvio" name="txtEnvio" class="form-control custom-select" required>
+												<option selected disabled>Seleccionar</option>
+												<option th:each="plaz : ${plazos}" th:value="${plaz.id_plazo}"
+													th:text="${plaz.descripcion}"></option>
+											</select>
+										</div>
+
+									</div>
+
+								</div>
+							</div>
+							<div class="row">
+								<hr />
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th class='text-center'>Item</th>
+													<th class='text-center'>Cantidad</th>
+													<th class='text-center'>Código</th>
+													<th class='text-center'>Descripción</th>
+													<th class='text-center'>Ultimo Precio</th>
+													<th class='text-center'>Total</th>
+													<th class='text-center'></th>
+												</tr>
+											</thead>
+											<tbody class='items'>
+
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="row">
+								<hr />
+							</div>
+
+							<button type="submit" class="btn btn-success" href="javascript:;"
+								onclick="guardar_orden(1); return false">Crear prefactura</button>
+
+							<button type="submit" class="btn btn-danger" style="float: right;" href="javascript:;"
+								onclick="guardar_orden(0); return false">Guardar borrador</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+
+		</div>
+	</div>
+	<!--FIN DE MODAL ADD NUEVA ORDEN-->
+
+	<!--Modal para agregar items-->
+	<form class="form-horizontal" name="guardar_item" id="guardar_item">
+		<div class="modal fade bs-example-modal-lg" id="addItem" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+
+					</div>
+					<div class="modal-body">
+
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-6">
+								<select style="width: 100%" class="productos form-control" name="productos"
+									id="producto" required>
+									<option value="">Buscar producto</option>
+								</select>
+							</div>
+
+							<div class="col-md-12">
+								<label>Producto</label>
+								<input class="form-control" id="descripcionProducto" name="descripcionProducto"
+									disabled="false"></input>
+								<input type="hidden" id="idOrdenT1" name="idOrdenT1" value="">
+								<input type="hidden" class="form-control" id="action" name="action" value="ajax">
+							</div>
+
+						</div>
+
+						<div class="row">
+							<div class="col-md-4">
+								<label>Cantidad</label>
+								<input type="text" class="form-control" id="cantidad" name="cantidad">
+							</div>
+
+							<div class="col-md-4">
+								<label>Ultimo Precio</label>
+								<input type="text" class="form-control" id="precio" name="precio" disabled="false">
+							</div>
+
+						</div>
+
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" onclick="cerrarModal('addItem'); return false">Cerrar</button>
+						<button type="submit" class="btn btn-success" href="javascript:;"
+							onclick="guardarDetallePrefactura(); return false">Guardar</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<!--Fin de modal add items -->
+
+	<!-- The Modal editar ordenes de compras -->
+	<div class="modal" id="ModalEditarPrefactura" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl" >
+			<div class="modal-content">
+
+				<form class="form-horizontal" role="form" id="datos_editar" method="post">
+
+					<!-- Modal Header -->
+					<div class="modal-header" style="background: #17a2b8;">
+						<h4 class="modal-title">EDITAR PREFACTURA DE VENTA</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body" style="overflow: hidden;">
+						<div class="box-body">
+
+
+							<div id="print-area">
+								<div class="row pad-top font-big">
+									<div class="col-lg-4 col-md-4 col-sm-4">
+										<a href="https://obedalvarado.pw/" target="_blank"> <img
+												src="assets/img/logo.png" alt="Logo sistemas web" /></a>
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4">
+										<strong>E-mail : </strong> Prueba
+										<br />
+										<strong>Teléfono :</strong> Prueba <br />
+										<strong>Sitio web :</strong> prueba.com
+
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4">
+										<strong>comercial</strong>
+										<br />
+										Dirección : alguna
+									</div>
+
+								</div>
+
+
+								<div class="row ">
+									<hr />
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<h2>Detalles del cliente :</h2>
+										<h4><strong>Cliente: </strong><Label id="clienteNE"></Label></h4>
+										<input type="hidden" id="clienteE1" name="clienteE1" value="">
+										<h4><strong>Dirección: </strong><Label id="direccionE"></Label>
+											<h4><strong>E-mail: </strong><Label id="emailE"></Label></h4>
+											<h4><strong>Teléfono: </strong><Label id="telefonoE"></Label></h4>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<h2>Detalles de la orden de compra :</h2>
+										<div class="row">
+											<div class="col-lg-6">
+												<h4><strong>Orden #: </strong><label id="idPrefacturaE"></label></h4>
+												<input type="hidden" id="idPrefactura1E" name="idPrefactura1E" value="">
+											</div>
+											<div class="col-lg-5">
+												<h5><strong>Fecha: </strong></h5><input type="date" class="form-control" id="datepickerE">
+											</div>
+
+										</div>
+										<div class="row">
+											<div class="col-lg-6">
+
+												<label for="txtFormaPagoE">Forma de Pago</label>
+												<select id="txtFormaPagoE" name="txtFormaPagoE"
+													class="form-control custom-select">
+													<option selected disabled>Seleccines</option>
+												<option th:each="fp : ${formasPagos}" th:value="${fp.id_forma_pago}"
+													th:text="${fp.descripcion}"></option>
+												</select>
+
+											</div>
+
+
+											<div class="col-lg-6">
+												<label for="txtEnvioE">Método de envío</label>
+												<select id="txtEnvioE" name="txtEnvioE"
+													class="form-control custom-select">
+													<option selected disabled>Seleccines</option>
+												<option th:each="plaz : ${plazos}" th:value="${plaz.id_plazo}"
+													th:text="${plaz.descripcion}"></option>
+												</select>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+
+
+								<div class="row">
+									<hr />
+									<div class="col-lg-12 col-md-12 col-sm-12">
+										<div class="table-responsive">
+											<table class="table table-bordered">
+												<thead>
+													<tr>
+														<th class='text-center'>Item</th>
+														<th class='text-center'>Cantidad</th>
+														<th class='text-center'>Código</th>
+														<th class='text-center'>Descripción</th>
+														<th class='text-center'>Ultimo Precio</th>
+														<th class='text-center'>Total</th>
+														<th class='text-center'></th>
+													</tr>
+												</thead>
+												<tbody class='items'>
+
+												</tbody>
+
+
+											</table>
+
+
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="row">
+								<hr />
+							</div>
+
+							<button type="submit" id="bttautorizo" class="btn btn-success" href="javascript:;"
+								onclick="guardar_prefacturaEditadas(2); return false"><span>AUTORIZAR ORDEN<br><b>A <label
+											id="autorizo"></label></b></span></button>
+
+
+							<button type="submit" class="btn btn-danger" id="bttcancelo" style="float: right;"
+								href="javascript:;"
+								onclick="guardar_prefacturaEditadas(5); return false"><span>CANCELAR<br><b>A <label
+											id="cancelo"></b></span></button>
+
+
+
+
+
+
+						</div>
+					</div>
+
+				</form>
+			</div>
+
+		</div>
+
+
+	</div>
+
+	<div th:replace="template :: mDiaTemplate"></div>
+		<div th:replace="template :: loadingTemplate"></div>
+
+<div th:replace="template :: footer"></div>
+
+</body>
+
+
+
+<style type="text/css">
+	
+	 .text_rojo{
+    color:#C40000;
+    font-weight:bold;
+  }
+
+  .text_verde{
+    color:#060;
+    font-weight:bold;
+  }
+  .text_azul{
+    color:#00F;
+    font-weight:bold;
+  }
+  .text_naranja{
+    color:#F60;
+    font-weight:bold;
+  }
+  .text_negro{
+    color:#000000;
+    font-weight:bold;
+  }
+
+  .text_normal{
+    color:inherit;
+
+  }
+	
+	a.active {
+		background-color: #4CAF50;
+		color: white;
+		border-radius: 5px;
+	}
+
+
+	div.nav {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav.a {
+		display: inline;
+	}
+
+	a.bot {
+		color: black;
+		float: left;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 5px;
+	}
+
+	.loader-page {
+		position: fixed;
+		z-index: 25000;
+		background: rgb(255, 255, 255);
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all .3s ease;
+	}
+
+	.loader-page::before {
+		content: "";
+		position: absolute;
+		border: 2px solid rgb(50, 150, 176);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s linear infinite;
+		transform: rotate(0deg);
+	}
+
+	@keyframes rotarload {
+		0% {
+			transform: rotate(0deg)
+		}
+
+		100% {
+			transform: rotate(360deg)
+		}
+	}
+
+	.loader-page::after {
+		content: "";
+		position: absolute;
+		border: 2px solid rgba(50, 150, 176, .5);
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border-left: 2px solid rgba(50, 150, 176, 0);
+		border-top: 2px solid rgba(50, 150, 176, 0);
+		animation: rotarload 1s ease-out infinite;
+		transform: rotate(0deg);
+	}
+</style>
+
+
+
+</html>
