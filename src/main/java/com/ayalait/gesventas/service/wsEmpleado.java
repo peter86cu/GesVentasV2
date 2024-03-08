@@ -1,9 +1,7 @@
 package com.ayalait.gesventas.service;
 
-import com.ayalait.fecha.FormatearFechas;
 import com.ayalait.gesventas.controller.LoginController;
 import com.ayalait.gesventas.request.RequestAddEmpleado;
-import com.ayalait.gesventas.request.RequestAddProducto;
 import com.ayalait.modelo.Banco;
 import com.ayalait.modelo.Empleado;
 import com.ayalait.modelo.EmpleadoBanco;
@@ -17,7 +15,6 @@ import com.ayalait.modelo.MarcasEmpleado;
 import com.ayalait.modelo.MesPago;
 import com.ayalait.modelo.Modulos;
 import com.ayalait.modelo.TipoDocumento;
-import com.ayalait.modelo.UnidadMedida;
 import com.ayalait.modelo.User;
 import com.ayalait.response.*;
 import com.ayalait.utils.ErrorState;
@@ -155,8 +152,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/validar?documento="+documento;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.GET, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -172,11 +169,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 
 
 		return responseResult;
 
@@ -238,8 +231,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/nuevos?id=" + id_empresa;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<List<Empleado>> response = restTemplate.exchange(uri , HttpMethod.GET, null,
+			//URI uri = new URI(url);
+			ResponseEntity<List<Empleado>> response = restTemplate.exchange(url , HttpMethod.GET, null,
 					new ParameterizedTypeReference<List<Empleado>>() {
 					});
 
@@ -257,10 +250,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		 
 
 		return responseResult;
@@ -432,8 +422,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/filtro?documento="+documento+"&mes="+mes+"&annio="+annio+"&dia="+dia;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<List<HorarioLaboral>> response = restTemplate.exchange(uri , HttpMethod.GET, null,
+			//URI uri = new URI(url);
+			ResponseEntity<List<HorarioLaboral>> response = restTemplate.exchange(url , HttpMethod.GET, null,
 					new ParameterizedTypeReference<List<HorarioLaboral>>() {
 					});
 
@@ -451,10 +441,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (org.springframework.web.client.HttpClientErrorException e) {
+		}  catch (org.springframework.web.client.HttpClientErrorException e) {
 			/*ErrorState data = new ErrorState();
 			data.setCode(e.getStatusCode().value());
 			data.setMenssage(MessageCodeImpl.getMensajeServiceTerminal(String.valueOf(e.getStatusCode().value() )));
@@ -526,8 +513,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/marcas/buscar?id=" + idEmpleado+"&fecha="+fecha;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<MarcasEmpleado> response = restTemplate.exchange(uri , HttpMethod.GET, null,MarcasEmpleado.class);
+			//URI uri = new URI(url);
+			ResponseEntity<MarcasEmpleado> response = restTemplate.exchange(url , HttpMethod.GET, null,MarcasEmpleado.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -543,10 +530,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (org.springframework.web.client.HttpClientErrorException e) {
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
 			ErrorState data = new ErrorState();
 			data.setCode(e.getStatusCode().value());
 			data.setMenssage(e.getMessage());
@@ -568,8 +552,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/marcas/filtro?mes="+mes+"&anio="+anio+"&estado=" + estado;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<List<MarcasEmpleado>> response = restTemplate.exchange(uri , HttpMethod.POST, null,
+			//URI uri = new URI(url);
+			ResponseEntity<List<MarcasEmpleado>> response = restTemplate.exchange(url , HttpMethod.POST, null,
 					new ParameterizedTypeReference<List<MarcasEmpleado>>() {
 			});
 
@@ -587,10 +571,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (org.springframework.web.client.HttpClientErrorException e) {
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
 			JsonParser jsonParser = new JsonParser();
 			int in = e.getLocalizedMessage().indexOf("{");
 			int in2 = e.getLocalizedMessage().indexOf("}");
@@ -620,8 +601,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/marcas/procesar?mes="+mes+"&anio="+anio;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -637,10 +618,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (org.springframework.web.client.HttpClientErrorException e) {
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
 			JsonParser jsonParser = new JsonParser();
 			int in = e.getLocalizedMessage().indexOf("{");
 			int in2 = e.getLocalizedMessage().indexOf("}");
@@ -721,8 +699,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/marcas/obtener-marcas-empleado?documento="+documento+"&mes="+mes+"&anio="+anio;
 
-			URI uri = new URI(url);
-			ResponseEntity<List<MarcaEmpleadoProcess>> response = restTemplate.exchange(uri , HttpMethod.POST, null,new ParameterizedTypeReference<List<MarcaEmpleadoProcess>>() {
+			//URI uri = new URI(url);
+			ResponseEntity<List<MarcaEmpleadoProcess>> response = restTemplate.exchange(url , HttpMethod.POST, null,new ParameterizedTypeReference<List<MarcaEmpleadoProcess>>() {
 			});
 
 			if (response.getStatusCodeValue() == 200) {
@@ -738,10 +716,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (org.springframework.web.client.HttpClientErrorException e) {
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
 			JsonParser jsonParser = new JsonParser();
 			int in = e.getLocalizedMessage().indexOf("{");
 			int in2 = e.getLocalizedMessage().indexOf("}");
@@ -1151,8 +1126,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/empleado?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1168,11 +1143,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 
 
 		return responseResult;
 		 
@@ -1187,8 +1158,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/titulo?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1204,11 +1175,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 
 
 		return responseResult;
 
@@ -1224,8 +1191,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/trabajo?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1241,9 +1208,6 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		 
 
@@ -1261,8 +1225,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/salud?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1278,10 +1242,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		 
 
 		return responseResult;
@@ -1298,8 +1259,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/banco?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1315,11 +1276,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 
 
 		return responseResult;
 
@@ -1334,8 +1291,8 @@ public class wsEmpleado {
 
 			String url = this.hostRecursosHumanos + "/empleado/delete/cargo?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.DELETE, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.DELETE, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -1351,10 +1308,7 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		 
 
 		return responseResult;
