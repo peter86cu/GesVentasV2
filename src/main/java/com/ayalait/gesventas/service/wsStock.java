@@ -287,8 +287,8 @@ public final class wsStock {
 
 			String url = this.hostStock + "/factura/numero-factura?fecha=" + fecha + "&idusuario=" + idusuario;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.GET, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 
@@ -304,9 +304,6 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		 
 
@@ -323,8 +320,8 @@ public final class wsStock {
 
 			String url = this.hostStock + "/orden/compras/delete?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, null,String.class);
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
 
@@ -340,11 +337,7 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 		 
 
 		return responseResult;
 
@@ -360,8 +353,8 @@ public final class wsStock {
 
 			String url = this.hostStock + "/orden/compras/id?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<OrdenCompra> response = restTemplate.exchange(uri , HttpMethod.GET, null,OrdenCompra.class);
+			//URI uri = new URI(url);
+			ResponseEntity<OrdenCompra> response = restTemplate.exchange(url , HttpMethod.GET, null,OrdenCompra.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -377,11 +370,7 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 		 
 
 		return responseResult;
 
@@ -398,8 +387,8 @@ public final class wsStock {
 
 			String url = this.hostStock + "/prefactura/id?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<Prefactura> response = restTemplate.exchange(uri , HttpMethod.GET, null,Prefactura.class);
+			//URI uri = new URI(url);
+			ResponseEntity<Prefactura> response = restTemplate.exchange(url , HttpMethod.GET, null,Prefactura.class);
 
 			if (response.getStatusCodeValue() == 200) {
 				responseResult.setCode(response.getStatusCodeValue());
@@ -415,11 +404,7 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 
 
 		return responseResult;
 
@@ -434,8 +419,8 @@ public final class wsStock {
 
 			String url = this.hostStock + "/factura/compra/id?id=" + id;
 			 
-			URI uri = new URI(url);
-			ResponseEntity<FacturaCompra> response = restTemplate.exchange(uri , HttpMethod.GET, null,FacturaCompra.class);
+			//URI uri = new URI(url);
+			ResponseEntity<FacturaCompra> response = restTemplate.exchange(url , HttpMethod.GET, null,FacturaCompra.class);
 
 			if (response.getStatusCodeValue() == 200) {
 
@@ -451,11 +436,7 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
+		} 		 
 
 		return responseResult;
 
