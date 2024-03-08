@@ -205,7 +205,7 @@ public class OrdenesFacturasController {
 			modelo.addAttribute("user", LoginController.session.getUser());
 			ResponseResultado resultado= new ResponseResultado();
 			ResponseOrdenImprimir response= new ResponseOrdenImprimir();
-			String pathOrden=System.getProperty("user.dir")+"\\src\\main\\resources\\static\\pdf\\ordenes\\orden_"+idOrden+".pdf";
+			String pathOrden=LoginController.rutaPDFOrdenes+"\\orden_"+idOrden+".pdf";
 
 			File archivo = new File(pathOrden);
 			if (!archivo.exists()) {
@@ -490,7 +490,7 @@ public class OrdenesFacturasController {
 					responseHttp.getWriter().write(json);
 				}
 
-				String pathOrden=System.getProperty("user.dir")+"\\src\\main\\resources\\static\\pdf\\ordenes\\orden_"+idOrden+".pdf";
+				String pathOrden=LoginController.rutaPDFOrdenes+"\\orden_"+idOrden+".pdf";
 
 				File archivo = new File(pathOrden);
 				if (!archivo.exists()) {

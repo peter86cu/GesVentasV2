@@ -741,7 +741,7 @@ function datosImprimir(idOrden,idProveedor){
         					var datas = JSON.parse(response);
         					if (datas.code == 200) {
         					//window.open(datas.resultado,"_blank");
-        					ventanaCentrada('./pdf/ordenes/orden_'+idOrden+'.pdf','Orden','','1024','768','true');
+        					ventanaCentrada('/ordenes/orden_'+idOrden+'.pdf','Orden','','1024','768','true');
 
 
         					} else {
