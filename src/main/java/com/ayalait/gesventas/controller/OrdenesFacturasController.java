@@ -81,7 +81,7 @@ public class OrdenesFacturasController {
 				modelo.addAttribute("plazos", new Plazos());
 			}
 
-			return "/orden-compra";
+			return "orden-compra";
 		} else {
 			return "redirect:/";
 		}
@@ -142,7 +142,7 @@ public class OrdenesFacturasController {
 				modelo.addAttribute("plazos", new Plazos());
 			}
 
-			return "/prefactura";
+			return "prefactura";
 		} else {
 			return "redirect:/";
 		}
