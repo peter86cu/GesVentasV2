@@ -19,7 +19,7 @@ public class DocumentosConfig implements WebMvcConfigurer{
 		/****************************FIN***************************/
 		
 		/***********************PRODUCCION*******************************/
-		registry.addResourceHandler("/empleados/**").addResourceLocations("file:/home/jelastic/conf/empleados");
+		registry.addResourceHandler("/empleados/**").addResourceLocations("file:/home/jelastic/conf/empleados/");
 		registry.addResourceHandler("/productos/**").addResourceLocations("file:/home/jelastic/conf/productos/");
 		registry.addResourceHandler("/titulos/**").addResourceLocations("file:/home/jelastic/conf/titulos/");
 		registry.addResourceHandler("/ordenes/**").addResourceLocations("file:/home/jelastic/conf/ordenes/");
