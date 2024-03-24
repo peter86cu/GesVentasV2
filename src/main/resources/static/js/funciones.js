@@ -9,7 +9,7 @@ function desactivarLoading(){
 	cerrarModal('loadingModal');
 	}
 function validarServer(accion) {
-  // activarLoader();
+   activarLoader();
 	var datos = new FormData();
 	datos.append("accion", accion);
 
@@ -78,8 +78,6 @@ function validarServer(accion) {
 			msg = 'Requested page not found. [404]';
 		} else if (jqXHR.status == 500) {
 			msg = 'Internal Server Error [500].';
-		} else if (exception === 'parsererror') {
-			msg = 'Requested JSON parse failed.';
 		} else if (exception === 'timeout') {
 			msg = 'Time out error.';
 		} else if (exception === 'abort') {

@@ -248,9 +248,10 @@ function cerrarModalDetalle(cerrarModal) {
 }
 
 function abrirModalDetalle(nombreModal) {
+	activarLoader();
 	$('#' + nombreModal).modal({ backdrop: 'static', keyboard: false })
 	$('#' + nombreModal).modal('show');
-
+desactivarLoading();
 
 }
 
@@ -636,7 +637,7 @@ function agregarProductos(event) {
 			text: "Debe completar los campos obligatorios."
 		})
 	} else {
-
+activarLoader();
 		//Obtengo los valores
 		//var idProducto=  $(this).attr("idProducto");
 		var codigo = $('#inputCodigo').val();
@@ -693,6 +694,7 @@ function agregarProductos(event) {
 			processData: false,
 			dataType: "json",
 			success: function(respuesta) {
+				desactivarLoading();
 				var response = JSON.stringify(respuesta, null, '\t');
 				var data = JSON.parse(response);
 				if (data.code == 200) {
