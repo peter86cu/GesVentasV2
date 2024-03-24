@@ -151,7 +151,8 @@ public class ProductosController {
 				request.setProducto(producto);
 				response = LoginController.conStock.addProducto(request);
 				if (response.isStatus()) {
-
+					imageProd= new ArrayList<ProductoImagenes>();
+					detalleProd= new ProductoDetalles();
 					String json = (new Gson()).toJson(response);
 					responseHttp.setContentType("application/json");
 					responseHttp.setCharacterEncoding("UTF-8");
