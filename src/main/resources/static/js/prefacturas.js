@@ -15,7 +15,7 @@ function agregarPrefacturaInicial(event) {
 	var idCliente = 1;
 	datos.append("estado", 1);
 	datos.append("accion", accion);
-	datos.append("id", idPrefactura);
+	datos.append("idPrefactura", idPrefactura);
 	datos.append("idCliente", idCliente);
 	datos.append("fecha", "");
 	datos.append("plazo", 0);
@@ -60,7 +60,7 @@ function addPrefactura(id) {
 
 
 	$.ajax({
-		url: globalPath+"/editar-prefctura",
+		url: globalPath+"/editar-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -73,7 +73,7 @@ function addPrefactura(id) {
 
 			if (data.code == 200) {
 
-				document.querySelector('#idCliente').innerText = data.prefactura.id_prefactura;
+				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
 				$("#txtFormaPago > option[value=" + data.prefactura.id_forma_pago + "]").attr("selected", true);
 				$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
@@ -435,7 +435,7 @@ function guardar_cliente(idCliente) {
 	datos.append("accion", accion);
 	$('#id_cliente').val(idCliente);
 	datos.append("idCliente", idCliente);
-	datos.append("idOrden", id);
+	datos.append("idPrefactura", id);
 	datos.append("estado", 1);
 	datos.append("fecha", "");
 	datos.append("plazo", 0);
@@ -507,7 +507,7 @@ function guardar_orden(estado) {
 		} else {
 			datos.append("accion", accion);
 			datos.append("idCliente", idCliente);
-			datos.append("id", id);
+			datos.append("idPrefactura", id);
 			datos.append("plazo", plazo);
 			datos.append("forma_pago", forma_pago);
 			datos.append("fecha", fecha);
@@ -577,7 +577,7 @@ function guardar_prefacturaEditadas(estado) {
 
 	datos.append("accion", accion);
 	datos.append("idCliente", idCliente);
-	datos.append("id", id);
+	datos.append("idPrefactura", id);
 	datos.append("plazo", plazo);
 	datos.append("forma_pago", forma_pago);
 	datos.append("fecha", fecha);

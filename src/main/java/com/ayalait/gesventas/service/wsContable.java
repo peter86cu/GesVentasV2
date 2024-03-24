@@ -7,7 +7,7 @@ import com.ayalait.utils.ErrorState;
 import com.ayalait.utils.MessageCodeImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-
+import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -155,6 +155,48 @@ public final class wsContable {
 		 
 	}
 	
+	
+	public ResponseResultado addGasto(List<ContableGastos> gastos) {
+
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		try {
+
+			String url = this.hostContable + "/contable/gastos/add";
+			String data= new Gson().toJson(gastos);
+			HttpEntity<String> requestEntity = new HttpEntity<>(data, null);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceTerminal(String.valueOf(e.getStatusCode().value() ) ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;	
+		 
+	}
 	
 	
 

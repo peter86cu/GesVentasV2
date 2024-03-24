@@ -76,8 +76,12 @@ public class ProductosController {
 	public ProductosController() {
 		try {
 			this.cargarServer();
-			responseMarcas= LoginController.conParam.listadoMarcasProducto();
-			responseModelo= LoginController.conParam.listadoModelosProducto();
+			ResponseResultado response= LoginController.conStock.validarConectividadServidor();
+			if(response.isStatus()) {
+				responseMarcas= LoginController.conParam.listadoMarcasProducto();
+				responseModelo= LoginController.conParam.listadoModelosProducto();
+			}
+			
 		} catch (IOException var2) {
 			Logger.getLogger(Session.class.getName()).log(Level.SEVERE, (String) null, var2);
 		}

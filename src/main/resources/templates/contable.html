@@ -106,10 +106,10 @@
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header" style="background: #17a2b8;">
-					<h5 class="modal-title">FILTRAR MARCAS A PROCESAR</h5>
+					<h5 class="modal-title">GESTION DE GASTOS</h5>
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close"
-						onclick="cerrarModal('asistenciaModal'); return false">
+						onclick="cerrarModal('gastosNuevoModal'); return false">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -156,16 +156,15 @@
 
 						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
 						<div class="card-block">
-							<table class="table table-bordered table-striped" id="productost">
+							<table class="table table-bordered table-striped" id="h-table">
 								<thead>
 									<tr style="background: #778899">
 										<th>GASTO</th>
 										<th>MONEDA</th>
 										<th>CANTIDAD</th>
+										<th>ARCHIVO</th>
 										<th>RECIBO</th>
-										<th>ESTADO</th>
-										<th>FECHA</th>
-										<th>USUARIO</th>
+										<th>ACCION</th>
 									</tr>
 								</thead>
 								<tbody id="cuerpo-items">
@@ -177,7 +176,13 @@
 						</div>
 						<!--FIN-->
 
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarGastos(); return false">Guardar</button>
+						</div>
 
+					</div>
 
 					</div>
 

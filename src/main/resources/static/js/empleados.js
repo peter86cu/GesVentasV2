@@ -85,10 +85,160 @@ function abrirModal(nombreModal) {
 
 }
 
+
+
+function generarCalendarioEmpleados() {
+	var mes = $("#mesAProcesar").val();
+
+
+	if (mes == null ) {
+		Swal.fire({
+			icon: "error",
+			text: "Debe selecionar el mes a procesar."
+		})
+	} else {
+
+		var datos = new FormData();
+		datos.append("mes", mes);
+		datos.append("accion", "procesar");
+		$.ajax({
+			url: globalPath + "/generar-calendario-mes",
+			method: "POST",
+			data: datos,
+			chache: false,
+			contentType: false,
+			processData: false,
+			dataType: "json",
+			success: function(respuesta) {
+				var response = JSON.stringify(respuesta, null, '\t');
+				var data = JSON.parse(response);
+				if(data.code==200){
+					$('#calendarioModal').modal('hide');
+					Swal.fire({
+						icon: "success",
+						text: data.resultado
+					})
+				}else if(data.code==405){
+					  Swal.fire({
+        text: data.resultado,
+        //type: "success",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "OK",
+        cancelButtonText: "No",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+    }).then((result) => {
+        if (result.value) {
+			var mes = $("#mesAProcesar").val();
+           var datos = new FormData();
+		datos.append("mes", mes);
+		datos.append("accion", "reprocesar");
+		$.ajax({
+			url: globalPath + "/generar-calendario-mes",
+			method: "POST",
+			data: datos,
+			chache: false,
+			contentType: false,
+			processData: false,
+			dataType: "json",
+			success: function(respuesta) {
+				var response = JSON.stringify(respuesta, null, '\t');
+				var data = JSON.parse(response);
+				if(data.status){
+					$('#calendarioModal').modal('hide');
+					Swal.fire({
+						icon: "warning",
+						text: data.resultado
+					})
+				}else if(data.code==405){
+					
+					
+					const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+			confirmButton: 'btn btn-success',
+			cancelButton: 'btn btn-danger'
+		},
+		buttonsStyling: false
+	})
+
+	swalWithBootstrapButtons.fire({
+		title: data.resultad,
+
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonText: 'Si ',
+		cancelButtonText: 'No',
+		reverseButtons: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+
+			$.ajax({
+				url: globalPath+"/crear-orden-compra",
+				method: "POST",
+				data: datos,
+				chache: false,
+				contentType: false,
+				processData: false,
+				dataType: "json",
+				success: function(respuesta) {
+					var response = JSON.stringify(respuesta, null, '\t');
+					var datas = JSON.parse(response);
+					if (datas.code == 200) {
+						swalWithBootstrapButtons.fire(
+							'Procesando!',
+							data.resultado,
+							'success'
+						).then((result) => {
+							if (result.isConfirmed)
+								location.reload();
+						});
+
+					} else {
+						Swal.fire({
+							icon: 'error',
+							text: data.error.menssage,
+						})
+					}
+$('#calendarioModal').modal('hide');
+				}
+			});
+
+		} else if (
+			/* Read more about handling dismissals below */
+			result.dismiss === Swal.DismissReason.cancel
+		) {
+			swalWithBootstrapButtons.fire(
+				'Acción cancelada', '',
+				'warning'
+			)
+		}
+	})
+				}
+		    }
+		   })
+
+        }else{
+			
+		}
+    });
+				}else if(!data.status){
+					Swal.fire({
+						icon: "error",
+						text: data.resultado
+					})
+				}
+		    }
+		   })
+		}
+	}
+
 function mesAProcesarMarcas() {
 	var mes = $("#mes").val();
 	var estado = $("#estado").val();
-
+$('#marcasProcessEmpl > tbody').empty();
+$('#cuerpo-items > tfoot').empty();
+$('#cabeza-items > tfoot').empty();
 
 	if (mes == null || estado == null) {
 		Swal.fire({
@@ -174,7 +324,7 @@ function mesAProcesarMarcas() {
 								marcaEntrada = data.marcas[i].marcaentrada;
 							}
 
-							var tr2 = `<tr>
+							var tr2 = `<tr id="fila`+ i + `">
                                         <td style="width: 8%">`+ numero + `</td>
                                         <td style="width: 20%">` + nombre + `</td>
                                         <td style="width: 10%">` + data.marcas[i].compositeId.fecha + `</td>
@@ -185,7 +335,7 @@ function mesAProcesarMarcas() {
                                         <td style="width: 10%">` + data.marcas[i].tipo + `</td>
                                         <td>
 									<button class="btn btn-primary "
-										onclick="gestionarMarcaEmpleado('`+ idEmpleadoOK + `'); return false"
+										onclick="gestionarMarcaEmpleado('`+ idEmpleadoOK + `','fila`+ i + `'); return false"
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fas fa-check-circle"></i></button></td><tr>`;
 
 
@@ -260,7 +410,9 @@ function mesAProcesarTodasMarcas() {
 function filterByNumeroEmpleado(){
 		var mes = $("#mesMarca").val();
 		var empleado = $("#numeroEmpleado").val();
-		
+		$('#marcasProcessEmpl > tbody').empty();
+		$('#cuerpo-items > tfoot').empty();
+		$('#cabeza-items > tfoot').empty();
 	if (mes == null || empleado =="") {
 		Swal.fire({
 			icon: "error",
@@ -282,9 +434,7 @@ function filterByNumeroEmpleado(){
 				var response = JSON.stringify(respuesta, null, '\t');
 				var data = JSON.parse(response);
 				if (data.status) {
-					$('#empleadost > tbody').empty();
-					$('#cuerpo-items > tfoot').empty();
-					$('#cabeza-items > tfoot').empty();
+					
 
 					// Obtén la referencia al elemento <thead>
 					var thead = document.querySelector('thead');
@@ -378,11 +528,23 @@ function exportTableToExcel(tableElement, filename) {
   XLSX.writeFile(workbook, $("#numeroEmpleado").val()+".xlsx");
 }
 
-function gestionarMarcaEmpleado(idEmpleado) {
+function gestionarMarcaEmpleado(idEmpleado, fila) {
 
-	var entrada = document.getElementById('empleadost').tBodies[0].rows[0].cells[3].innerHTML
-	var salida = document.getElementById('empleadost').tBodies[0].rows[0].cells[4].innerHTML
+    let obtenerDato = document.getElementsByTagName("th");
+  
+    
+    let obtenerFila = document.getElementById(fila);
 
+// Obtenemos los elementos td de la fila
+let elementosFila = obtenerFila.getElementsByTagName("td");
+
+// Mostramos la colección HTML de la fila.
+
+	var entrada = elementosFila[3].innerHTML
+	var salida = elementosFila[4].innerHTML
+					$('#empleadost > tbody').empty();
+					$('#cuerpo-items > tfoot').empty();
+					$('#cabeza-items > tfoot').empty();
 	if (entrada == "" || salida == "" || entrada=="SIN DEFINIR" || salida=="SIN DEFINIR") {
 		Swal.fire({
 			icon: "warning",
@@ -425,7 +587,9 @@ function procesarCalendarioPorEmpleado() {
 
 	var datos = new FormData();
 	datos.append("numero", inputNumeroEmpleado);
-
+          $('#empleadost > tbody').empty();
+					$('#cuerpo-items > tfoot').empty();
+					$('#cabeza-items > tfoot').empty();
 	$.ajax({
 		url: globalPath + "/filtrar-calendario",
 		method: "POST",

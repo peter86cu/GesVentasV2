@@ -2,6 +2,7 @@ package com.ayalait.gesventas.utils;
 
 
 import com.ayalait.gesventas.controller.LoginController;
+import com.ayalait.gesventas.imprimir.ItemOrden;
 import com.ayalait.gesventas.service.wsRoles;
 import com.ayalait.modelo.AccionesGestion;
 import com.ayalait.modelo.Caja;
@@ -238,6 +239,70 @@ public class Utils {
 
 		return numero;
 	}
+	
+	
+	
+	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra) throws SQLException {
+		double calculoIVA=0;
+		double iva1=0;
+		ResultSet estado=null;
+		try {
+		if(!itemsCompra.isEmpty()) {
+			for(ItemsOrdenCompra item: itemsCompra) {
+				 estado = Conexion.getConexion("SELECT i.aplicar as iva FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' GROUP BY i.aplicar,pf.importe");
+				while ( estado.next()) {
+					 iva1 = estado.getDouble("iva");
+				
+				}
+				calculoIVA=calculoIVA+(iva1*item.getImporte());
+			}
+		}
+		
+		
+		} catch (SQLException var2) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var2);
+		}finally {
+			if(estado!=null)
+				estado.close();
+		}
+
+		return Math.floor(calculoIVA);
+	}
+	
+	
+	public static double obtenerIvaAFactura(List<ItemOrden> itemsCompra)  {
+		double calculoIVA=0;
+		double iva1=0;
+		ResultSet estado=null;
+		try {
+		if(!itemsCompra.isEmpty()) {
+			for(ItemOrden item: itemsCompra) {
+				 estado = Conexion.getConexion("SELECT i.aplicar as iva FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' GROUP BY i.aplicar,pf.importe");
+				while ( estado.next()) {
+					 iva1 = estado.getDouble("iva");
+				
+				}
+				calculoIVA=calculoIVA+(iva1*item.getImporte());
+			}
+		}
+		
+		
+		} catch (SQLException var2) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var2);
+		}finally {
+			if(estado!=null)
+				try {
+					estado.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+
+		return Math.floor(calculoIVA);
+	}
 
 	public static int getArqueo(int IdApertura, String idUsuario) throws SQLException {
 		int id = 0;
@@ -418,7 +483,7 @@ public class Utils {
 				rol.setIdrol(role.getIdrol());
 				List<Modulos> modules = new ArrayList<Modulos>();
 				List<Gestiones> gestiones = new ArrayList<Gestiones>();
-				Iterator var11 = role.getModulos().iterator();
+				/*Iterator var11 = role.getModulos().iterator();
 
 				while (var11.hasNext()) {
 					Modulos modulo = (Modulos) var11.next();
@@ -449,7 +514,7 @@ public class Utils {
 					modules.add(mod);
 				}
 
-				rol.setModulos(modules);
+				rol.setModulos(modules);*/
 				roles.add(rol);
 			}
 		}
@@ -1104,6 +1169,28 @@ public class Utils {
 			return consecutivo;
 		}
 
+		
+		public static String guardarIvaPrefactura(int idPrefactura, double iva, double total) throws SQLException {
+			String consecutivo = "";
+			ResultSet conse=null;
+			try {
+				if (Conexion.getUpdate(" INSERT INTO  prefactura_calculo_iva VALUE("+idPrefactura+","+iva+","+total+");") > 0) {
+					for ( conse = Conexion.getConexion("select * from consecutivo_venta"); conse
+							.next(); consecutivo = conse.getString("id")) {
+					}
+				} else {
+					Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null,
+							"Error insertando calculo del iva de la prefactura con id "+idPrefactura);
+				}
+			} catch (SQLException var2) {
+				Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var2);
+			}finally {
+				if(conse!=null)
+					conse.close();
+			}
+
+			return consecutivo;
+		}
 		
 		public static boolean actualizarStockProducto(String idProducto, BigDecimal cantidad) throws SQLException {
 			boolean resultado=false;

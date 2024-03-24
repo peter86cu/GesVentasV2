@@ -241,41 +241,55 @@ public class OrdenesFacturasController {
 	
 	@PostMapping({LoginController.ruta+ "/imprimir-prefactura" })
 	public void imprimirPrefactura(@ModelAttribute("idPrefactura") int idPrefactura,@ModelAttribute("idCliente") int idCliente,Model modelo,HttpServletResponse responseHttp) throws IOException {
-		if (LoginController.session.getToken() != null) {
-			modelo.addAttribute("user", LoginController.session.getUser());
-			ResponseResultado resultado= new ResponseResultado();
-			ResponsePrefacturamprimir response= new ResponsePrefacturamprimir();
-			String pathOrden=LoginController.rutaPDFPrefacturas+"prefactura_"+idPrefactura+".pdf";
+		ResponseResultado resultado= new ResponseResultado();
 
-			File archivo = new File(pathOrden);
-			if (!archivo.exists()) {
-				response = ImprimirUtils.imprimirPrefactura(idPrefactura,idCliente);
+		try {
+			if (LoginController.session.getToken() != null) {
+				modelo.addAttribute("user", LoginController.session.getUser());
+				ResponsePrefacturamprimir response= new ResponsePrefacturamprimir();
+				String pathOrden=LoginController.rutaPDFPrefacturas+"prefactura_"+idPrefactura+".pdf";
 
-				if(response.isStatus()) {
-					OutputStream fileOutputStream = new FileOutputStream(pathOrden);
-					HtmlConverter.convertToPdf(ImprimirUtils.armarPDFPrefactura(response), fileOutputStream);
-				}else{
-					resultado.setResultado("No se pudo generar el PDF de la orden "+idPrefactura);
-					resultado.setCode(400);
-					resultado.setStatus(false);
+				File archivo = new File(pathOrden);
+				if (!archivo.exists()) {
+					response = ImprimirUtils.imprimirPrefactura(idPrefactura,idCliente);
+
+					if(response.isStatus()) {
+						OutputStream fileOutputStream = new FileOutputStream(pathOrden);
+						HtmlConverter.convertToPdf(ImprimirUtils.armarPDFPrefactura(response), fileOutputStream);
+					}else{
+						resultado.setResultado("No se pudo generar el PDF de la orden "+idPrefactura);
+						resultado.setCode(400);
+						resultado.setStatus(false);
+						String json = (new Gson()).toJson(resultado);
+						responseHttp.setContentType("application/json");
+						responseHttp.setCharacterEncoding("UTF-8");
+						responseHttp.getWriter().write(json);
+					}
+				}
+					resultado.setResultado(pathOrden);
+					resultado.setCode(200);
+					resultado.setStatus(true);
+
 					String json = (new Gson()).toJson(resultado);
 					responseHttp.setContentType("application/json");
 					responseHttp.setCharacterEncoding("UTF-8");
 					responseHttp.getWriter().write(json);
+
+
+
 				}
-			}
-				resultado.setResultado(pathOrden);
-				resultado.setCode(200);
-				resultado.setStatus(true);
+		} catch (Exception e) {
+			resultado.setResultado(e.getMessage());
+			resultado.setCode(404);
+			resultado.setStatus(false);
 
-				String json = (new Gson()).toJson(resultado);
-				responseHttp.setContentType("application/json");
-				responseHttp.setCharacterEncoding("UTF-8");
-				responseHttp.getWriter().write(json);
-
-
-
-			}
+			String json = (new Gson()).toJson(resultado);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);
+		}
+		
+		
 	}
 	
 	@PostMapping({ LoginController.ruta+"/crear-factura-compra" })
@@ -548,7 +562,7 @@ public class OrdenesFacturasController {
 	
 	
 	@PostMapping({ LoginController.ruta+"/crear-prefactura-venta" })
-	public void crearPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("id") int id,
+	public void crearPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("idPrefactura") int idPrefactura,
 								 @ModelAttribute("idCliente") int idCliente, @ModelAttribute("estado") int estado,
 								 @ModelAttribute("fecha") String fecha, @ModelAttribute("plazo") int plazo,
 								 @ModelAttribute("forma_pago") int forma_pago, @ModelAttribute("prefactura") Prefactura prefactura,
@@ -559,10 +573,10 @@ public class OrdenesFacturasController {
 			//Prefactura request= new Prefactura();
 			ResponsePrefactClient response = new ResponsePrefactClient();
 			if (accion.equalsIgnoreCase("uCliente")) {
-				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				response = LoginController.conStock.obtenerPrefacturaPorID(idPrefactura);
 				if (response.isStatus()) {
 					prefactura.setId_usuario(response.getPrefactura().getId_usuario());
-					prefactura.setId_prefactura(id);
+					prefactura.setId_prefactura(idPrefactura);
 					prefactura.setId_cliente(idCliente);
 					prefactura.setId_forma_pago(response.getPrefactura().getId_forma_pago());
 					prefactura.setId_plazo(response.getPrefactura().getId_plazo());
@@ -575,7 +589,7 @@ public class OrdenesFacturasController {
 			if (accion.equalsIgnoreCase("inicial")) {
 				prefactura.setId_usuario(LoginController.session.getUser().getIdusuario());
 				prefactura.setEstado(1);
-				prefactura.setId_prefactura(id);
+				prefactura.setId_prefactura(idPrefactura);
 				prefactura.setId_forma_pago(1);
 				prefactura.setId_cliente(idCliente);
 				prefactura.setId_plazo(1);
@@ -587,7 +601,7 @@ public class OrdenesFacturasController {
 			}
 
 			if (accion.equalsIgnoreCase("update")) {
-				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				response = LoginController.conStock.obtenerPrefacturaPorID(idPrefactura);
 				if (response.isStatus()) {
 					prefactura.setId_usuario(response.getPrefactura().getId_usuario());
 					prefactura.setEstado(estado);
@@ -602,7 +616,7 @@ public class OrdenesFacturasController {
 			}
 
 			if (estado == 5) {
-				ResponseMofPorIdPrefactura responseM= LoginController.conStock.obtenerModificacionPorIdPrefactura(id);
+				ResponseMofPorIdPrefactura responseM= LoginController.conStock.obtenerModificacionPorIdPrefactura(idPrefactura);
 				if(responseM.isStatus()) {
 					PrefacturaModificaciones modif = responseM.getModificaciones();
 					modif.setId_prefactura(modif.getId_prefactura());
@@ -622,7 +636,7 @@ public class OrdenesFacturasController {
 					}
 				}else {
 					PrefacturaModificaciones modif = new PrefacturaModificaciones();
-					modif.setId_prefactura(id);
+					modif.setId_prefactura(idPrefactura);
 					modif.setId_prefactura_modif(0);
 					modif.setId_usuario_cancela(LoginController.session.getUser().getIdusuario());
 					//Calendar calendar = Calendar.getInstance();
@@ -641,7 +655,7 @@ public class OrdenesFacturasController {
 				
 			}else if (estado == 3){
 				PrefacturaModificaciones modif = new PrefacturaModificaciones();
-				modif.setId_prefactura(id);
+				modif.setId_prefactura(idPrefactura);
 				modif.setId_prefactura_modif(0);
 				modif.setId_usuario_autorizo(LoginController.session.getUser().getIdusuario());
 				//Calendar calendar = Calendar.getInstance();
@@ -655,11 +669,11 @@ public class OrdenesFacturasController {
 					responseHttp.getWriter().write(json);
 				}
 				
-				String pathPrefactura=LoginController.rutaPDFPrefacturas+"\\prefactura_"+id+".pdf";
+				String pathPrefactura=LoginController.rutaPDFPrefacturas+"\\prefactura_"+idPrefactura+".pdf";
 
 				File archivo = new File(pathPrefactura);
 				//if (archivo.exists()) {
-				ResponsePrefacturamprimir responsePDF = ImprimirUtils.imprimirPrefactura(id, idCliente);
+				ResponsePrefacturamprimir responsePDF = ImprimirUtils.imprimirPrefactura(idPrefactura, idCliente);
 
 					if (responsePDF.isStatus()) {
 						OutputStream fileOutputStream = new FileOutputStream(pathPrefactura);
@@ -669,7 +683,7 @@ public class OrdenesFacturasController {
 			}
 
 			if (accion.equalsIgnoreCase("delete")) {
-				response = LoginController.conStock.obtenerPrefacturaPorID(id);
+				response = LoginController.conStock.obtenerPrefacturaPorID(idPrefactura);
 				if (response.isStatus()) {
 					prefactura = response.getPrefactura();
 					//Calendar calendar = Calendar.getInstance();
@@ -984,12 +998,19 @@ public class OrdenesFacturasController {
 							+ " onclick=\"eliminar_item('" + items.getId_detalle() + "','" + idOrden
 							+ "')\" ><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAeFBMVEUAAADnTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDx+VWpeAAAAJ3RSTlMAAQIFCAkPERQYGi40TVRVVlhZaHR8g4WPl5qdtb7Hys7R19rr7e97kMnEAAAAaklEQVQYV7XOSQKCMBQE0UpQwfkrSJwCKmDf/4YuVOIF7F29VQOA897xs50k1aknmnmfPRfvWptdBjOz29Vs46B6aFx/cEBIEAEIamhWc3EcIRKXhQj/hX47nGvt7x8o07ETANP2210OvABwcxH233o1TgAAAABJRU5ErkJggg==\"></a></td></tr>";
 				}
-
+				double iva=Utils.obtenerIvaACalcularProducto(itemsCompra);
+				double totalMasIva=iva+totalSuma;
+				//Utils.guardarIvaPrefactura(idOrden, iva, totalMasIva);
+				
 				totales = "<tr><td colspan='7'>\r\n<button id=\"itemsBtt\" type=\"button\" class=\"btn btn-info btn-sm\" style =\"float: left;\"  onclick=\"abrirModal('"
 						+ modal + "')\" " + dis
 						+ " ><span class=\"glyphicon glyphicon-plus\"></span> Agregar ítem</button>\r\n"
-						+ "</td></tr><tr><td colspan='5' class='text-right'>\r\n" + "<h4>TOTAL </h4></td>\r\n"
-						+ "<th class='text-right'>\r\n" + "<h4>" + totalSuma + "</h4>\r\n"
+						+ "</td></tr>"
+						+ "<tr><td colspan='5' class='text-right'>\r\n" + "<h4>IVA </h4></td>\r\n"
+								+ "<th class='text-right'>\r\n" + "<h4>" + iva + "</h4>\r\n"
+								+ "</th><td></td></tr>"
+						+ "<tr><td colspan='5' class='text-right'>\r\n" + "<h4>TOTAL </h4></td>\r\n"
+						+ "<th class='text-right'>\r\n" + "<h4>" + totalMasIva + "</h4>\r\n"
 						+ "<input type=\"hidden\" id=\"itemsTabla\" name=\"itemsTabla\" value='" + itemPos + "'>\r\n"
 						+ "</th><td></td></tr>";
 			}

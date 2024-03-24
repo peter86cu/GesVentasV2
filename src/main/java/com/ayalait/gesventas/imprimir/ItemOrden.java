@@ -5,6 +5,9 @@ public class ItemOrden {
     private String nombre;
     private int cantidad;
     private double importe;
+    private String simboloMoneda;
+    private String moneda;
+    private String um;
 
     private double total;
 
@@ -47,4 +50,28 @@ public class ItemOrden {
     public void setTotal(double total) {
         this.total = total;
     }
+
+	public String getMoneda() {
+		return moneda;
+	}
+
+	public void setMoneda(String moneda) {
+		this.moneda = moneda;
+	}
+
+	public String getSimboloMoneda() {
+		return simboloMoneda;
+	}
+
+	public void setSimboloMoneda(String simboloMoneda) {
+		this.simboloMoneda = simboloMoneda;
+	}
+
+	public String getUm() {
+		return um;
+	}
+
+	public void setUm(String um) {
+		this.um = um;
+	}
 }

@@ -34,7 +34,9 @@ import com.ayalait.gesventas.request.RequestAddUsuario;
 import com.ayalait.gesventas.utils.Utils;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
+import com.ayalait.response.ResponseListaBancos;
 import com.ayalait.utils.CompositeIdMarcasEmpleado;
+import com.ayalait.utils.ErrorState;
 import com.google.gson.Gson;
 
 @Controller
@@ -45,6 +47,7 @@ public class EmpleadosController {
 	static EmpleadoSalud salud = new EmpleadoSalud();
 	static EmpleadoTrabajo work = new EmpleadoTrabajo();
 	static EmpleadoBanco banco = new EmpleadoBanco();
+	ErrorState error= new ErrorState();
 	static ResponseListaMarcasEmpleados responseMarcaFiltre = new ResponseListaMarcasEmpleados();
 	@GetMapping({ "/empleados" })
 	public String empleados(Model modelo) throws SQLException, IOException {
@@ -212,6 +215,14 @@ public class EmpleadosController {
 				modelo.addAttribute("listaEmpleados", listaEmp.getEmpleados());
 			} else {
 				modelo.addAttribute("listaEmpleados", new ArrayList<Empleado>());
+			}
+			
+			ResponseMesAProcesar mesProcesa= LoginController.conEmpl.mesAProcesar();
+			if(mesProcesa.isStatus()) {
+				modelo.addAttribute("mesAProcesar", mesProcesa.getMesProcesar());
+			}else {
+				modelo.addAttribute("mesAProcesar", new CalendarioMesAProcesar());
+
 			}
 			return "pagos";
 		}
@@ -491,6 +502,47 @@ public class EmpleadosController {
 
 	}
 	
+	@PostMapping({ LoginController.ruta + "/generar-calendario-mes" })
+	public void generarCalendarioMes(@ModelAttribute("mes") String mes,@ModelAttribute("accion") String accion,
+								   Model modelo, HttpServletResponse responseHttp)
+			throws IOException, ParseException, SQLException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			String[] data = mes.split("-");
+			int mesF = Integer.parseInt(data[0]);
+			int anio = Integer.parseInt(data[1]);
+		    ResponseResultado response= LoginController.conEmpl.existeMesAProcesar(mesF, anio);
+		    if(response.isStatus()) {
+		    	boolean resultado= Boolean.parseBoolean(response.getResultado()) ;
+		    	if(resultado && (accion.equalsIgnoreCase("procesar")|| accion.equalsIgnoreCase("reprocesar"))) {
+		    		ResponseResultado aProcesar=LoginController.conEmpl.generarCalendarioEmpleado(accion,mesF, anio);
+		    		aProcesar.setResultado("Se esta procesando el calendario de empleados para la fecha: "+mes);
+		    		aProcesar.setCode(200);
+		    		aProcesar.setStatus(true);
+		    		String json = (new Gson()).toJson(aProcesar);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
+		    		
+		    	}else {
+		    		response.setCode(405);
+		    		response.setResultado("El mes seleccionado se ha procesado. Desea reprocesarlo de nuevo?");
+		    		String json = (new Gson()).toJson(response);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);	
+		    	}
+		    }
+			
+			/*String json = (new Gson()).toJson(response);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);*/
+
+		}
+
+	}
+	
 	@PostMapping({ LoginController.ruta + "/datos-banco-empleado" })
 	public void agregarDatosBanco(@ModelAttribute("idEmpleado") String idEmpleado,
 								  @ModelAttribute("banco") int bancoId, @ModelAttribute("cuenta") String cuenta,
@@ -521,58 +573,73 @@ public class EmpleadosController {
 	public void guardarMarcaEmpleado(@ModelAttribute("marcaEntrada") boolean marcaEntrada,
 									 @ModelAttribute("marcaSalida") boolean marcaSalida, Model modelo, HttpServletResponse responseHttp)
 			throws IOException, ParseException, SQLException {
-		if (LoginController.session.getToken() != null) {
-			modelo.addAttribute("user", LoginController.session.getUser());
-			MarcasEmpleado marcas = new MarcasEmpleado();
-			Date fecha = Utils.obtenerFechaPorFormatoDateSQLDate();
-			CompositeIdMarcasEmpleado compositeId = new CompositeIdMarcasEmpleado();
-			ResponseCalendarioEmpleado responseHorario = LoginController.conEmpl.consultarHorarioLaboral(
-					LoginController.session.getUser().getEmpleado().getDocumento(),fecha.toLocalDate().getDayOfMonth(), fecha.toLocalDate().getMonth().getValue(),fecha.toLocalDate().getYear());
-			if (!responseHorario.isStatus()) {
-				String json = (new Gson()).toJson(responseHorario);
-				responseHttp.setContentType("application/json");
-				responseHttp.setCharacterEncoding("UTF-8");
-				responseHttp.getWriter().write(json);
-//
-
-			} else {
-
-				ResponseMarcasPorEmpleado responseMarca = LoginController.conEmpl
-						.buscarMarcasEmpleado(LoginController.session.getUser().getEmpleado().getIdempleado(), fecha);
-				if (responseMarca.isStatus()) {
-
-					marcas = responseMarca.getMarcas();
-					compositeId = marcas.getCompositeId();
-					compositeId.setFecha(responseMarca.getMarcas().getCompositeId().getFecha());
+		ResponseResultado response = new ResponseResultado();
+		try {
+			if (LoginController.session.getToken() != null) {
+				modelo.addAttribute("user", LoginController.session.getUser());
+				MarcasEmpleado marcas = new MarcasEmpleado();
+				Date fecha = Utils.obtenerFechaPorFormatoDateSQLDate();
+				CompositeIdMarcasEmpleado compositeId = new CompositeIdMarcasEmpleado();
+				ResponseCalendarioEmpleado responseHorario = LoginController.conEmpl.consultarHorarioLaboral(
+						LoginController.session.getUser().getEmpleado().getDocumento(),fecha.toLocalDate().getDayOfMonth(), fecha.toLocalDate().getMonth().getValue(),fecha.toLocalDate().getYear());
+				if (!responseHorario.isStatus()) {
+					String json = (new Gson()).toJson(responseHorario);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
+	//
 
 				} else {
-					compositeId.setIdempleado(LoginController.session.getUser().getEmpleado().getIdempleado());
-					compositeId.setIdmarca(Utils.generarCodigo());
-					marcas.setEstado("MARCA");
-					compositeId.setFecha(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDD.getFormato()));
-					marcas.setIdhorario(  responseHorario.getHorario().get(0).getIdHorario() );
 
+					ResponseMarcasPorEmpleado responseMarca = LoginController.conEmpl
+							.buscarMarcasEmpleado(LoginController.session.getUser().getEmpleado().getIdempleado(), fecha);
+					if (responseMarca.isStatus()) {
+
+						marcas = responseMarca.getMarcas();
+						compositeId = marcas.getCompositeId();
+						compositeId.setFecha(responseMarca.getMarcas().getCompositeId().getFecha());
+
+					} else {
+						compositeId.setIdempleado(LoginController.session.getUser().getEmpleado().getIdempleado());
+						compositeId.setIdmarca(Utils.generarCodigo());
+						marcas.setEstado("MARCA");
+						compositeId.setFecha(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDD.getFormato()));
+						marcas.setIdhorario(  responseHorario.getHorario().get(0).getIdHorario() );
+
+
+					}
+
+					if (marcaEntrada) {
+						marcas.setMarcaentrada(Utils.obtenerFechaPorFormato(FormatoFecha.H24.getFormato()));
+					}
+					if (marcaSalida) {
+						marcas.setMarcasalida(Utils.obtenerFechaPorFormato(FormatoFecha.H24.getFormato()));
+					}
+					marcas.setTipo("MANUAL");
+					marcas.setProceso("SIN PROCESAR");
+					marcas.setCompositeId(compositeId);
+					 response = LoginController.conEmpl.addMarcaEmpleado(marcas);
+
+					String json = (new Gson()).toJson(response);
+					responseHttp.setContentType("application/json");
+					responseHttp.setCharacterEncoding("UTF-8");
+					responseHttp.getWriter().write(json);
 
 				}
-
-				if (marcaEntrada) {
-					marcas.setMarcaentrada(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
-				}
-				if (marcaSalida) {
-					marcas.setMarcasalida(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
-				}
-				marcas.setTipo("MANUAL");
-				marcas.setProceso("SIN PROCESAR");
-				marcas.setCompositeId(compositeId);
-				ResponseResultado response = LoginController.conEmpl.addMarcaEmpleado(marcas);
-
-				String json = (new Gson()).toJson(response);
-				responseHttp.setContentType("application/json");
-				responseHttp.setCharacterEncoding("UTF-8");
-				responseHttp.getWriter().write(json);
-
 			}
+		} catch (Exception e) {
+			response.setCode(404);
+			response.setStatus(false);
+			response.setResultado(e.getMessage());
+			error.setMenssage(e.getMessage());
+			response.setError(error);
+			String json = (new Gson()).toJson(response);
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write(json);
 		}
+		
+		
 
 	}
 
@@ -627,6 +694,9 @@ public class EmpleadosController {
 			int anio = Integer.parseInt(data[1]);
 						
 			ResponseResultado response = LoginController.conEmpl.procesoMarcasAsistencia(mesF, anio);
+			response.setCode(200);
+			response.setStatus(true);
+			response.setResultado("Las marcas para la fecha: "+mes+" se estan procesando.");
 			String json = (new Gson()).toJson(response);
 			responseHttp.setContentType("application/json");
 			responseHttp.setCharacterEncoding("UTF-8");
@@ -656,6 +726,9 @@ public class EmpleadosController {
 				marca.setMarcasalida(salida);
 				response= LoginController.conEmpl.procesarMarcaEmpleado(marca);
 				//responseMarcaFiltre = new ResponseListaMarcasEmpleados();
+				response.setResultado("La marca se envio a procesar.");
+				response.setCode(200);
+				response.setStatus(true);
 				String json = (new Gson()).toJson(response);
 				responseHttp.setContentType("application/json");
 				responseHttp.setCharacterEncoding("UTF-8");

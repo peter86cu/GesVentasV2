@@ -3,6 +3,7 @@ package com.ayalait.gesventas.imprimir;
 import com.ayalait.gesventas.controller.LoginController;
  
 import com.ayalait.gesventas.utils.Conexion;
+import com.ayalait.gesventas.utils.Utils;
 import com.ayalait.modelo.Cliente;
 import com.ayalait.modelo.Configuraciones;
 import com.ayalait.modelo.Empresa;
@@ -107,8 +108,8 @@ public class ImprimirUtils {
         Empresa empresa= new Empresa();
         Cliente cliente= new Cliente();
         try {
-            String consulta="select p.codigo,p.nombre, oc.cantidad, oc.importe, o.fecha_hora FROM  prefactura_detalle oc , producto p, prefacturas o\r\n"
-            		+ " where oc.id_producto=p.id AND o.id_prefactura=oc.id_prefactura AND  oc.id_prefactura="+idPrefactura;
+            String consulta="select p.codigo,p.nombre, oc.cantidad, oc.importe, o.fecha_hora, m.simbolo, m.moneda, u.simbolo as um FROM  prefactura_detalle oc , producto p, prefacturas o, moneda m, unidades_medidas u\r\n"
+            		+ " where oc.id_producto=p.id AND o.id_prefactura=oc.id_prefactura AND m.id=oc.id_moneda AND p.um=u.id_unidad_medida  and oc.id_prefactura="+idPrefactura;
             ResultSet orden = conexion.getConexion(consulta);
             if(orden!=null){
                 while (orden.next()){
@@ -117,6 +118,9 @@ public class ImprimirUtils {
                     item.setCodigo(orden.getString("codigo"));
                     item.setImporte(orden.getDouble("importe"));
                     item.setNombre(orden.getString("nombre"));
+                    item.setSimboloMoneda(orden.getString("simbolo"));
+                    item.setMoneda(orden.getString("moneda"));
+                    item.setUm(orden.getString("um"));
                     item.setTotal(item.getCantidad()*item.getImporte());
                     response.setFecha(orden.getString("fecha_hora"));
                     lstItems.add(item);
@@ -440,7 +444,7 @@ public class ImprimirUtils {
                 "      <td  style=\"width: 10%; \">\n" +
                 "      </td>\n" +
                 "      <td style=\"width: 80%;text-align:center;font-size:22px;color:#c0392b;padding:10px; border-radius: 5px; \">\n" +
-                "        ORDEN DE COMPRA\n" +
+                "        PREFACTURA DE VENTA\n" +
                 "      </td>\n" +
                 "    </tr>\n" +
                 "  </table>\n" +
@@ -450,7 +454,7 @@ public class ImprimirUtils {
                 "      <td  style=\"width: 60%; \">\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 20%;color:white;background-color:#c0392b;padding:5px;text-align:center \">\n" +
-                "        <strong style=\"font-size:14px;\" >ORDEN #</strong>\n" +
+                "        <strong style=\"font-size:14px;\" >No. ORDEN</strong>\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 20%; color:white;background-color:#c0392b;padding:5px;text-align:center \" >\n" +
                 "        <strong style=\"font-size:14px;\">FECHA</strong>\n" +
@@ -465,12 +469,16 @@ public class ImprimirUtils {
                 "        "+response.getFecha()+"</td>\n" +
                 "    </tr>\n" +
                 "  </table>";
+        String moneda="";
 
+        if(!response.getLstItems().isEmpty()) {
+       	 moneda=response.getLstItems().get(0).getMoneda(); 
+        }
         String pdf2=" <br>\n" +
                 "  <table cellspacing=\"0\" style=\"width: 100%;\" class=\"detalle\">\n" +
                 "    <tr>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
-                "        <strong style=\"font-size:18px;color:#2c3e50\">Proveedor</strong>\n" +
+                "        <strong style=\"font-size:18px;color:#2c3e50\">Cliente</strong>\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
                 "        <strong style=\"font-size:18px;color:#2c3e50\">Enviar a</strong>\n" +
@@ -494,7 +502,7 @@ public class ImprimirUtils {
                 "  <table cellspacing=\"0\" style=\"width: 100%;\" class=\"detalle\">\n" +
                 "    <tr>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
-                "        <strong style=\"font-size:16px;color:#2c3e50\">Condiciones de pago</strong>\n" +
+                "        <strong style=\"font-size:16px;color:#2c3e50\">Moneda de pago</strong>\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
                 "        <strong style=\"font-size:16px;color:#2c3e50\">Método de envío</strong>\n" +
@@ -502,7 +510,7 @@ public class ImprimirUtils {
                 "    </tr>\n" +
                 "    <tr>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
-                "        <?php echo $condiciones;?>\n" +
+                "        "+moneda +
                 "      </td>\n" +
                 "      <td  style=\"width: 50%; \">\n" +
                 "        <?php echo $envio;?>\n" +
@@ -515,23 +523,35 @@ public class ImprimirUtils {
                 "    <tr>\n" +
                 "      <th style=\"text-align:center;width:10%\">Cantidad</th>\n" +
                 "      <th style=\"text-align:center;width:10%\">Código</th>\n" +
-                "      <th style=\"text-align:left;width:40%\">Descripción</th>\n" +
-                "      <th style=\"text-align:right;width:20%\">Ultimo Precio</th>\n" +
-                "      <th style=\"text-align:right;width:20%\">Total</th>\n" +
+                "      <th style=\"text-align:left;width:35%\">Descripción</th>\n" +
+                "      <th style=\"text-align:right;width:10%\">Costo</th>\n" +
+                "      <th style=\"text-align:right;width:5%\">U/M</th>\n" +
+                "      <th style=\"text-align:right;width:10%\">Total</th>\n" +
                 "    </tr>\n" ;
+        String simboloMoneda="";
         for(int i=0; i<response.getLstItems().size();i++) {
             table = table +
                     "      <td class=\"border-bottom text-center\" >"+response.getLstItems().get(i).getCantidad()+"</td>\n" +
                     "      <td class=\"border-bottom text-center\">"+response.getLstItems().get(i).getCodigo()+"</td>\n" +
                     "      <td class=\"border-bottom\">"+response.getLstItems().get(i).getNombre()+"</td>\n" +
                     "      <td class=\"border-bottom text-right\">"+response.getLstItems().get(i).getImporte()+"</td>\n" +
+                    "      <td class=\"border-bottom text-right\">"+response.getLstItems().get(i).getUm()+"</td>\n" +
                     "      <td class='border-bottom text-right' \" >"+response.getLstItems().get(i).getTotal()+"</td></tr>" ;
-
+            	simboloMoneda=response.getLstItems().get(i).getSimboloMoneda();
 
         }
         //table=table+" </tr>\n" ;
-        String fin=	"  <tr > <td colspan=4 class='text-right' style=\"font-size:24px;color: #c0392b\">TOTAL  </td>\n" +
-                "      <td class='text-right' style=\"font-size:24px;color:#c0392b\">"+response.getTotal()+" </td>\n" +
+        double ivaCalculo= Utils.obtenerIvaAFactura(response.getLstItems());
+        double total= ivaCalculo+response.getTotal();
+        String iva=	"  <tr > <td colspan=4 class='text-right' style=\"font-size:24px;color: #c0392b\">IVA </td>\n" +
+        		"      <td class='text-right' style=\"font-size:18px;color:#c0392b;width:5%\">"+ simboloMoneda+" </td>\n" +
+                "      <td class='text-right' style=\"font-size:20px;color:#c0392b\">"+ ivaCalculo+" </td>\n" +
+                "    </tr>\n";
+        
+        
+        String fin=	"  <tr > <td colspan=4 class='text-right' style=\"font-size:24px;color: #c0392b\">TOTAL </td>\n" +
+        		"      <td class='text-right' style=\"font-size:18px;color:#c0392b;width:5%\">"+ simboloMoneda+" </td>\n" +
+                "      <td class='text-right' style=\"font-size:20px;color:#c0392b\">"+ total+" </td>\n" +
                 "    </tr>\n" +
                 "  </table>";
 
@@ -540,9 +560,9 @@ public class ImprimirUtils {
                 "    Autorizado por : <label>"+response.getAprobadoPor()+"</label> <br>\n" +
                 "  </p>\n" +
                 "  <br><br>\n" +
-                "  <p class='text-center'>Si tiene alguna consulta relacionada con esta orden de compra, por favor contáctenos : <br><label>"+confi.get(2).getValor()+"</label>, <label>"+response.getEmpresa().getTelefono()+"</label>, <label>"+confi.get(1).getValor()+"</label> </p>\n" +
+                "  <p class='text-center'>Si tiene alguna consulta relacionada con esta prefactura, por favor contáctenos a: <br><label>"+confi.get(2).getValor()+"</label>, <label>"+response.getEmpresa().getTelefono()+"</label>, <label>"+confi.get(1).getValor()+"</label> </p>\n" +
                 "</html>";
 
-        return css+pdf1+pdf2+pdf3+table+fin+fin1;
+        return css+pdf1+pdf2+pdf3+table+iva+fin+fin1;
     }
 }

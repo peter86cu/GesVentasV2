@@ -3,6 +3,7 @@ package com.ayalait.gesventas.service;
 import com.ayalait.gesventas.controller.LoginController;
 import com.ayalait.gesventas.request.RequestAddEmpleado;
 import com.ayalait.modelo.Banco;
+import com.ayalait.modelo.CalendarioMesAProcesar;
 import com.ayalait.modelo.Empleado;
 import com.ayalait.modelo.EmpleadoBanco;
 import com.ayalait.modelo.EmpleadoCargo;
@@ -374,6 +375,56 @@ public class wsEmpleado {
 		 
 	}
 	
+	
+	public ResponseMesAProcesar mesAProcesar() {
+		 
+		ResponseMesAProcesar responseResult = new ResponseMesAProcesar();
+		
+		try {
+
+			String url = this.hostRecursosHumanos + "/calendario/mes-a-procesar";
+			 
+			URI uri = new URI(url);
+			ResponseEntity<CalendarioMesAProcesar> response = restTemplate.exchange(uri , HttpMethod.GET, null,CalendarioMesAProcesar.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setMesProcesar(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
 	public ResponseListaHorarioTrabajo listadoHorarioTrabajo() {
 		 
 		ResponseListaHorarioTrabajo responseResult = new ResponseListaHorarioTrabajo();
@@ -543,6 +594,51 @@ public class wsEmpleado {
 		 
 	}
 	
+	public ResponseResultado generarCalendarioEmpleado(String accion,int mes, int anio)   {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostRecursosHumanos + "/empleado/calendario/generar?accion="+accion+"&mes="+mes+"&anio="+anio;
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceMarcasEmpleados(myJson.get("code").getAsString() ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			return responseResult;	
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
 	
 	public ResponseListaMarcasEmpleados filtrarMarcas(int mes, int anio, String estado)   {
 		 
@@ -561,6 +657,53 @@ public class wsEmpleado {
 				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setMarcas(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceMarcasEmpleados(myJson.get("code").getAsString() ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			return responseResult;	
+		}
+		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
+	public ResponseResultado existeMesAProcesar(int mes, int anio)   {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		
+		try {
+
+			String url = this.hostRecursosHumanos + "/calendario/existe-mes-procesar?mes="+mes+"&anio="+anio;
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
  
 			}
 
