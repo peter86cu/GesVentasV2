@@ -3,7 +3,7 @@ package com.ayalait.gesventas.controller;
 import com.google.gson.Gson;
 
 import com.ayalait.gesventas.request.*;
- 
+import com.ayalait.gesventas.service.wsStock;
 import com.ayalait.gesventas.utils.*;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
@@ -55,7 +55,7 @@ public class ProductosController {
     private static ProductoDetalles detalleProd= new ProductoDetalles();
 	void cargarServer() throws IOException {
 		Properties p = new Properties();
-
+		
 		try {
 			URL url = this.getClass().getClassLoader().getResource("application.properties");
 			if (url == null) {
@@ -76,6 +76,7 @@ public class ProductosController {
 	public ProductosController() {
 		try {
 			this.cargarServer();
+			LoginController.conStock= new wsStock();
 			ResponseResultado response= LoginController.conStock.validarConectividadServidor();
 			if(response.isStatus()) {
 				responseMarcas= LoginController.conParam.listadoMarcasProducto();
