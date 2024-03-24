@@ -8,7 +8,7 @@ function abrirModal(modal) {
 
 
 function agregarPrefacturaInicial(event) {
-
+ activarLoader();
 	var datos = new FormData();
 	var accion = "inicial";
 	var idPrefactura = 0;
@@ -32,7 +32,7 @@ function agregarPrefacturaInicial(event) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
-
+			desactivarLoading();
 			if (data.code == 200) {
 
 				$("#idPrefacturaT").val(data.resultado);
@@ -57,7 +57,7 @@ function addPrefactura(id) {
 	var accion = "buscar";
 	datos.append("accion", accion);
 	datos.append("id", id);
-
+	activarLoader();
 
 	$.ajax({
 		url: globalPath+"/editar-prefactura",
@@ -70,7 +70,7 @@ function addPrefactura(id) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
-
+			desactivarLoading();
 			if (data.code == 200) {
 
 				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
@@ -106,7 +106,7 @@ function editarPrefactura(id, estado) {
 	var accion = "buscar";
 	datos.append("accion", accion);
 	datos.append("id", id);
-
+	activarLoader();
 
 	$.ajax({
 		url: globalPath+"/editar-prefactura",
@@ -119,7 +119,7 @@ function editarPrefactura(id, estado) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
-
+			desactivarLoading();
 			if (data.code == 200) {
 				document.querySelector('#idPrefacturaE').innerText = data.prefactura.id_prefactura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
@@ -165,7 +165,7 @@ function buscar_cliente_prefactura(id, paso) {
 	var accion = "buscarCliente";
 	datos.append("accion", accion);
 	datos.append("idCliente", id,);
-
+    activarLoader();
 	$.ajax({
 		url: globalPath+"/buscar-cliente",
 		method: "POST",
@@ -177,6 +177,7 @@ function buscar_cliente_prefactura(id, paso) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
+			desactivarLoading();
 			if (data.code == 200) {
 
 				if (paso == "1") {
@@ -215,7 +216,7 @@ function buscar_cliente_prefactura(id, paso) {
 
 function guardarDetallePrefactura(event) {
 
-
+	 activarLoader();
 	var idProducto = $('#producto').val();
 	var id = $('#idPrefacturaT').val();
 	var cantidad = $('#cantidad').val();
@@ -241,6 +242,7 @@ function guardarDetallePrefactura(event) {
 		success: function(respuesta) {
 		   var response = JSON.stringify(respuesta, null, '\t');
 			var datos = JSON.parse(response);
+			desactivarLoading();
 			if (datos.code==200) {
 				$("#addItem").find("input,textarea,select,select2").val("");
 				$("#addItem input[type='checkbox']").prop('checked', false).change();
