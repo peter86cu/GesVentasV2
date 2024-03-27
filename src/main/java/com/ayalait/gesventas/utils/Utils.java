@@ -303,7 +303,7 @@ public class Utils {
 				
 				}
 				
-				sumado=sumado+item.getImporte();
+				sumado=item.getImporte();
 				if(cantidad>0) {
 					calculoIVA=calculoIVA+(iva1*(sumado*cantidad));
 				}else {
