@@ -20,13 +20,14 @@ function obtenerValue(id) { // Obtengo el valor entrado
 }
 
 function validarEntradaCompra(id, valor) {
-
+	
 	var arq = new Cambio(id, valor);
 	valorcompra.push(arq);
 
 }
 
 function validarEntradaVenta(id, valor) {
+	
 
 	var arq = new Cambio(id, valor);
 	valorventa.push(arq);
@@ -72,6 +73,8 @@ function guardarArqueo() {
 			console.log(data.code);
 			if (data.code == 200) {
 				// $('#arqueoCaja').modal('hide');
+				valorventa = [];
+				valorcompra =[];
 				Swal.fire({
 					position: "top-end",
 					icon: "success",
@@ -79,8 +82,17 @@ function guardarArqueo() {
 					showConfirmButton: false,
 					timer: 1500
 				})
+				//Ocultar DIV
+					var x = document.getElementById("loadingModal");
+				    if (x.style.display === "none") {
+				        x.style.display = "block";
+				    } else {
+				        x.style.display = "none";
+				    }
+				cerrarModal('abrirDia');
+				
 
-				setTimeout(function() { location.href = "./inicio"; }, 1505)
+				//setTimeout(function() { location.href = "./inicio"; }, 1505)
 			} else {
 				Swal.fire({
 					icon: "error",

@@ -74,7 +74,7 @@
 							<tr  th:each="prefactura :${listaPrefactura}">
 								<td class="text_naranja" th:text="${prefactura.id_prefactura}"></td>
 								<td th:text="${prefactura.fecha}"></td>
-								<td th:text="${prefactura.forma_pago}"></td>
+								<td th:text="${prefactura.id_moneda}"></td>
 								<td th:text="${prefactura.items}"></td>
 								<td th:text="${prefactura.nombre}"></td>
 								<td >
@@ -167,19 +167,19 @@
 										<div class="col-lg-6">
 											<h4><strong>Fecha emitida: </strong>
 												<label id="fecha" value=""></label>
-												<input type="date" class="form-control" id="datepicker" required>
+												<input type="date" class="form-control" id="datepicker" onchange="validarFecha()" required>
 										</div>
 
 									</div>
 									<div class="row">
 										<div class="col-lg-6">
 
-											<label for="txtFormaPago">Forma de Pago</label>
+											<label for="txtFormaPago">Moneda de pago</label>
 											<select id="txtFormaPago" name="txtFormaPago"
-												class="form-control custom-select" required>
-												<option selected disabled>Seleccines</option>
-												<option th:each="fp : ${formasPagos}" th:value="${fp.id_forma_pago}"
-													th:text="${fp.descripcion}"></option>
+												class="form-control custom-select" onchange="validarMoneda()" required>
+												<option selected disabled>Seleccionar</option>
+												<option th:each="fp : ${listaMoneda}" th:value="${fp.id}"
+													th:text="${fp.moneda}"></option>
 											</select>
 
 										</div>
@@ -209,7 +209,7 @@
 													<th class='text-center'>Cantidad</th>
 													<th class='text-center'>Código</th>
 													<th class='text-center'>Descripción</th>
-													<th class='text-center'>Ultimo Precio</th>
+													<th class='text-center'>Precio</th>
 													<th class='text-center'>Total</th>
 													<th class='text-center'></th>
 												</tr>
@@ -278,7 +278,7 @@
 
 							<div class="col-md-4">
 								<label>Ultimo Precio</label>
-								<input type="text" class="form-control" id="precio" name="precio" disabled="false">
+								<input type="text" class="form-control" id="precio" name="precio" disabled>
 							</div>
 
 						</div>
@@ -363,12 +363,12 @@
 										<div class="row">
 											<div class="col-lg-6">
 
-												<label for="txtFormaPagoE">Forma de Pago</label>
+												<label for="txtFormaPagoE">Moneda de Pago</label>
 												<select id="txtFormaPagoE" name="txtFormaPagoE"
-													class="form-control custom-select">
+													class="form-control custom-select" onchange="validarMoneda()">
 													<option selected disabled>Seleccines</option>
-												<option th:each="fp : ${formasPagos}" th:value="${fp.id_forma_pago}"
-													th:text="${fp.descripcion}"></option>
+												<option th:each="fp : ${listaMoneda}" th:value="${fp.id}"
+													th:text="${fp.moneda}"></option>
 												</select>
 
 											</div>

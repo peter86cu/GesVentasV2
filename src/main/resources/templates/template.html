@@ -635,11 +635,11 @@
 											<tr>
 												<td class="cantidad" th:text="${moneda.moneda}"></td>
 												<td><input type="text" th:name="@{${'valorcompra_' + moneda.id}}"
-														th:id="@{${'valorcompra_' + moneda.id}}" value=""
+														th:id="@{${'valorcompra_' + moneda.id}}" value="0"
 														title="${moneda.moneda}" placeholder="" required /></td>
 												<td><input type="text" th:name="@{${'valorventa_' + moneda.id}}"
-														th:id="@{${'valorventa_' + moneda.id}}" value=""
-														title="${moneda.moneda}" placeholder="" required /></td>
+														th:id="@{${'valorventa_' + moneda.id}}" value="0"
+														title="${moneda.moneda}" placeholder=""  required /></td>
 
 												<!--<div th:text="${historico.add(cambio)}"></div> -->
 											</tr>

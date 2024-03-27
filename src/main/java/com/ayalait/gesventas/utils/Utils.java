@@ -59,6 +59,10 @@ public class Utils {
 
 	}
 	
+	public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
+		return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);
+		}
+	
 	
 	public static void resizeFile(String imagePathToRead, String imagePathToWrite, int resizeWidth,
 		      int resizeHeight) throws IOException {
@@ -242,20 +246,30 @@ public class Utils {
 	
 	
 	
-	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra) throws SQLException {
+	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra,int id) throws SQLException {
 		double calculoIVA=0;
 		double iva1=0;
+		int cantidad=0;
+		double sumado=0;
 		ResultSet estado=null;
 		try {
 		if(!itemsCompra.isEmpty()) {
 			for(ItemsOrdenCompra item: itemsCompra) {
-				 estado = Conexion.getConexion("SELECT i.aplicar as iva FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
-						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' GROUP BY i.aplicar,pf.importe");
+				 estado = Conexion.getConexion("SELECT i.aplicar as iva,pf.cantidad FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura="+id+" GROUP BY i.aplicar,pf.importe");
 				while ( estado.next()) {
 					 iva1 = estado.getDouble("iva");
+					 if(item.getImporte()>0)
+					 cantidad= estado.getInt("cantidad");
 				
 				}
-				calculoIVA=calculoIVA+(iva1*item.getImporte());
+				sumado=sumado+item.getImporte();
+				if(cantidad>0) {
+					calculoIVA=calculoIVA+(iva1*(sumado*cantidad));
+				}else {
+					calculoIVA=calculoIVA+(iva1*(sumado));
+				}
+				
 			}
 		}
 		
@@ -271,20 +285,31 @@ public class Utils {
 	}
 	
 	
-	public static double obtenerIvaAFactura(List<ItemOrden> itemsCompra)  {
+	public static double obtenerIvaAFactura(List<ItemOrden> itemsCompra, int id)  {
 		double calculoIVA=0;
 		double iva1=0;
+		int cantidad=0;
+		double sumado=0;
 		ResultSet estado=null;
 		try {
 		if(!itemsCompra.isEmpty()) {
 			for(ItemOrden item: itemsCompra) {
-				 estado = Conexion.getConexion("SELECT i.aplicar as iva FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
-						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' GROUP BY i.aplicar,pf.importe");
+				 estado = Conexion.getConexion("SELECT i.aplicar as iva,pf.cantidad FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura="+id+"  GROUP BY i.aplicar,pf.importe");
 				while ( estado.next()) {
 					 iva1 = estado.getDouble("iva");
+					 if(item.getTotal()>0)
+					 cantidad= estado.getInt("cantidad");
 				
 				}
-				calculoIVA=calculoIVA+(iva1*item.getImporte());
+				
+				sumado=sumado+item.getImporte();
+				if(cantidad>0) {
+					calculoIVA=calculoIVA+(iva1*(sumado*cantidad));
+				}else {
+					calculoIVA=calculoIVA+(iva1*(sumado));
+				}
+				
 			}
 		}
 		
@@ -845,6 +870,7 @@ public class Utils {
 				items.setId(producto.getString("id"));
 				items.setNombre(producto.getString("nombre"));
 				items.setPrecio(getPrecioProducto(items.getId()));
+				items.setId_moneda(producto.getInt("moneda"));
 				lstItems.add(items);
 			}
 		} catch (SQLException var4) {

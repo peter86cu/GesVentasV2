@@ -4,7 +4,8 @@ public enum FormatoFecha {
 	
 	YYYYMMDDH24(1,"yyyy-MM-dd HH:mm:ss"),
 	YYYYMMDD(2,"yyyy-MM-dd"),
-	H24(3,"HH:mm:ss");
+	H24(3,"HH:mm:ss"),
+	MM_DD_YYYY(4,"MM/dd/yyyy");
 	
 	private int idFormato;
 	private String formato;

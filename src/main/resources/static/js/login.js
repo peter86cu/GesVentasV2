@@ -4,7 +4,7 @@ let aperturaCajero="0";
 
 
 function inicioSession() {
-	activarLoader();
+	$('#loadingModal').modal('show'); 
 	var datos = new FormData();
 	var user = $("#username").val();
 	var pass = $("#password").val();
@@ -29,7 +29,14 @@ function inicioSession() {
 		processData: false,
 		dataType: "json",
 		success: function(respuesta) {
-			desactivarLoading();
+			//Ocultar DIV
+			var x = document.getElementById("loadingTemplate");
+		    if (x.style.display === "none") {
+		        x.style.display = "block";
+		    } else {
+		        x.style.display = "none";
+		    }
+			
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
 			console.log(data.code);
@@ -38,8 +45,13 @@ function inicioSession() {
 			} else {
 				Swal.fire({
 					icon: "error",
-					text: data.error.menssage
-				})
+					text: data.error.menssage,
+					 showDenyButton: false,
+				}).then((result) => {
+			  /* Read more about isConfirmed, isDenied below */
+			  if (result.isConfirmed) {
+			    desactivarLoading();
+			  }})
 				window.location = "redirect:/";
 			}
 

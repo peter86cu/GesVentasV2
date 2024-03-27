@@ -9,7 +9,8 @@ function desactivarLoading(){
 	cerrarModal('loadingModal');
 	}
 function validarServer(accion) {
-   activarLoader();
+  // $('#loadingModal' ).modal({ backdrop: 'static', keyboard: false })
+	$('#loadingModal').modal('show');
 	var datos = new FormData();
 	datos.append("accion", accion);
 
@@ -27,7 +28,13 @@ function validarServer(accion) {
 			var data = JSON.parse(response);
 			if (data.status) {
 				if ("/cargar-open-dia" == data.resultado) {
-					desactivarLoading();
+					//Ocultar DIV
+					var x = document.getElementById("loadingTemplate");
+				    if (x.style.display === "none") {
+				        x.style.display = "block";
+				    } else {
+				        x.style.display = "none";
+				    }
 					$.ajax({
 						url: globalPath + data.resultado,
 						method: "POST",
@@ -39,8 +46,9 @@ function validarServer(accion) {
 						success: function(respuesta) {
 							var response = JSON.stringify(respuesta, null, '\t');
 							var data = JSON.parse(response);
+							
 							if (data.status) {
-								desactivarLoading();
+								
 								$('#abrirDia').modal({ backdrop: 'static', keyboard: false })
 								$('#abrirDia').modal('show');
 								//  var ventana = window.open('inicio');
@@ -50,21 +58,30 @@ function validarServer(accion) {
 
 
 							} else {
+								
 								window.location.href = data.resultado;
 							}
 						}						
 					});
 
 				} else {
+					
 					window.location.href = data.resultado;
 				}
 			} else if (!data.status) {
+				
+				
 				Swal.fire({
 					icon: "error",
-					title: data.resultado
-				})
+					title: data.resultado,
+					 showDenyButton: false,
+				}).then((result) => {
+			  /* Read more about isConfirmed, isDenied below */
+			  if (result.isConfirmed) {
+			    desactivarLoading();
+			  }})
 			}
-			desactivarLoading();
+			
 
 		}
 
@@ -246,20 +263,20 @@ function abrirModal(nombreModal) {
 }
 
 function cerrarModal(nombreModal) {
-	$(".modal-body input").val("")
+	/*$(".modal-body input").val("")
 	$(".modal-body select").val("")
 	$('#tabla1 > tbody').empty();
 	$('#tabla2 > tbody').empty();
-	$('#tabla3 > tbody').empty();
+	$('#tabla3 > tbody').empty();*/
 	$('#' + nombreModal).modal('hide');
 }
 
-
+/*
 $(function() {
 	$("#datepicker").datepicker({
 		dateFormat: "yy-mm-dd"
 	});
-});
+});*/
 
 
 function abrirWEB() {

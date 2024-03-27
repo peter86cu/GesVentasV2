@@ -98,7 +98,7 @@ public class ProductosController {
 			@ModelAttribute("categoria") int categoria , @ModelAttribute("marca") int marca,
 			@ModelAttribute("modelo") int modeloMarca, @ModelAttribute("tipo_producto") int tipo_producto,
 			@ModelAttribute("unidad_medida") int unidad_medida, @ModelAttribute("inventario") boolean inventario,
-			@ModelAttribute("disponible") boolean disponible, /*@RequestParam("foto") MultipartFile file,*/ Model modelo,
+			@ModelAttribute("disponible") boolean disponible,@ModelAttribute("moneda") int moneda, /*@RequestParam("foto") MultipartFile file,*/ Model modelo,
 			RedirectAttributes attribute, HttpServletResponse responseHttp) throws IOException {
 		if (LoginController.session.getToken() != null) {
 			try {
@@ -139,6 +139,7 @@ public class ProductosController {
 				producto.setMarca(marca);
 				producto.setModelo(modeloMarca);
 				producto.setImagen(imageProd.get(0).getImagen());
+				producto.setMoneda(moneda);
 				/*Path path = Paths.get(LoginController.rutaDowloadProducto + fileName, new String[0]);
 				Files.copy(file.getInputStream(), path, new CopyOption[] { StandardCopyOption.REPLACE_EXISTING });
 

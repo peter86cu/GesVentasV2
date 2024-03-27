@@ -3,6 +3,7 @@ package com.ayalait.gesventas.service;
 import com.ayalait.gesventas.controller.LoginController;
  import com.ayalait.modelo.*;
  import com.ayalait.response.*;
+import com.ayalait.utils.DiaAbierto;
 import com.ayalait.utils.ErrorState;
 import com.ayalait.utils.MessageCodeImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -229,16 +230,72 @@ public final class wsCaja {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			responseResult.setStatus(false);
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
 			ErrorState data = new ErrorState();
-			data.setCode(401);
-			data.setMenssage(MessageCodeImpl.getMensajeServiceEmpleados("401"));
-			responseResult.setCode(data.getCode());
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
 			responseResult.setError(data);
 		}
 		 
 		return responseResult;
 		 
 	}
+	
+	
+	public ResponseOpenDay openDay(String fecha) {
+		 
+
+		ResponseOpenDay responseResult = new ResponseOpenDay();
+		try {
+
+			String url = this.hostTerminal + "/caja/open-day?fecha=" + fecha;
+			
+			URI uri = new URI(url);
+			ResponseEntity<List<DiaAbierto>> response = restTemplate.exchange(uri , HttpMethod.GET, null,
+					new ParameterizedTypeReference<List<DiaAbierto>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setOpen(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			JsonParser jsonParser = new JsonParser();
+			responseResult.setStatus(false);
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}
+		 
+		return responseResult;
+		 
+	}
+
 
 	public ResponseResultado guardarHistoricoCambio(HistoricoCambio request, String token) {
 

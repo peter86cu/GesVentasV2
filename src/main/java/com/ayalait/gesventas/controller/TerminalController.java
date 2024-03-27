@@ -132,6 +132,29 @@ public class TerminalController {
 
 	}
 
+	
+	// Pagina abir dia
+	@PostMapping(value = LoginController.ruta + "/validar-open-dia")
+	public void validarDiaOpen(Model modelo, @ModelAttribute("fecha") String fecha,
+				HttpServletResponse responseHttp) throws IOException {
+		
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponseValidarEstadoCaja responseResult = LoginController.conCaja.validarCaja(LoginController.session.getToken(), fecha);
+			
+				String json = new Gson().toJson(responseResult);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			
+			
+		}else {
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write("Session caducada.");
+		}
+	}
+	
 	// Pagina abir dia
 	@PostMapping(value = LoginController.ruta + "/abrir-dia")
 	public void guardarAbrirDia(Model modelo, @ModelAttribute("fechaApertura") String fecha,
@@ -168,7 +191,12 @@ public class TerminalController {
 						}
 					}
 				}
-
+				//Obtener id apertura del dia
+				
+                ResponseOpenDay aperturaDia = LoginController.conCaja.openDay(fecha);
+				if(aperturaDia.isStatus()) {
+					LoginController.session.setOepnDay(aperturaDia.getOpen());
+				}
 				String json = new Gson().toJson(responseCaja);
 				responseHttp.setContentType("application/json");
 				responseHttp.setCharacterEncoding("UTF-8");

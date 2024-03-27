@@ -110,7 +110,7 @@ public class ImprimirUtils {
         try {
             String consulta="select p.codigo,p.nombre, oc.cantidad, oc.importe, o.fecha_hora, m.simbolo, m.moneda, u.simbolo as um FROM  prefactura_detalle oc , producto p, prefacturas o, moneda m, unidades_medidas u\r\n"
             		+ " where oc.id_producto=p.id AND o.id_prefactura=oc.id_prefactura AND m.id=oc.id_moneda AND p.um=u.id_unidad_medida  and oc.id_prefactura="+idPrefactura;
-            ResultSet orden = conexion.getConexion(consulta);
+            ResultSet orden = Conexion.getConexion(consulta);
             if(orden!=null){
                 while (orden.next()){
                     ItemOrden item= new ItemOrden();
@@ -126,7 +126,7 @@ public class ImprimirUtils {
                     lstItems.add(item);
                 }
                 String consultaEmpresa="select * from empresa where id_empresa="+ LoginController.session.getId_empresa();
-                ResultSet  rEmpresa= conexion.getConexion(consultaEmpresa);
+                ResultSet  rEmpresa= Conexion.getConexion(consultaEmpresa);
                 if(rEmpresa!=null){
                     while (rEmpresa.next()){
                         empresa.setDireccion(rEmpresa.getString("direccion"));
@@ -391,23 +391,23 @@ public class ImprimirUtils {
                 "\tfont-size:13px\n" +
                 "}\n" +
                 ".detalle td{\n" +
-                "\tborder:solid 1px #bdc3c7;\n" +
+                "\tborder:solid 1px #6A05C6;\n" +
                 "\tpadding:5px;\n" +
                 "}\n" +
                 ".items{\n" +
-                "\tborder:solid 1px #bdc3c7;\n" +
+                "\tborder:solid 1px detalle;\n" +
                 "\n" +
                 "}\n" +
                 ".items td, th{\n" +
                 "\tpadding:10px;\n" +
                 "}\n" +
                 ".items th{\n" +
-                "\tbackground-color: #c0392b;\n" +
+                "\tbackground-color: #6A05C6;\n" +
                 "\tcolor:white;\n" +
                 "\n" +
                 "}\n" +
                 ".border-bottom{\n" +
-                "\tborder-bottom: solic 1px #bdc3c7;\n" +
+                "\tborder-bottom: solic 1px #6A05C6\n" +
                 "}\n" +
                 "table.page_footer {width: 100%; border: none; background-color: white; padding: 2mm;border-collapse:collapse; border: none;}\n" +
                 "} \n" +
@@ -417,7 +417,7 @@ public class ImprimirUtils {
                 "<table class=\"page_footer\">\n" +
                 "      <tr>\n" +
                 "        <td style=\"width: 50%; text-align: right\">\n" +
-                "          &copy; <?php echo \"mipagina.com \"; echo  $anio=date('Y'); ?>\n" +
+                "          &copy;  	 \n" +
                 "        </td>\n" +
                 "      </tr>\n" +
                 "    </table>\n" +
@@ -453,10 +453,10 @@ public class ImprimirUtils {
                 "    <tr>\n" +
                 "      <td  style=\"width: 60%; \">\n" +
                 "      </td>\n" +
-                "      <td  style=\"width: 20%;color:white;background-color:#c0392b;padding:5px;text-align:center \">\n" +
+                "      <td  style=\"width: 20%;color:white;background-color:#6A05C6;padding:5px;text-align:center \">\n" +
                 "        <strong style=\"font-size:14px;\" >No. ORDEN</strong>\n" +
                 "      </td>\n" +
-                "      <td  style=\"width: 20%; color:white;background-color:#c0392b;padding:5px;text-align:center \" >\n" +
+                "      <td  style=\"width: 20%; color:white;background-color:#6A05C6;padding:5px;text-align:center \" >\n" +
                 "        <strong style=\"font-size:14px;\">FECHA</strong>\n" +
                 "      </td>\n" +
                 "    </tr>\n" +
@@ -541,9 +541,14 @@ public class ImprimirUtils {
 
         }
         //table=table+" </tr>\n" ;
-        double ivaCalculo= Utils.obtenerIvaAFactura(response.getLstItems());
+        double ivaCalculo= Utils.obtenerIvaAFactura(response.getLstItems(),response.getIdPrefactura());
         double total= ivaCalculo+response.getTotal();
-        String iva=	"  <tr > <td colspan=4 class='text-right' style=\"font-size:24px;color: #c0392b\">IVA </td>\n" +
+        
+        String subTotal=" <tr > <td colspan=4 class='text-right' style=\"font-size:20px;color: #c0392b\">SUBTOTAL </td>\n" +
+        		"      <td class='text-right' style=\"font-size:18px;color:#c0392b;width:5%\">"+ simboloMoneda+" </td>\n" +
+                "      <td class='text-right' style=\"font-size:20px;color:#c0392b\">"+ response.getTotal()+" </td>\n" +
+                "    </tr>\n";
+        String iva=	"  <tr > <td colspan=4 class='text-right' style=\"font-size:20px;color: #c0392b\">IVA </td>\n" +
         		"      <td class='text-right' style=\"font-size:18px;color:#c0392b;width:5%\">"+ simboloMoneda+" </td>\n" +
                 "      <td class='text-right' style=\"font-size:20px;color:#c0392b\">"+ ivaCalculo+" </td>\n" +
                 "    </tr>\n";
@@ -563,6 +568,6 @@ public class ImprimirUtils {
                 "  <p class='text-center'>Si tiene alguna consulta relacionada con esta prefactura, por favor contáctenos a: <br><label>"+confi.get(2).getValor()+"</label>, <label>"+response.getEmpresa().getTelefono()+"</label>, <label>"+confi.get(1).getValor()+"</label> </p>\n" +
                 "</html>";
 
-        return css+pdf1+pdf2+pdf3+table+iva+fin+fin1;
+        return css+pdf1+pdf2+pdf3+table+subTotal+iva+fin+fin1;
     }
 }
