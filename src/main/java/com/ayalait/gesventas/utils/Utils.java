@@ -263,7 +263,7 @@ public class Utils {
 					 cantidad= estado.getInt("cantidad");
 				
 				}
-				sumado=sumado+item.getImporte();
+				sumado=item.getImporte();
 				if(cantidad>0) {
 					calculoIVA=calculoIVA+(iva1*(sumado*cantidad));
 				}else {
