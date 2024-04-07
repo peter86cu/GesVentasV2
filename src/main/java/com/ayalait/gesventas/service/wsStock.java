@@ -423,7 +423,7 @@ public final class wsStock {
 			ResponseEntity<FacturaCompra> response = restTemplate.exchange(url , HttpMethod.GET, null,FacturaCompra.class);
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(200);;
 				responseResult.setStatus(true);
 				responseResult.setFacturaCompra(response.getBody());
  
