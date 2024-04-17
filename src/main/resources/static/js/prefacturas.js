@@ -106,7 +106,7 @@ function agregarPrefacturaInicial(event) {
 				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
 				$("#txtFormaPago > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
-				$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
+				//$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
 				$("#idPrefacturaT").val(data.prefactura.id_prefactura);
 				$("#cliente").val(data.prefactura.id_cliente);
 				$("#datepicker").val(data.prefactura.fecha_hora);
@@ -152,9 +152,10 @@ function addPrefactura(id) {
 				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
 				document.querySelector('#datepicker').innerText = data.prefactura.fecha_hora; 
 				$("#txtFormaPago > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
-				$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
+				//$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
 				$("#idPrefacturaT").val(data.prefactura.id_prefactura);
 				$("#cliente").val(data.prefactura.id_cliente);
+				$("#txtUtil").val(data.prefactura.utilidad);
 				$("#datepicker").val(data.prefactura.fecha_hora);
 				$("#id_proveedor").val(data.prefactura.id_cliente);
 				buscar_cliente_prefactura(data.prefactura.id_cliente, "2");
@@ -202,9 +203,10 @@ function editarPrefactura(id, estado) {
 				document.querySelector('#idPrefacturaE').innerText = data.prefactura.id_prefactura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
 				$("#txtFormaPagoE > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
-				$("#txtEnvioE > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
+				//$("#txtEnvioE > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
 				buscar_cliente_prefactura(data.prefactura.id_cliente, "1");
 				mostrar_items(data.prefactura.id_prefactura, "editar");
+				$("#txtUtilE").val(data.prefactura.utilidad);
 
 				$("#idPrefactura1E").val(data.prefactura.id_prefactura);
 				$("#clienteE1").val(data.prefactura.id_cliente);
@@ -579,12 +581,18 @@ function guardar_orden(estado) {
 			timer: 1500
 		})
 		setTimeout(function() { location.reload(); }, 1505)
+	}if ($('#txtUtil').val()==null || $('#txtUtil').val()==""){
+		Swal.fire({
+				icon: "warning",
+				text: "Debe definir el porciento de utilidad.",
+			})
 	} else {
 
 
 		var idCliente = $('#id_cliente').val();
 		var id = document.getElementById('idPrefactura').innerHTML;
-		var plazo = $('#txtEnvio').val();
+		//var plazo = $('#txtEnvio').val();
+		var utilidad = $('#txtUtil').val();
 		var forma_pago = $('#txtFormaPago').val();
 		var fecha = $('#datepicker').val();
 		var datos = new FormData();
@@ -595,7 +603,7 @@ function guardar_orden(estado) {
 				icon: "warning",
 				text: "Debe agregar al menos un producto a la orden",
 			})
-		} if (idCliente == null || plazo == null || forma_pago == null || fecha == "") {
+		} if (idCliente == null || forma_pago == null || fecha == "") {
 			Swal.fire({
 				icon: "warning",
 				text: "Debe completar todos los campos",
@@ -604,7 +612,7 @@ function guardar_orden(estado) {
 			datos.append("accion", accion);
 			datos.append("idCliente", idCliente);
 			datos.append("idPrefactura", id);
-			datos.append("plazo", plazo);
+			datos.append("utilidad", utilidad);
 			datos.append("forma_pago", forma_pago);
 			datos.append("fecha", fecha);
 			datos.append("estado", var_estado);
@@ -662,6 +670,9 @@ function guardar_prefacturaEditadas(estado) {
 		var var_estado = 5;
 	}
 
+	if (estado == 6) {
+		var var_estado = 6;
+	}
 
 	var idCliente = $('#clienteE1').val();
 	var id = $('#idPrefactura1E').val();

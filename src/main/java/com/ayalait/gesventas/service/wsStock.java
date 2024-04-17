@@ -9,6 +9,7 @@ import com.ayalait.gesventas.request.RequestGuardarDetalleOC;
 import com.ayalait.gesventas.request.RequestGuardarModifOC;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
+import com.ayalait.utils.Email;
 import com.ayalait.utils.ErrorState;
 import com.ayalait.utils.MarcaEmpleadoProcess;
 import com.ayalait.utils.MessageCodeImpl;
@@ -46,6 +47,7 @@ public final class wsStock {
 
 	private String hostStock;
 	private String hostTerminal;
+	private String hostMail;
 	
 	ObjectWriter ow = (new ObjectMapper()).writer().withDefaultPrettyPrinter();
 
@@ -66,6 +68,7 @@ public final class wsStock {
 				propertiesStream.close();
 				this.hostStock = p.getProperty("server.stock");
 				this.hostTerminal = p.getProperty("server.terminal");
+				this.hostMail= p.getProperty("server.mail");
 			}
 		} catch (FileNotFoundException var3) {
 			Logger.getLogger(wsStock.class.getName()).log(Level.SEVERE, (String) null, var3);
@@ -78,6 +81,7 @@ public final class wsStock {
 			if(LoginController.desarrollo){
 				hostStock = "http://localhost:8082";
 				hostTerminal= "http://localhost:8087";
+				hostMail="http://localhost:7002";
 			}else{
 				cargarServer();
 			}
@@ -404,7 +408,19 @@ public final class wsStock {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} 
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}
 
 		return responseResult;
 
@@ -437,6 +453,51 @@ public final class wsStock {
 			responseResult.setError(data);
 			 
 		} 		 
+
+		return responseResult;
+
+		 
+	}
+	
+	
+	
+	public ResponseCliente obtenerClientePorId(int id) {
+		 
+		ResponseCliente responseResult = new ResponseCliente();
+		try {
+
+			String url = this.hostStock + "/prefactura/cliente?id=" + id;
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<Cliente> response = restTemplate.exchange(url , HttpMethod.POST, null,Cliente.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(200);;
+				responseResult.setStatus(true);
+				responseResult.setCliente(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		}		 
 
 		return responseResult;
 
@@ -1191,5 +1252,56 @@ public final class wsStock {
 		return responseResult;
 
 		 
+	}
+	
+	
+	
+	
+	public ResponseResultado enviarMailConfirmacion(Email email) {
+		ResponseResultado responseResult = new ResponseResultado();
+
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			String url = this.hostMail + "/sendMailBody";
+			URI uri = new URI(url);
+	
+			HttpEntity<Email> requestEntity = new HttpEntity<>(email, headers);
+		
+			ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity,
+					String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+				
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			
+		
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return responseResult;
 	}
 }

@@ -156,7 +156,7 @@ public final class wsContable {
 	}
 	
 	
-	public ResponseResultado addGasto(List<ContableGastos> gastos) {
+	public ResponseResultado addGasto(ContableGastos gastos) {
 
 		 
 		ResponseResultado responseResult = new ResponseResultado();

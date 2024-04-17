@@ -92,7 +92,9 @@
 								<td th:if="${prefactura.id_estado}==3" ><span  class="text_azul" th:text="${prefactura.estado}"></span></td>
 								<td th:if="${prefactura.id_estado}==4" ><span  class="text_verde" th:text="${prefactura.estado}"></span></td>
 								<td th:if="${prefactura.id_estado}==5" ><span  class="text_rojo" th:text="${prefactura.estado}"></span></td>
-								<td th:if="${prefactura.id_estado}!=2 and ${prefactura.id_estado}!=3 and ${prefactura.id_estado}!=4 and ${prefactura.id_estado}!=5" ><span  class="text_negro" th:text="${prefactura.estado}"></span></td>
+								<td th:if="${prefactura.id_estado}==6" ><span  class="text_verde" th:text="${prefactura.estado}"></span></td>
+								
+								<td th:if="${prefactura.id_estado}!=2 and ${prefactura.id_estado}!=3 and ${prefactura.id_estado}!=4 and ${prefactura.id_estado}!=5 and ${prefactura.id_estado}!=6" ><span  class="text_negro" th:text="${prefactura.estado}"></span></td>
 								<td>
 								<span th:if="${prefactura.id_estado}!=1">								
 									<button class="btn btn-primary ModalEditarPrefactura" 	th:onclick="editarPrefactura('[(${prefactura.id_prefactura})]','[(${prefactura.id_estado})]')"
@@ -109,6 +111,11 @@
 								<button class="btn btn-success" th:onclick="datosImprimir('[(${prefactura.id_prefactura})]','[(${prefactura.id_cliente})]')"
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa fa-file-pdf-o"></i></button>
 								</span>
+								<span th:if="${prefactura.id_estado}==3">
+								<button class="btn btn-success" th:onclick="datosImprimir('[(${prefactura.id_prefactura})]','[(${prefactura.id_cliente})]')"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa-solid fa-envelope-open-text"></i></button>
+								</span>
+								
 									<button class="btn btn-default btnEliminarOrden" th:onclick="eliminarOrdenCompra('[(${prefactura.id_prefactura})]')" style="color: #fff;background-color: #8B0000;border-color: #800000"><i
 											class="fas fa-trash"></i></button>
 								</td>
@@ -123,7 +130,6 @@
 		</div>
 
 	</main>
-
 
 	<!-- The Modal Add Ordenes -->
 	<div class="modal" id="ModalADDPrefactura" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -185,13 +191,17 @@
 										</div>
 
 
-										<div class="col-lg-6">
-											<label for="txtEnvio">Método de envío</label>
+										<div class="col-lg-4">
+										<!--<label for="txtEnvio">Método de envío</label>
 											<select id="txtEnvio" name="txtEnvio" class="form-control custom-select" required>
 												<option selected disabled>Seleccionar</option>
 												<option th:each="plaz : ${plazos}" th:value="${plaz.id_plazo}"
 													th:text="${plaz.descripcion}"></option>
-											</select>
+											</select>  -->	
+											
+											<label for="txtUtil">% Utilidad</label>
+											<input type="text" style="text-align: right;" id="txtUtil" class="form-control input-right" required>
+
 										</div>
 
 									</div>
@@ -374,7 +384,7 @@
 											</div>
 
 
-											<div class="col-lg-6">
+										<!--<div class="col-lg-6">
 												<label for="txtEnvioE">Método de envío</label>
 												<select id="txtEnvioE" name="txtEnvioE"
 													class="form-control custom-select">
@@ -382,7 +392,15 @@
 												<option th:each="plaz : ${plazos}" th:value="${plaz.id_plazo}"
 													th:text="${plaz.descripcion}"></option>
 												</select>
-											</div>
+											</div>  -->	
+											
+											
+												<div class="col-lg-4">
+																					
+											<label for="txtUtilE">% Utilidad</label>
+											<input type="text" style="text-align: right;" id="txtUtilE" class="form-control input-right" required>
+
+										</div>
 
 										</div>
 
@@ -425,13 +443,13 @@
 
 							<button type="submit" id="bttautorizo" class="btn btn-success" href="javascript:;"
 								onclick="guardar_prefacturaEditadas(2); return false"><span>AUTORIZAR ORDEN<br><b>A <label
-											id="autorizo"></label></b></span></button>
-
+											id="autorizo"></label></b></span></button>							
 
 							<button type="submit" class="btn btn-danger" id="bttcancelo" style="float: right;"
 								href="javascript:;"
 								onclick="guardar_prefacturaEditadas(5); return false"><span>CANCELAR<br><b>A <label
 											id="cancelo"></b></span></button>
+						
 
 
 

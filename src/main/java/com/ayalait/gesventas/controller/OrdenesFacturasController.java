@@ -15,23 +15,30 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.UUID;
 
 import com.ayalait.gesventas.request.*;
 import com.ayalait.gesventas.utils.*;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
+import com.ayalait.utils.Email;
 import com.ayalait.utils.ResponsePrefactura;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.multishop.modelo.Prefactura;
 import com.multishop.modelo.PrefacturaDetalle;
 import com.multishop.modelo.PrefacturaModificaciones;
+import com.multishop.modelo.ShoppingUsuarios;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -569,7 +576,7 @@ public class OrdenesFacturasController {
 	@PostMapping({ LoginController.ruta+"/crear-prefactura-venta" })
 	public void crearPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("idPrefactura") int idPrefactura,
 								 @ModelAttribute("idCliente") int idCliente, @ModelAttribute("estado") int estado,
-								 @ModelAttribute("fecha") String fecha, @ModelAttribute("plazo") int plazo,
+								 @ModelAttribute("fecha") String fecha, @ModelAttribute("utilidad") int utilidad,
 								 @ModelAttribute("forma_pago") int forma_pago, @ModelAttribute("prefactura") Prefactura prefactura,
 								 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
 		if (LoginController.session.getToken() != null) {
@@ -609,6 +616,7 @@ public class OrdenesFacturasController {
 						prefactura.setId_moneda(response.getPrefactura().getId_moneda());
 						prefactura.setId_plazo(response.getPrefactura().getId_plazo());
 						prefactura.setEstado(response.getPrefactura().getEstado());
+						prefactura.setUtilidad(response.getPrefactura().getUtilidad());
 						prefactura.setFecha_hora(response.getPrefactura().getFecha_hora());
 						prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
 					}
@@ -621,6 +629,7 @@ public class OrdenesFacturasController {
 					prefactura.setId_cliente(1);
 					prefactura.setId_cliente(idCliente);
 					prefactura.setId_plazo(1);
+					prefactura.setUtilidad(100);
 					prefactura.setId_moneda(forma_pago);
 					//Calendar calendar = Calendar.getInstance();
 					//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -637,7 +646,8 @@ public class OrdenesFacturasController {
 						prefactura.setId_prefactura(response.getPrefactura().getId_prefactura());
 						prefactura.setId_moneda(forma_pago);
 						prefactura.setId_cliente(idCliente);
-						prefactura.setId_plazo(plazo);
+						prefactura.setId_plazo(0);
+						prefactura.setUtilidad(utilidad);
 						prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
 						prefactura.setFecha_hora(fecha);
 						//prefactura.setId_sucursal(LoginController.session.getUser().getEmpleado().getIdsucursal());
@@ -1152,4 +1162,93 @@ public class OrdenesFacturasController {
 		}
 
 	}
+	
+	
+	
+	
+	@PostMapping({ "send-mail" })
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseStatus(HttpStatus.CREATED)
+	public void enviarPDF(@RequestParam("id") int idDocumento,
+						  Model modelo,HttpServletResponse responseHttp) throws IOException {
+		
+		ResponsePrefactClient response= LoginController.conStock.obtenerPrefacturaPorID(idDocumento);
+		if(response.isStatus()) {
+			ResponseCliente cliente = LoginController.conStock.obtenerClientePorId(response.getPrefactura().getId_cliente());
+			if(cliente.isStatus()) {
+				//ENVIO MAIL 
+				Email confirmar= new Email();
+				confirmar.setEmail(cliente.getCliente().getEmail());
+				confirmar.setName(cliente.getCliente().getNombres());
+				confirmar.setSubject("Confirmar solicitud.");
+				
+				String mensajeEnvio=  " <html lang=\"en\">\r\n"
+						+ "<head>\r\n"
+						+ "    <meta charset=\"UTF-8\">\r\n"
+						+ "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
+						+ "    <title>Confirmación de Pedido</title>\r\n"
+						+ "    <style>\r\n"
+						+ "        /* Estilos para el botón */\r\n"
+						+ "        .btn {\r\n"
+						+ "            display: inline-block;\r\n"
+						+ "            font-weight: 400;\r\n"
+						+ "            color: #ffffff;\r\n"
+						+ "            text-align: center;\r\n"
+						+ "            vertical-align: middle;\r\n"
+						+ "            user-select: none;\r\n"
+						+ "            background-color: #007bff;\r\n"
+						+ "            border: 1px solid transparent;\r\n"
+						+ "            padding: 0.5rem 1rem;\r\n"
+						+ "            font-size: 1rem;\r\n"
+						+ "            line-height: 1.5;\r\n"
+						+ "            border-radius: 0.25rem;\r\n"
+						+ "            text-decoration: none;\r\n"
+						+ "        }\r\n"
+						+ "\r\n"
+						+ "        .btn:hover {\r\n"
+						+ "            background-color: #0056b3;\r\n"
+						+ "            color: #ffffff;\r\n"
+						+ "        }\r\n"
+						+ "    </style>\r\n"
+						+ "</head>\r\n"
+						+ "<body style=\"font-family: Arial, sans-serif; padding: 20px;\">\r\n"
+						+ "    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin: auto;\">\r\n"
+						+ "        <tr>\r\n"
+						+ "            <td align=\"center\">\r\n"
+						+ "                <h2 style=\"color: #007bff;\">Confirmación de Pedido</h2>\r\n"
+						+ "                <p>Estimado(a) "+cliente.getCliente().getNombres()+",</p>\r\n"
+						+ "                <p>Gracias por su confianza en el equipo de AYALA IT. Por favor, haga clic en el siguiente botón para confirmar su pedido:</p>\r\n"
+						+ "                <table cellpadding=\"0\" cellspacing=\"0\">\r\n"
+						+ "                    <tr>\r\n"
+						+ "                        <td align=\"center\">\r\n"
+						+ "                            <a class=\"btn\" href=\"http://localhost:8082/prefactura/confirmar-pedido?id="+idDocumento+"\" style=\"background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block;\">Confirmar Pedido</a>\r\n"
+						+ "                        </td>\r\n"
+						+ "                    </tr>\r\n"
+						+ "                </table>\r\n"
+						+ "                <p>Si el botón no funciona, puede copiar y pegar el siguiente enlace en su navegador:</p>\r\n"
+						+ "                <p><a href=\"http://localhost:8082/prefactura/confirmar-pedido?id="+idDocumento+"\" style=\"color: #007bff; text-decoration: underline;\">http://localhost:8082/prefactura/confirmar-pedido?id="+idDocumento+"</a></p>\r\n"
+						+ "                <p>Gracias,<br>Equipo de AYALA IT</p>\r\n"
+						+ "					<p><img src=\"data:image/png;base64,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\" width=\"150\">\r\n"
+						+ "      </p>\r\n"
+						+ "            </td>\r\n"
+						+ "        </tr>\r\n"
+						+ "    </table>\r\n"
+						+ "</body>\r\n"
+						+ "</html>\r\n"
+						+ " ";
+				confirmar.setMessage(mensajeEnvio);
+				
+				ResponseResultado envioMail= LoginController.conStock.enviarMailConfirmacion(confirmar);
+				
+				String json = new Gson().toJson(envioMail);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
+			
+		}
+			
+		
+				
+}
 }

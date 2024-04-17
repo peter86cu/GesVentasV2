@@ -127,46 +127,69 @@ public class ContableController {
 		}
 
 	}
-   
+    
+    @PostMapping("/archivo")
+    public String recibirArchivo(@RequestParam("archivo") MultipartFile archivo) {
+        // Procesar el archivo, por ejemplo, guardar en el servidor
+        try {
+            byte[] contenido = archivo.getBytes();
+            // Realizar alguna acción con el contenido del archivo
+            // Por ejemplo, guardar en el servidor
+            // Ejemplo: FileCopyUtils.copy(contenido, new File("ruta/del/archivo"));
+            return "Archivo recibido correctamente";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al recibir el archivo";
+        }
+    }
+    // Método para obtener la extensión del archivo
+    private String obtenerExtension(String nombreArchivo) {
+        if (nombreArchivo != null && !nombreArchivo.isEmpty()) {
+            int puntoIndex = nombreArchivo.lastIndexOf(".");
+            if (puntoIndex != -1) {
+                return nombreArchivo.substring(puntoIndex + 1);
+            }
+        }
+        return "";
+    }
     @PostMapping({ LoginController.ruta + "/add-gastos" })
-	public void agregarDatosProfesionales(@RequestParam("gasto") String gasto,Model modelo, HttpServletResponse responseHttp)
+	public void agregarDatosProfesionales(@RequestParam("tipogasto") int tipogasto,@RequestParam("moneda") int moneda,
+			@RequestParam("saldo") double saldo,@RequestParam("estado") String estado,
+			@RequestParam("factura") MultipartFile archivo,Model modelo, HttpServletResponse responseHttp)
 			throws IOException, ParseException, SQLException {
 		if (LoginController.session.getToken() != null) {
 			modelo.addAttribute("user", LoginController.session.getUser());
-			List<ContableGastos> cont= new Gson().fromJson(gasto, List.class);
-			 ArrayList array = new ArrayList();
-		        array = new Gson().fromJson(gasto, ArrayList.class);
-		        List<ContableGastos> lstConGasto= new ArrayList<ContableGastos>();
-		        for (int i = 0; i < array.size(); i++) {
+			
+			// Obtener el nombre original del archivo
+            String nombreArchivo = archivo.getOriginalFilename();
+            
+            // Obtener la extensión del archivo
+            String extension = obtenerExtension(nombreArchivo);
+            
+			Path path = Paths.get(LoginController.rutaFacturas + archivo.getOriginalFilename(),
+					new String[0]);
+			Files.copy(archivo.getInputStream(), path, new CopyOption[] { StandardCopyOption.REPLACE_EXISTING });
+			byte[] fileContent = Files.readAllBytes(path);
+			String base64 = Base64.getEncoder().encodeToString(fileContent);
+			
 		        	ContableGastos contableGastos= new ContableGastos();
-		        	LinkedTreeMap map = (LinkedTreeMap) array.get(i);
-			        System.out.println(map.get("estado"));
-			        contableGastos.setEstado(map.get("estado").toString());
-			        contableGastos.setFactura(map.get("factura").toString() );
-			        contableGastos.setMoneda(map.get("moneda").toString());
-			        contableGastos.setSaldo(Double.parseDouble(map.get("saldo").toString() ));
+			        contableGastos.setEstado(estado);
+			        contableGastos.setTipogasto(tipogasto);
+			        contableGastos.setFactura(base64 );
+			        contableGastos.setMoneda(moneda);
+			        contableGastos.setSaldo(saldo);
 			        contableGastos.setFecha(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDD.getFormato()));
 					contableGastos.setId(UUID.randomUUID().toString());
 					contableGastos.setUsuario(LoginController.session.getUser().getIdusuario());
-					lstConGasto.add(contableGastos);
-				}
+				
 		        
-		        if(!lstConGasto.isEmpty()) {
-		        	ResponseResultado response= LoginController.conContable.addGasto(cont);
+		       
+		        	ResponseResultado response= LoginController.conContable.addGasto(contableGastos);
 					String json = (new Gson()).toJson(response);
 					responseHttp.setContentType("application/json");
 					responseHttp.setCharacterEncoding("UTF-8");
 					responseHttp.getWriter().write(json);
-		        }else {
-		        	ResponseResultado response = new ResponseResultado();
-					response.setCode(300);
-					response.setStatus(false);
-					response.setResultado("Error con los datos de los gastos, volver a intentar.");
-					String json = (new Gson()).toJson(response);
-					responseHttp.setContentType("application/json");
-					responseHttp.setCharacterEncoding("UTF-8");
-					responseHttp.getWriter().write(json);
-		        }
+		        
 
 		}else {
 			ResponseResultado response = new ResponseResultado();

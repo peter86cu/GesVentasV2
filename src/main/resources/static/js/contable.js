@@ -1,13 +1,29 @@
 var registros = new Array();
+let pos = 0;
 
+class MiObjetoConArchivo {
+	constructor(id, codigo, nombre, idmoneda, moneda, saldo, estado, usuario, factura) {
+		this.id = id;
+		this.codigo = codigo;
+		this.nombre = nombre;
+		this.idmoneda = idmoneda;
+		this.moneda = moneda;
+		this.saldo = saldo;
+		this.estado = estado;
+		this.usuario = usuario;
+		this.factura = factura; // El atributo archivo es un objeto File
+	}
+
+
+}
 
 
 $(document).ready(function() {
 	$(".gastos").select2({
-		dropdownParent: $('#gastosNuevoModal .modal-body'),
+		dropdownParent: $('#gastosNuevoModal'),
 		theme: 'bootstrap-5',
 		ajax: {
-			url: globalPath+"/buscar-gastos",
+			url: globalPath + "/buscar-gastos",
 			method: "POST",
 			dataType: 'json',
 			delay: 250,
@@ -33,38 +49,40 @@ $(document).ready(function() {
 });
 
 
-	function insertar(){
- 
- 
-		var codigo=document.getElementById("idTipoGasto").value;
- 
-		var nombre=$('#gasto :selected').text();
-		
-		var idMoneda=document.getElementById("idMoneda").value;
-		
-		var moneda=$('#idMoneda :selected').text();
-		
-		var userId=document.getElementById("userId").value;
- 
-		var saldo=parseFloat(document.getElementById("inputValor").value);
- 
- 
-		registros.push({ 'codigo': codigo, 'nombre': nombre, 'moneda': moneda,'saldo': saldo,'estado':'PENDIENTE','usuario':userId});
-		/*document.getElementById("txtCod").value="";
-		document.getElementById("txtNom").value="";
-		document.getElementById("txtNota").value="";*/
- 
-		mostrarTabla();
- 
-	}
-	
-function mostrarTabla(){
- var id=0;
-const tiempoTranscurrido = Date.now();
-const hoy = new Date(tiempoTranscurrido);
+function insertar() {
 
-	for(var i=0;i<registros.length;i++){
- 
+
+	var codigo = document.getElementById("idTipoGasto").value;
+
+	var nombre = $('#gasto :selected').text();
+
+	var idMoneda = document.getElementById("idMoneda").value;
+
+	var moneda = $('#idMoneda :selected').text();
+
+	var userId = document.getElementById("userId").value;
+
+	var saldo = parseFloat(document.getElementById("inputValor").value);
+
+
+	let objetoConArchivo = new MiObjetoConArchivo(pos, codigo, nombre, idMoneda, moneda, saldo, "PENDIENTE", userId, null);
+	registros.push(objetoConArchivo);
+	//registros.push({ 'codigo': codigo, 'nombre': nombre, 'moneda': moneda,'saldo': saldo,'estado':'PENDIENTE','usuario':userId});
+	/*document.getElementById("txtCod").value="";
+	document.getElementById("txtNom").value="";
+	document.getElementById("txtNota").value="";*/
+	pos++;
+	mostrarTabla();
+
+}
+
+function mostrarTabla() {
+	var id = 0;
+	const tiempoTranscurrido = Date.now();
+	const hoy = new Date(tiempoTranscurrido);
+
+	for (var i = 0; i < registros.length; i++) {
+
 		var tr2 = `<tr style="background: #ccffcc" id="fila` + i + `">
            <td style="width: 35%"><h5 id="id"><strong>`+ registros[i].nombre + `</strong></h5></td>
            <td style="width: 25%"><h5><strong>` + registros[i].moneda + `</strong></td>
@@ -77,26 +95,33 @@ const hoy = new Date(tiempoTranscurrido);
 
            </tr>`;
 
-			
- //hoy.toLocaleDateString()
+
+		//hoy.toLocaleDateString()
 		/*celda.appendChild(document.createTextNode(registros[i].codigo));
 		celda.appendChild(document.createTextNode(registros[i].nombre));
 		celda.appendChild(document.createTextNode(registros[i].nombre));*/
- 
+
 	}
- 
-$("#cuerpo-items").append(tr2);
- 
+
+	$("#cuerpo-items").append(tr2);
+
 }
- 
- 
- function cargarFichero(id) {
+
+function actualizarValorPorId(lista, id, nuevoValor) {
+	lista.forEach(objeto => {
+		if (objeto.id === id) {
+			objeto.factura = nuevoValor;
+		}
+	});
+}
+
+function cargarFichero(id) {
 	/* const fileSelector = document.getElementById('file');
 	  fileSelector.addEventListener('change', (event) => {
 		const fileList = event.target.files;
 		console.log(fileList);
 	  })	*/
-	 
+
 	var imagen = $('.fichero_' + id)[0].files[0];
 	/*if (imagen.type && (!imagen.type.startsWith('image/*') || !imagen.type.startsWith('application/pdf') )) {
 		console.log('File is not an image.', imagen.type, file);
@@ -114,7 +139,11 @@ $("#cuerpo-items").append(tr2);
 			text: "No ha seleccionado un archivo valido."
 		})
 	}
+	//let archivo = new File(imagen, imagen.name, { type: imagen.type });
+	//let blob = new Blob([imagen], { type: imagen.type });
+	let archivo = new File([imagen], imagen.name, { type: imagen.type });
 
+	actualizarValorPorId(registros, id, archivo);
 
 
 }
@@ -122,109 +151,62 @@ $("#cuerpo-items").append(tr2);
 
 function guardarGastos() {
 
-	
-	var archivo = "";
+
 	try {
-		var resume_table = document.getElementById("h-table");
-		var existe = false;
-		var gasto="";
-		var moneda=""
-		var saldo=0;
-		var gastosArray= new Array();
-		var pos=0;
+		if (registros.length > 0) {
+			for (let i = 0; i < registros.length; i++) {
+				console.log(registros[i]);
+				let ultimoValor = registros[0].factura;
+				var datos = new FormData();
+				//datos.append("gasto", JSON.stringify(registros[i]));
+				datos.append("factura", ultimoValor);
+				datos.append("tipogasto", registros[i].codigo);
+				datos.append("moneda", registros[i].idmoneda);
+				datos.append("saldo", registros[i].saldo);
+				datos.append("estado", registros[i].estado);
 
+				$.ajax({
+					url: globalPath + "/add-gastos",
+					method: "POST",
+					data: datos,
+					chache: false,
+					contentType: false,
+					processData: false,
+					dataType: "json",
+					success: function(respuesta) {
+						var response = JSON.stringify(respuesta, null, '\t');
+						var data = JSON.parse(response);
+						if (data.code == 200) {
 
-		for (var i = 0, row; row = resume_table.rows[i]; i++) {
-			//alert(cell[i].innerText);
-			for (var j = 0, col; col = row.cells[j]; j++) {
-				//alert(col[j].innerText);
-				//console.log(`Txt: ${col.innerText} \tFila: ${i} \t Celda: ${j}`);
-				if (j == 0 && i >= 1) {
-					gasto = col.innerText;
+							$('#gastosNuevoModal').modal('hide');
+							Swal.fire({
+								position: "top-end",
+								icon: "success",
+								title: datas.resultado,
+								showConfirmButton: false,
+								timer: 1500
+							})
+							setTimeout(function() { location.reload(); }, 1505)
+						} else {
 
-				}
-				if (j == 1 && i >= 1) {
-					moneda = col.innerText;
-				}
-				if (j == 2 && i >= 1) {
-					saldo = col.innerText;
-				}
-				if (j == 3 && i >= 1) {
-					console.log(`Txt: ${col.innerText} \tFila: ${i} \t Celda: ${j}`);
-					archivo = $('.fichero_' + pos)[0].files[0];
-						if (archivo == null) {
 							Swal.fire({
 								icon: "error",
-								text: "Debe cargar la factura para continuar."
+								text: datos.error.menssage,
+
 							})
-							return
-					        }else{
-								existe = true;
-							}
-							pos++;						
 						}
-						
-						if(existe){
-							
 
-					var objJavaScript = {
-					    tipogasto: gasto,
-					    moneda: moneda,
-					    saldo: saldo,
-					    factura: new Blob([JSON.stringify(archivo)],{type:'multipart/form-data'}),
-					    estado: "PENDIENTE"
 					}
-						gastosArray.push(objJavaScript);
-						existe=false;
-					}
-						
-					}
-					
-				
-			}	
-						if(gastosArray.length>0){
-							var datos = new FormData();
-							datos.append("gasto", JSON.stringify(gastosArray));
-							//datos.append("trabajos", trabajos);
-							//datos.append("idTitulo", pos);
-							//datos.append("idEmpleado", idEmpleado);
 
-							$.ajax({
-								url: globalPath + "/add-gastos",
-								method: "POST",
-								data: datos,
-								chache: false,
-								contentType: false,
-								processData: false,
-								dataType: "json",
-								success: function(respuesta) {
-									var response = JSON.stringify(respuesta, null, '\t');
-									var data = JSON.parse(response);
-									if (data.code == 200) {
-
-										$("#profile-edit").removeClass("active");
-										$("#profile-edit-div").removeClass("show active");
-
-										$("#profile-profesion").removeClass("active");
-										$("#profile-profesion-div").removeClass("show active");
-
-										var div = document.getElementById("profile-salud");
-										div.className += " active";
-
-										var div2 = document.getElementById("profile-salud-div");
-										div2.className += " show active";
-
-										$('#idEmpleado').val(data.resultado)
-									}
-								}
-							})	
-						}
-					
-							
-						
+				})
 
 
-			}catch (error) {
+
+			}
+		}
+
+
+	} catch (error) {
 		Swal.fire({
 			icon: "error",
 			text: console.error(error)
@@ -234,7 +216,7 @@ function guardarGastos() {
 
 
 
-
+	pos = 0;
 
 }
 
