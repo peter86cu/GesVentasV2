@@ -112,7 +112,7 @@
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa fa-file-pdf-o"></i></button>
 								</span>
 								<span th:if="${prefactura.id_estado}==3">
-								<button class="btn btn-success" th:onclick="datosImprimir('[(${prefactura.id_prefactura})]','[(${prefactura.id_cliente})]')"
+								<button class="btn btn-success" th:onclick="sendMailPrefactura('[(${prefactura.id_prefactura})]')"
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa-solid fa-envelope-open-text"></i></button>
 								</span>
 								
@@ -191,19 +191,6 @@
 										</div>
 
 
-										<div class="col-lg-4">
-										<!--<label for="txtEnvio">Método de envío</label>
-											<select id="txtEnvio" name="txtEnvio" class="form-control custom-select" required>
-												<option selected disabled>Seleccionar</option>
-												<option th:each="plaz : ${plazos}" th:value="${plaz.id_plazo}"
-													th:text="${plaz.descripcion}"></option>
-											</select>  -->	
-											
-											<label for="txtUtil">% Utilidad</label>
-											<input type="text" style="text-align: right;" id="txtUtil" class="form-control input-right" required>
-
-										</div>
-
 									</div>
 
 								</div>
@@ -219,8 +206,8 @@
 													<th class='text-center'>Cantidad</th>
 													<th class='text-center'>Código</th>
 													<th class='text-center'>Descripción</th>
+													<th class='text-center'>UM</th>
 													<th class='text-center'>Precio</th>
-													<th class='text-center'>Total</th>
 													<th class='text-center'></th>
 												</tr>
 											</thead>
@@ -253,8 +240,8 @@
 	<!--FIN DE MODAL ADD NUEVA ORDEN-->
 
 	<!--Modal para agregar items-->
-	<form class="form-horizontal" name="guardar_item" id="guardar_item">
-		<div class="modal fade bs-example-modal-lg" id="addItem" role="dialog" aria-labelledby="myModalLabel">
+	<!--<form class="form-horizontal" name="guardar_item" id="guardar_item">-->
+		<div class="modal fade bs-example-modal-lg" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="myModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -269,7 +256,15 @@
 									<option value="">Buscar producto</option>
 								</select>
 							</div>
-
+							<div class="col-md-2">								
+								<input type="text" style="text-align: right;" id="txtUtil" class="form-control input-right" required>
+							</div>
+								
+								<div class="col-lg-2">
+										
+										<button class="btn btn-primary " onclick="calculoPrecioUtilidad(); return false"
+										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fas fa-check-circle"></i></button>
+										</div>
 							<div class="col-md-12">
 								<label>Producto</label>
 								<input class="form-control" id="descripcionProducto" name="descripcionProducto"
@@ -287,9 +282,16 @@
 							</div>
 
 							<div class="col-md-4">
-								<label>Ultimo Precio</label>
+								<label>Precio</label>
 								<input type="text" class="form-control" id="precio" name="precio" disabled>
 							</div>
+							
+							<div class="col-md-4">
+								<label>Ultimo Precio</label>
+								<input type="text" class="form-control" id="precioUtil" name="precioUtil" disabled>
+							</div>
+							
+							
 
 						</div>
 
@@ -304,7 +306,7 @@
 				</div>
 			</div>
 		</div>
-	</form>
+	<!--</form>-->
 	<!--Fin de modal add items -->
 
 	<!-- The Modal editar ordenes de compras -->
@@ -327,25 +329,7 @@
 
 
 							<div id="print-area">
-								<div class="row pad-top font-big">
-									<div class="col-lg-4 col-md-4 col-sm-4">
-										<a href="https://obedalvarado.pw/" target="_blank"> <img
-												src="assets/img/logo.png" alt="Logo sistemas web" /></a>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-4">
-										<strong>E-mail : </strong> Prueba
-										<br />
-										<strong>Teléfono :</strong> Prueba <br />
-										<strong>Sitio web :</strong> prueba.com
-
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-4">
-										<strong>comercial</strong>
-										<br />
-										Dirección : alguna
-									</div>
-
-								</div>
+								
 
 
 								<div class="row ">
@@ -395,12 +379,7 @@
 											</div>  -->	
 											
 											
-												<div class="col-lg-4">
-																					
-											<label for="txtUtilE">% Utilidad</label>
-											<input type="text" style="text-align: right;" id="txtUtilE" class="form-control input-right" required>
-
-										</div>
+												
 
 										</div>
 

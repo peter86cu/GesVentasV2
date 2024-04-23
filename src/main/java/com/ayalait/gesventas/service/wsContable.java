@@ -156,7 +156,7 @@ public final class wsContable {
 	}
 	
 	
-	public ResponseResultado addGasto(ContableGastos gastos) {
+	public ResponseResultado addGasto(ContableLibroDiario gastos) {
 
 		 
 		ResponseResultado responseResult = new ResponseResultado();
@@ -199,5 +199,178 @@ public final class wsContable {
 	}
 	
 	
+	public ResponseListaCostosDirect obterCostosDirectos(int mes, int anio) {
+
+		 
+		ResponseListaCostosDirect responseResult = new ResponseListaCostosDirect();
+		try {
+
+			String url = this.hostContable + "/contable/costos-directos?mes="+mes+"&anio="+anio;
+			
+			URI uri = new URI(url);
+			ResponseEntity<List<ContableLibroDiario>> response = restTemplate.exchange(uri , HttpMethod.GET, null,
+					new ParameterizedTypeReference<List<ContableLibroDiario>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setLibroDiario(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;	
+		 
+	}
+	
+	
+	public ResponseResultado addCalculoCostos(CalculoCosto calculo) {
+
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		try {
+
+			String url = this.hostContable + "/contable/calculo/add";
+			String data= new Gson().toJson(calculo);
+			HttpEntity<String> requestEntity = new HttpEntity<>(data, null);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;	
+		 
+	}
+	
+	
+	
+	public ResponseResultado addCentroCosto(CentroCosto centro) {
+
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		try {
+
+			String url = this.hostContable + "/contable/centro-costo/add";
+			String data= new Gson().toJson(centro);
+			HttpEntity<String> requestEntity = new HttpEntity<>(data, null);
+			URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceTerminal(String.valueOf(e.getStatusCode().value() ) ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;	
+		 
+	}
+	
+	
+	public ResponseListaCentroCosto listaCentroCosto() {
+
+		 
+		ResponseListaCentroCosto responseResult = new ResponseListaCentroCosto();
+		try {
+
+			String url = this.hostContable + "/contable/centro-costo/lista";
+			
+			URI uri = new URI(url);
+			ResponseEntity<List<CentroCosto>> response = restTemplate.exchange(uri , HttpMethod.POST, null,
+					new ParameterizedTypeReference<List<CentroCosto>>() {
+			});
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setCentroCosto(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(MessageCodeImpl.getMensajeServiceTerminal(String.valueOf(e.getStatusCode().value() ) ));
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
+		 
+
+		return responseResult;	
+		 
+	}
 
 }

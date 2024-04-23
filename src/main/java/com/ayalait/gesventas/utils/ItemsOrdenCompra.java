@@ -6,6 +6,7 @@ public class ItemsOrdenCompra {
    private double importe;
    private String codigo;
    private String nombre;
+   private String simboloUM;
    private double total;
 
    public int getId_detalle() {
@@ -55,4 +56,12 @@ public class ItemsOrdenCompra {
    public void setTotal(double total) {
       this.total = total;
    }
+
+public String getSimboloUM() {
+	return simboloUM;
+}
+
+public void setSimboloUM(String simboloUM) {
+	this.simboloUM = simboloUM;
+}
 }

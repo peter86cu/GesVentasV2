@@ -576,7 +576,7 @@ public class OrdenesFacturasController {
 	@PostMapping({ LoginController.ruta+"/crear-prefactura-venta" })
 	public void crearPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("idPrefactura") int idPrefactura,
 								 @ModelAttribute("idCliente") int idCliente, @ModelAttribute("estado") int estado,
-								 @ModelAttribute("fecha") String fecha, @ModelAttribute("utilidad") int utilidad,
+								 @ModelAttribute("fecha") String fecha,
 								 @ModelAttribute("forma_pago") int forma_pago, @ModelAttribute("prefactura") Prefactura prefactura,
 								 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
 		if (LoginController.session.getToken() != null) {
@@ -616,7 +616,6 @@ public class OrdenesFacturasController {
 						prefactura.setId_moneda(response.getPrefactura().getId_moneda());
 						prefactura.setId_plazo(response.getPrefactura().getId_plazo());
 						prefactura.setEstado(response.getPrefactura().getEstado());
-						prefactura.setUtilidad(response.getPrefactura().getUtilidad());
 						prefactura.setFecha_hora(response.getPrefactura().getFecha_hora());
 						prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
 					}
@@ -629,7 +628,6 @@ public class OrdenesFacturasController {
 					prefactura.setId_cliente(1);
 					prefactura.setId_cliente(idCliente);
 					prefactura.setId_plazo(1);
-					prefactura.setUtilidad(100);
 					prefactura.setId_moneda(forma_pago);
 					//Calendar calendar = Calendar.getInstance();
 					//SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -646,8 +644,8 @@ public class OrdenesFacturasController {
 						prefactura.setId_prefactura(response.getPrefactura().getId_prefactura());
 						prefactura.setId_moneda(forma_pago);
 						prefactura.setId_cliente(idCliente);
-						prefactura.setId_plazo(0);
-						prefactura.setUtilidad(utilidad);
+						prefactura.setId_plazo(1);
+						
 						prefactura.setFecha_hora_creado(response.getPrefactura().getFecha_hora_creado());
 						prefactura.setFecha_hora(fecha);
 						//prefactura.setId_sucursal(LoginController.session.getUser().getEmpleado().getIdsucursal());
@@ -708,7 +706,7 @@ public class OrdenesFacturasController {
 						responseHttp.getWriter().write(json);
 					}
 					
-					String pathPrefactura=LoginController.rutaPDFPrefacturas+"\\prefactura_"+idPrefactura+".pdf";
+					String pathPrefactura=LoginController.rutaPDFPrefacturas+"prefactura_"+idPrefactura+".pdf";
 
 					File archivo = new File(pathPrefactura);
 					//if (archivo.exists()) {
@@ -1039,7 +1037,7 @@ public class OrdenesFacturasController {
 					tabla = tabla + "<tr>\r\n<td class='text-center'>" + itemPos + "</td>\r\n"
 							+ "<td class='text-center'>" + items.getCatidad() + "</td>\r\n" + "<td class='text-center'>"
 							+ items.getCodigo() + "</td>\r\n" + "<td>" + items.getNombre() + "</td>\r\n"
-							+ "<td class='text-right'>" + items.getImporte() + "</td>\r\n" + "<td class='text-right'>"
+							+ "<td class='text-right'>" + items.getSimboloUM() + "</td>\r\n" + "<td class='text-right'>"
 							+ items.getTotal() + "</td>\r\n" + "<td class='text-right'><a href=\"#\" " + modificar
 							+ " onclick=\"eliminar_item('" + items.getId_detalle() + "','" + idOrden
 							+ "')\" ><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAeFBMVEUAAADnTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDznTDx+VWpeAAAAJ3RSTlMAAQIFCAkPERQYGi40TVRVVlhZaHR8g4WPl5qdtb7Hys7R19rr7e97kMnEAAAAaklEQVQYV7XOSQKCMBQE0UpQwfkrSJwCKmDf/4YuVOIF7F29VQOA897xs50k1aknmnmfPRfvWptdBjOz29Vs46B6aFx/cEBIEAEIamhWc3EcIRKXhQj/hX47nGvt7x8o07ETANP2210OvABwcxH233o1TgAAAABJRU5ErkJggg==\"></a></td></tr>";
@@ -1097,6 +1095,25 @@ public class OrdenesFacturasController {
 
 	}
 
+	@PostMapping({ LoginController.ruta+"/delete-items-prefactura" })
+	public void deleteItemPrefactura(@ModelAttribute("accion") String accion, @ModelAttribute("id") int id,
+									  Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException {
+		if (LoginController.session.getToken() != null) {
+			modelo.addAttribute("user", LoginController.session.getUser());
+			if (accion.equalsIgnoreCase("eliminar")) {
+				ResponseResultado response = LoginController.conStock.eliminarItemPrefactura(id);
+				String json = (new Gson()).toJson(response);
+				responseHttp.setContentType("application/json");
+				responseHttp.setCharacterEncoding("UTF-8");
+				responseHttp.getWriter().write(json);
+			}
+		} else {
+			responseHttp.setContentType("application/json");
+			responseHttp.setCharacterEncoding("UTF-8");
+			responseHttp.getWriter().write("LoginController.session caducada");
+		}
+
+	}
 	@PostMapping({ LoginController.ruta+"/items-proveedor" })
 	public void itemsProveedores(@ModelAttribute("accion") String accion, @ModelAttribute("q") String busqueda,
 								 Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
@@ -1146,6 +1163,7 @@ public class OrdenesFacturasController {
 					neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()*LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa(),2)); 
 
 				}else {
+					//Validar que este abierto el dia 
 					neow.setPrecio(Utils.formatearDecimales(itemsProducto.getPrecio()/ LoginController.session.getOepnDay().stream().filter(e->e.getIdmoneda()==moneda).findAny().get().getValorventa() ,2)); 
 
 				}
@@ -1166,7 +1184,7 @@ public class OrdenesFacturasController {
 	
 	
 	
-	@PostMapping({ "send-mail" })
+	@PostMapping({LoginController.ruta+"/send-mail-prefactura" })
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseStatus(HttpStatus.CREATED)
 	public void enviarPDF(@RequestParam("id") int idDocumento,
@@ -1181,6 +1199,8 @@ public class OrdenesFacturasController {
 				confirmar.setEmail(cliente.getCliente().getEmail());
 				confirmar.setName(cliente.getCliente().getNombres());
 				confirmar.setSubject("Confirmar solicitud.");
+				confirmar.setAdjunto(true);
+				confirmar.setArchivo(LoginController.rutaPDFPrefacturas+"prefactura_"+idDocumento+".pdf");
 				
 				String mensajeEnvio=  " <html lang=\"en\">\r\n"
 						+ "<head>\r\n"

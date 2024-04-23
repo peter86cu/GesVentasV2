@@ -328,7 +328,39 @@ public final class wsStock {
 			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
 
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		} 		 
+
+		return responseResult;
+
+		 
+
+	}
+	
+	public ResponseResultado eliminarItemPrefactura(int id) {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		try {
+
+			String url = this.hostStock + "/prefactura/delete?id=" + id;
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.POST, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  

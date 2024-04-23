@@ -563,7 +563,7 @@ public class ImprimirUtils {
                 "    Autorizado por : <label>"+response.getAprobadoPor()+"</label> <br>\n" +
                 "  </p>\n" +
                 "  <br><br>\n" +
-                "  <p class='text-center'>Si tiene alguna consulta relacionada con esta prefactura, por favor contáctenos a: <br><label>"+confi.get(2).getValor()+"</label>, <label>"+response.getEmpresa().getTelefono()+"</label>, <label>"+confi.get(1).getValor()+"</label> </p>\n" +
+                "  <p class='text-center'>Si tiene alguna consulta relacionada con esta prefactura, por favor contáctenos a: <br><label>"+response.getEmpresa().getNombre()+"</label>, <label>"+response.getEmpresa().getTelefono()+"</label>, <label>"+response.getEmpresa().getEmail()+"</label> </p>\n" +
                 "</html>";
 
         return css+pdf1+pdf2+pdf3+table+subTotal+iva+fin+fin1;

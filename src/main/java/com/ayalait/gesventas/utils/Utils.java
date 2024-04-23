@@ -244,6 +244,24 @@ public class Utils {
 		return numero;
 	}
 	
+	public static String obtenerUnidadMedida(int id) throws SQLException {
+		String numero = "";
+		ResultSet estado = Conexion.getConexion("SELECT u.simbolo  FROM unidades_medidas u WHERE u.id_unidad_medida="+id);
+		try {
+			while ( estado.next()) {
+				 numero = estado.getString("simbolo");
+			
+			}
+		} catch (SQLException var2) {
+			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, (String) null, var2);
+		}finally {
+			if(estado!=null)
+				estado.close();
+		}
+
+		return numero;
+	}
+	
 	
 	
 	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra,int id) throws SQLException {
@@ -745,7 +763,7 @@ public class Utils {
 		ResultSet ordenes=null;
 		try {
 			ordenes = Conexion.getConexion(
-					"select o.id_prefactura_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre from prefactura_detalle o inner join producto p \r\n"
+					"select o.id_prefactura_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre,p.um from prefactura_detalle o inner join producto p \r\n"
 					+ " on (o.id_producto=p.id) and o.id_prefactura="+idOrden+"  group by p.codigo");
 			if(ordenes!=null) {
 				while (ordenes.next()) {
@@ -755,6 +773,7 @@ public class Utils {
 					items.setId_detalle(ordenes.getInt("id_detalle"));
 					items.setImporte(ordenes.getDouble("importe"));
 					items.setNombre(ordenes.getString("nombre"));
+					items.setSimboloUM( obtenerUnidadMedida(ordenes.getInt("um")) );
 					items.setTotal((double) items.getCatidad() * items.getImporte());
 					lstItems.add(items);
 				}
@@ -869,7 +888,7 @@ public class Utils {
 				items.setText(producto.getString("codigo"));
 				items.setId(producto.getString("id"));
 				items.setNombre(producto.getString("nombre"));
-				items.setPrecio(getPrecioProducto(items.getId()));
+				items.setPrecio(producto.getDouble("precioventa") /*getPrecioProducto(items.getId())*/);
 				items.setId_moneda(producto.getInt("moneda"));
 				lstItems.add(items);
 			}

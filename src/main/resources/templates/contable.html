@@ -19,7 +19,7 @@
 						<div class="col-sm-6">
 							<h1>
 								<i class="fas fa-file-invoice-dollar" style="color: #218838"></i>
-								<strong>GESTIÓN DE GASTOS</strong>
+								<strong>GESTIÓN DE GASTOS - COSTOS E INGRESOS </strong>
 							</h1>
 						</div>
 
@@ -30,7 +30,7 @@
 			<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 					<li class="breadcrumb-item"><a href="inicio">Inicio</a></li>
-					<li class="breadcrumb-item active">Gestión de Gastos</li>
+					<li class="breadcrumb-item active">Gestión de Gastos, Costos e Ingresos</li>
 				</ol>
 			</div>
 
@@ -38,11 +38,12 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="dropdown">
-						<button class="btn btn-primary" style='width: 170px; height: 50px'>Gastos</button>
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Gestión Financiera</button>
 						<div class="dropdown-content">
-							<a href="#" onclick="abrirModal('gastosNuevoModal')">Gasto Indirecto</a> 
-							<a href="#" onclick="abrirModal('asistenciaModal')">Gasto Directos</a>
-							<a href="https://www.youtube.com/user/hubspot">YouTube</a>
+						<a href="#" onclick="abrirModal('registrarCentroCosto')">Registrar 
+							Centro de Costo</a>
+							<a href="#" onclick="abrirModal('gastosNuevoModal')">Gastos - Costos</a> 
+							
 						</div>
 					</div>
 					<div class="dropdown">
@@ -50,7 +51,13 @@
 						<div class="dropdown-content">
 							<a href="#" onclick="abrirModal('asistenciaModal')">Gasto Indirecto</a> 
 							<a href="#" onclick="abrirModal('asistenciaModal')">Gasto Directos</a>
-							<a href="https://www.youtube.com/user/hubspot">YouTube</a>
+						</div>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Utitilades</button>
+						<div class="dropdown-content">
+							<a href="#" onclick="abrirModal('filtroCostoModal')">Cálculo Hrs/Hombres</a> 
+							
 						</div>
 					</div>
 
@@ -102,11 +109,11 @@
 
 
 	<!--******************************************NUEVO MODAL PARA GESTIONAR GASTOS INDIRECTOS************************************** -->
-	<div class="modal" id="gastosNuevoModal" tabindex="-1" role="dialog">
+	<div class="modal" id="gastosNuevoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header" style="background: #17a2b8;">
-					<h5 class="modal-title">GESTION DE GASTOS</h5>
+					<h5 class="modal-title">GESTION DE GASTOS INDIRECTOS - COSTOS DIRECTOS</h5>
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close"
 						onclick="cerrarModal('gastosNuevoModal'); return false">
@@ -118,29 +125,66 @@
 					<div class="card-body">
 
 						<div class="row">
-							<input type="hidden" id="idTipoGasto" name="idTipoGasto" value="">
+							<input type="hidden" id="idTipoGasto" name="idTipoGasto" value="">							
+							<input type="hidden" id="tipoGasto" name="tipoGasto" value="">
 							<input type="hidden" th:id="userId" name="userId" th:value="${user.idusuario}">
+							<input type="hidden" id="codigoCC" name="codigoCC" value="">
+							
+							<div class="imput-group col-md-4">
+								<select style="width: 100%" class="centrocosto form-control"
+									name="centroc" id="centroc" required>
+									<option value="">Centro Costo</option>
+								</select>
+							</div>
+							
 							<div class="imput-group col-md-4">
 								<select style="width: 100%" class="gastos form-control"
 									name="gasto" id="gasto" required>
 									<option value="">Tipo de Gasto</option>
 								</select>
 							</div>
+							
+								
+							<label for="Mes" class="col-md-1 col-lg-2 col-form-label">Entrada/Salida</label>
+							<div class="col-md-2 col-lg-2">
+								<select id="estado" name="estado"
+									class="form-control custom-select">
+									<option selected disabled>Seleccionar</option>
+									<option value="INGRESO">INGRESO</option>
+									<option value="EGRESO">EGRESO</option>
+									
+								</select>
+							</div>
 
-							<label class="col-md-1 col-lg-1 col-form-label">Moneda</label>
-							<div class="imput-group col-md-3">
+						</div>
+						<br>
+						<div class="row">
+						
+						<label class="col-md-1 col-lg-1 col-form-label">Moneda</label>
+							<div class="imput-group col-md-2">
 								<select style="width: 100%" id="idMoneda" name="idMoneda"
 									class="form-control custom-select"
 									onchange="validarChange(this,'idMoneda');">
-									<option value="0" selected disabled>Seleccionar</option>
+									<option selected disabled>Seleccionar</option>
 									<option th:each="mony : ${listaMoneda}" th:value="${mony.id}"
 										th:text="${mony.moneda}"></option>
 								</select>
 							</div>
+							<label  class="col-md-1 col-lg-1 col-form-label">Fecha</label>
+							<div class="imput-group col-md-2">											
+								<input type="date" class="form-control" id="datepicker" required>
+							</div>
+										
 							<label class="col-md-1 col-lg-1 col-form-label">Saldo</label>
 							<div class="imput-group col-md-2">
 								<input style="width: 100%" type="text" id="inputValor"
 									name="inputValor" class="form-control">
+							</div>
+							
+							
+							<div class="imput-group col-md-2">
+							<input type="checkbox" id="iva" value="first_checkbox" >
+							<label for="opcion1">SUMA IVA</label>
 							</div>
 
 							<div class="imput-group col-md-1">
@@ -150,18 +194,18 @@
 									<i class="fa-solid fa-circle-plus"></i>
 								</button>
 							</div>
-
-						</div>
-						<br>
-
+						</div><br>
 						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
 						<div class="card-block">
 							<table class="table table-bordered table-striped" id="h-table">
 								<thead>
 									<tr style="background: #778899">
+									    <th>CC</th>
 										<th>GASTO</th>
+										<th>E/S</th>
+										<th>TIPO</th>
 										<th>MONEDA</th>
-										<th>CANTIDAD</th>
+										<th>SALDO</th>
 										<th>ARCHIVO</th>
 										<th>RECIBO</th>
 										<th>ACCION</th>
@@ -195,7 +239,125 @@
 <!-- *************************************************FIN************************************************ -->
 
 
-	
+<!--******************************************NUEVO MODAL PARA GENERAR LAS UTILIDADES************************************** -->
+	<div class="modal" id="calculoUtilidadesModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">GESTION DE GASTOS INDIRECTOS - COSTOS DIRECTOS</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('calculoUtilidadesModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row">
+							
+							
+
+						</div>
+						<br>
+
+						<!-- LUGAR DONDE VOY REGISTRADO DATOS  -->
+						<div class="card-block">
+							<table class="table table-bordered table-striped" id="h-table-costo">
+								<thead>
+									<tr style="background: #778899">
+										<th>COSTO DIRECTO</th>
+										<th>TOTAL/MES</th> 
+										<th>TOTAL DIAS/MES</th>
+										<th>HORAS/DIAS</th> 
+										<th>COSTO HORA</th> 
+										<th>ACCIÓN</th>
+									</tr>
+								</thead>
+								<tbody id="cuerpo-items-costo">
+
+								</tbody>
+							</table>
+
+
+						</div>
+						<!--FIN-->
+
+					<div class="modal-footer">
+					<div id="divInferiorIzquierdo" class="posicion-inferior-izquierda">
+						<label>Costo Hr/Hombres: </label><label id="calculoHH">0</label>
+						
+					</div>
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="calcularCostoHH(); return false">Calcular Hr/H</button>
+								<button id="btGuardar" type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarCalculo(); return false" disabled>Guardar</button>
+						</div>
+
+					</div>
+
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+<!-- *************************************************FIN************************************************ -->
+
+<style>
+    .posicion-inferior-izquierda {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+</style>
+
+
+<!--******************************************NUEVO MODAL BUSQUEDA DE COSTO PARA CALCULO DE HORAS/HOMBRES************************************** -->
+
+	<div class="modal" id="filtroCostoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">OBTENER COSTOS DIRECTOS </h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('filtroCostoModal'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Mes</label>
+							<div class="col-md-4 col-lg-4">
+								<select id="mes" name="mes" class="form-control custom-select">
+									<option selected disabled>Seleccionar</option>
+									<option th:each="mes : ${meses}" th:value="${mes.mes}"
+										th:text="${mes.valor}"></option>
+								</select>
+							</div>
+
+					</div>
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="obtenerCostosDirectos(); return false">Buscar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	</div>
+
+	<!--******************************************FIN******************************************************-->
+
 
 
 	<style>
@@ -253,9 +415,65 @@
 
 
 
+<!--***************************** MODAL PARA REGISTRAR CENTRO DE COSTO*********************************** -->
+<div class="modal" id="registrarCentroCosto" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #17a2b8;">
+					<h5 class="modal-title">REGISTRAR CENTRO DE COSTO </h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close"
+						onclick="cerrarModal('registrarCentroCosto'); return false">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Código</label>
+							<div class="col-md-4 col-lg-4">
+								      <input name="codigo" type="text" class="form-control" id="codigo" value="" required>
+
+							</div>
+
+							</div>
+					
+						<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Descripción</label>
+							<div class="col-md-4 col-lg-4">
+								      <input type="text" class="form-control" id="descripcion" name="descripcion" required><br>
+							</div>
+
+					</div>
+					
+					<div class="row mb-3">
+							<label for="Mes" class=" col-lg-2 col-form-label">Estado</label>
+							<div class="col-md-4 col-lg-4">
+								 <select id="estado" name="estado" class="form-control custom-select" required>
+						        <option value="activo">Activo</option>
+						        <option value="inactivo">Inactivo</option>
+						      </select><br>
+							</div>
+
+					</div>
+					
+					<div class="modal-footer">
+						<div class="text-center">
+							<button type="submit" class="btn btn-primary" href="javascript:;"
+								onclick="guardarCentroCosto(); return false">Guardar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	</div>
 
 
 
+	<!--******************************************FIN******************************************************-->
 
 
 

@@ -60,7 +60,36 @@ function validarDiaAbierto() {
 	
 	}
 
-
+function sendMailPrefactura(id) {
+	
+	var datos = new FormData();
+	
+	datos.append("id", id);
+	$.ajax({
+		url: globalPath+"/send-mail-prefactura",
+		method: "POST",
+		data: datos,
+		chache: false,
+		contentType: false,
+		processData: false,
+		dataType: "json",
+		success: function(respuesta) {
+			var response = JSON.stringify(respuesta, null, '\t');
+			var data = JSON.parse(response);
+				if(data.status){
+					mensajeOKSinActPagina(data.resultado)
+				}else{
+					Swal.fire({
+					icon: "error",
+					text: data.error.menssage
+				})
+				}
+			}
+			
+		})
+	
+	}
+	
 function agregarPrefacturaInicial(event) {
  activarLoader();
  const tiempoTranscurrido = Date.now();
@@ -300,7 +329,7 @@ function guardarDetallePrefactura(event) {
 	var idProducto = $('#producto').val();
 	var id = document.getElementById('idPrefactura').innerHTML;
 	var cantidad = $('#cantidad').val();
-	var importe = $('#precio').val();
+	var importe = $('#precioUtil').val();
 	var datos = new FormData();
 	var accion = "insert";
 
@@ -406,7 +435,7 @@ function eliminar_item(id, idOrden) {
 
 
 	$.ajax({
-		url: globalPath+"/delete-items-compra",
+		url: globalPath+"/delete-items-prefactura",
 		method: "POST",
 		data: datos,
 		chache: false,
@@ -581,11 +610,6 @@ function guardar_orden(estado) {
 			timer: 1500
 		})
 		setTimeout(function() { location.reload(); }, 1505)
-	}if ($('#txtUtil').val()==null || $('#txtUtil').val()==""){
-		Swal.fire({
-				icon: "warning",
-				text: "Debe definir el porciento de utilidad.",
-			})
 	} else {
 
 
@@ -655,6 +679,44 @@ function guardar_orden(estado) {
 
 	}
 }
+
+
+function calcularUtilidad() {
+
+	var suma = 0;
+	// Obtener referencia a la tabla
+	var tabla = document.getElementById("h-table-costo");
+
+	// Iterar sobre cada fila de la tabla
+	for (var i = 1; i < tabla.rows.length; i++) {
+		// Obtener referencia a la fila actual
+		var fila = tabla.rows[i];
+
+		// Iterar sobre cada celda de la fila
+		for (var j = 0; j < fila.cells.length; j++) {
+			// Obtener referencia a la celda actual
+			var celda = fila.cells[j];
+
+			if (j == 4) {
+				var contenido = celda.innerHTML;
+				suma += parseInt(contenido);
+			}
+
+
+			// Hacer algo con el contenido de la celda, como imprimirlo en la consola
+			console.log("Contenido de la celda:", contenido);
+		}
+
+	}
+	document.getElementById("calculoHH").innerHTML = suma;
+	if (suma > 0) {
+		var boton = document.getElementById("btGuardar");
+		boton.disabled = false;
+	}
+
+}
+
+
 
 function guardar_prefacturaEditadas(estado) {
 	if (estado == 1) {
@@ -962,5 +1024,22 @@ function changeToPage(table, page, rowsPerPage) {
 					: 'none';
 
 	}
+
+}
+
+function calculoPrecioUtilidad() {
+
+
+	let precio = $("#precio").val();
+	
+	let porciento = $("#txtUtil").val();
+
+	let resultado = (precio*porciento) / 100;
+
+	let precioFinal = parseInt(precio) +resultado;
+
+	$("#precioUtil").val(Math.round(precioFinal));
+
+
 
 }
