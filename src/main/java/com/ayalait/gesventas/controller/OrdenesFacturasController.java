@@ -1154,9 +1154,18 @@ public class OrdenesFacturasController {
 	public void itemsProductos(@ModelAttribute("accion") String accion, @ModelAttribute("q") String busqueda,
 			 @ModelAttribute("tipo") int moneda, Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
 		if (LoginController.session.getToken() != null) {
+			List<ItemsProducto> itemsProductosNew= new ArrayList<ItemsProducto>();
+
+			if(LoginController.session.getOepnDay().isEmpty()) {				 
+                ResponseOpenDay aperturaDia = LoginController.conCaja.openDay(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDD.getFormato()));
+                if(aperturaDia.isStatus()) {
+                	LoginController.session.setOepnDay(aperturaDia.getOpen());
+				}
+			}
+			
+			
 			modelo.addAttribute("user", LoginController.session.getUser());
 			List<ItemsProducto> itemsProductos = Utils.listadoItemsProductos(busqueda);
-			List<ItemsProducto> itemsProductosNew= new ArrayList<ItemsProducto>();
 			for (ItemsProducto itemsProducto : itemsProductos) {
 				ItemsProducto neow = itemsProducto;
 				if(itemsProducto.getId_moneda()!=moneda && moneda==1) {
@@ -1173,6 +1182,8 @@ public class OrdenesFacturasController {
 			responseHttp.setContentType("application/json");
 			responseHttp.setCharacterEncoding("UTF-8");
 			responseHttp.getWriter().write(json);
+			
+			
 		} else {
 			responseHttp.setContentType("application/json");
 			responseHttp.setCharacterEncoding("UTF-8");

@@ -446,7 +446,7 @@ public final class wsUsuarios {
 					});
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setUser(response.getBody());
 
@@ -462,6 +462,13 @@ public final class wsUsuarios {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (org.springframework.web.client.ResourceAccessException e){
+			ErrorState data = new ErrorState();
+			data.setCode(300);
+			responseResult.setStatus(false);
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
 		}
 		
 		return responseResult;

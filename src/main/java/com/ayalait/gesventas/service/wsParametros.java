@@ -357,7 +357,7 @@ public final class wsParametros {
 					});
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setMonedas(response.getBody());
  
@@ -549,7 +549,7 @@ public final class wsParametros {
 					});
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(response.getStatusCodeValue());
 				responseResult.setStatus(true);
 				responseResult.setEstados(response.getBody());
  

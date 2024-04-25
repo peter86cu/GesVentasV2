@@ -251,7 +251,14 @@ public class wsEmpleado {
 			responseResult.setCode(data.getCode());
 			responseResult.setError(data);
 			 
-		} 
+		} catch (org.springframework.web.client.ResourceAccessException e){
+			ErrorState data = new ErrorState();
+			data.setCode(300);
+			responseResult.setStatus(false);
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+		}
 		 
 
 		return responseResult;
@@ -367,6 +374,13 @@ public class wsEmpleado {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (org.springframework.web.client.ResourceAccessException e){
+			ErrorState data = new ErrorState();
+			data.setCode(300);
+			responseResult.setStatus(false);
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
 		}
 		 
 

@@ -290,6 +290,13 @@ public final class wsCaja {
 			data.setCode(myJson.get("code").getAsInt());
 			data.setMenssage(myJson.get("menssage").getAsString());			
 			responseResult.setError(data);
+		}catch (org.springframework.web.client.ResourceAccessException e){
+			ErrorState data = new ErrorState();
+			data.setCode(300);
+			responseResult.setStatus(false);
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
 		}
 		 
 		return responseResult;
