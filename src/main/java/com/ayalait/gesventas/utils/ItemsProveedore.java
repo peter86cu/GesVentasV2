@@ -1,16 +1,16 @@
 package com.ayalait.gesventas.utils;
 
 public class ItemsProveedore {
-	private int id;
+	private String id;
 	private String text;
 	private String email;
 	private String telefono;
 	private String direccion;
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getText() {

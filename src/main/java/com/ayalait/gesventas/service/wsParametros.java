@@ -790,7 +790,7 @@ public final class wsParametros {
 
 	}
 	
-	public ResponseCliente obtenerClientePorId(int id) {		 
+	public ResponseCliente obtenerClientePorId(String id) {		 
 
 		ResponseCliente responseResult = new ResponseCliente();
 		try {

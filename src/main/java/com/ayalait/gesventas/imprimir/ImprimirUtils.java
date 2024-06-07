@@ -102,14 +102,14 @@ public class ImprimirUtils {
         }
     }
 
-    public static ResponsePrefacturamprimir imprimirPrefactura(int idPrefactura, int idCliente){
+    public static ResponsePrefacturamprimir imprimirPrefactura(String idPrefactura, String idCliente){
     	ResponsePrefacturamprimir response= new ResponsePrefacturamprimir();
         List<ItemOrden> lstItems= new ArrayList<ItemOrden>();
         Empresa empresa= new Empresa();
         Cliente cliente= new Cliente();
         try {
             String consulta="select p.codigo,p.nombre, oc.cantidad, oc.importe, o.fecha_hora, m.simbolo, m.moneda, u.simbolo as um FROM  prefactura_detalle oc , producto p, prefacturas o, moneda m, unidades_medidas u\r\n"
-            		+ " where oc.id_producto=p.id AND o.id_prefactura=oc.id_prefactura AND m.id=oc.id_moneda AND p.um=u.id_unidad_medida  and oc.id_prefactura="+idPrefactura;
+            		+ " where oc.id_producto=p.id AND o.id_prefactura=oc.id_prefactura AND m.id=oc.id_moneda AND p.um=u.id_unidad_medida  and oc.id_prefactura='"+idPrefactura+"'";
             ResultSet orden = Conexion.getConexion(consulta);
             if(orden!=null){
                 while (orden.next()){
@@ -136,7 +136,7 @@ public class ImprimirUtils {
                         empresa.setTelefono(rEmpresa.getString("telefono"));
                     }
                 }
-                String consultaProveedor="select * from clientes where id_cliente="+idCliente;
+                String consultaProveedor="select * from clientes where id_cliente='"+idCliente+"'";
                 ResultSet  rProveedor= conexion.getConexion(consultaProveedor);
                 if(rProveedor!=null){
                     while (rProveedor.next()){
@@ -152,7 +152,7 @@ public class ImprimirUtils {
             }
 
             String aprobado=" SELECT CONCAT(e.nombre,' ',e.apellidos) AS nombre from usuarios u inner join prefacturas_modificaciones om\r\n"
-            		+ "  on(u.idusuario=om.id_usuario_autorizo) JOIN empleado e ON e.idempleado=u.idempleado and om.id_prefactura="+idPrefactura+" LIMIT 1";
+            		+ "  on(u.idusuario=om.id_usuario_autorizo) JOIN empleado e ON e.idempleado=u.idempleado and om.id_prefactura='"+idPrefactura+"' LIMIT 1";
             ResultSet  rAprobado= conexion.getConexion(aprobado);
             if(rAprobado!=null){
                 while (rAprobado.next()){
@@ -371,7 +371,7 @@ public class ImprimirUtils {
     
     
     
-    public static String armarPDFPrefactura(ResponsePrefacturamprimir response){
+    public static String armarPDFPrefactura(ResponsePrefacturamprimir response, String codFac){
         List<Configuraciones> confi =  LoginController.conParam.cargarConfiguraciones().getConfiguraciones() ;
 
         String css="<style type=\"text/css\">\n" +
@@ -452,7 +452,7 @@ public class ImprimirUtils {
                 "      <td  style=\"width: 60%; \">\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 20%;color:white;background-color:#aa00cb;padding:5px;text-align:center \">\n" +
-                "        <strong style=\"font-size:14px;\" >No. ORDEN</strong>\n" +
+                "        <strong style=\"font-size:14px;\" >No. PREFACTURA</strong>\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 20%; color:white;background-color:#aa00cb;padding:5px;text-align:center \" >\n" +
                 "        <strong style=\"font-size:14px;\">FECHA</strong>\n" +
@@ -462,7 +462,7 @@ public class ImprimirUtils {
                 "      <td  style=\"width: 60%; \">\n" +
                 "      </td>\n" +
                 "      <td  style=\"width: 20%;padding:5px;text-align:center;border:solid 1px #bdc3c7;font-size:15px\">\n" +
-                "      "+response.getIdPrefactura()+"</td>\n" +
+                "      "+codFac+"</td>\n" +
                 "      <td  style=\"width: 20%;padding:5px;text-align:center;border:solid 1px #bdc3c7;font-size:15px \" >\n" +
                 "        "+response.getFecha()+"</td>\n" +
                 "    </tr>\n" +

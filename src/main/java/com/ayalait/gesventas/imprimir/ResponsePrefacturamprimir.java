@@ -21,7 +21,7 @@ public class ResponsePrefacturamprimir {
 
     private String resultado;
 
-    private int idPrefactura;
+    private String idPrefactura;
 
     private String aprobadoPor;
 
@@ -99,11 +99,11 @@ public class ResponsePrefacturamprimir {
         this.aprobadoPor = aprobadoPor;
     }
 
-	public int getIdPrefactura() {
+	public String getIdPrefactura() {
 		return idPrefactura;
 	}
 
-	public void setIdPrefactura(int idPrefactura) {
+	public void setIdPrefactura(String idPrefactura) {
 		this.idPrefactura = idPrefactura;
 	}
 

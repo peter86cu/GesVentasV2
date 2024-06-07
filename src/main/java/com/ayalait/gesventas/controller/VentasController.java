@@ -294,7 +294,7 @@ public class VentasController {
                         update.setRedondeo(redondeo.doubleValue());
                         update.setId_venta(idVenta);
                         if(cliente!="")
-                        update.setId_cliente(Integer.parseInt(cliente));
+                        update.setId_cliente(cliente);
                         ResponseResultado updateVenta = LoginController.conStock.addVenta(update);
                         String json;
                         if (updateVenta.isStatus()) {
@@ -439,7 +439,7 @@ public class VentasController {
                     ventaInicial.setId_sucursal(LoginController.session.getUser().getEmpleado().getIdsucursal());
                     ventaInicial.setNro_consecutivo(Utils.generarNroConsecutivo(LoginController.session.getUser().getIdusuario(), idApertura));
                     ventaInicial.setId_apertura_cajero(idApertura);
-                    ventaInicial.setId_cliente(1);
+                    ventaInicial.setId_cliente("1");
                     ventaInicial.setFecha_hora(Utils.obtenerFechaPorFormato(fechaConHora.getFormato()));
                     ResponseResultado response = LoginController.conStock.addVenta(ventaInicial);
                     List<ItemsAperturaCajero> ventaNueva = Utils.buscasAperturaCajeroVentas(LoginController.session.getUser().getIdusuario(),true,0);

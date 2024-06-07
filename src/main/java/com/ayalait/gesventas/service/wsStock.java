@@ -48,6 +48,7 @@ public final class wsStock {
 	private String hostStock;
 	private String hostTerminal;
 	private String hostMail;
+	private String hostCotizacion;
 	
 	ObjectWriter ow = (new ObjectMapper()).writer().withDefaultPrettyPrinter();
 
@@ -69,6 +70,7 @@ public final class wsStock {
 				this.hostStock = p.getProperty("server.stock");
 				this.hostTerminal = p.getProperty("server.terminal");
 				this.hostMail= p.getProperty("server.mail");
+				this.hostCotizacion= p.getProperty("server.cotizaciones");
 			}
 		} catch (FileNotFoundException var3) {
 			Logger.getLogger(wsStock.class.getName()).log(Level.SEVERE, (String) null, var3);
@@ -82,6 +84,7 @@ public final class wsStock {
 				hostStock = "http://localhost:8082";
 				hostTerminal= "http://localhost:8087";
 				hostMail="http://localhost:7002";
+				hostCotizacion="http://localhost:7006";
 			}else{
 				cargarServer();
 			}
@@ -253,7 +256,7 @@ public final class wsStock {
 		
 		try {
 
-			String url = this.hostStock + "/prefactura/numero-orden?fecha=" + fecha + "&idusuario=" + idusuario;
+			String url = this.hostStock + "/prefactura/numero-orden?fecha=" + fecha + "&idusuario='" + idusuario+"'";
 			 
 			//URI uri = new URI(url);
 			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
@@ -415,7 +418,7 @@ public final class wsStock {
 	
 	
 	
-	public ResponsePrefactClient obtenerPrefacturaPorID(int id) {
+	public ResponsePrefactClient obtenerPrefacturaPorID(String id) {
 		 
 		ResponsePrefactClient responseResult = new ResponsePrefactClient();
 		
@@ -493,7 +496,7 @@ public final class wsStock {
 	
 	
 	
-	public ResponseCliente obtenerClientePorId(int id) {
+	public ResponseCliente obtenerClientePorId(String id) {
 		 
 		ResponseCliente responseResult = new ResponseCliente();
 		try {
@@ -1025,7 +1028,7 @@ public final class wsStock {
 	}
 	
 	
-	public ResponseMofPorIdPrefactura obtenerModificacionPorIdPrefactura(int id) {
+	public ResponseMofPorIdPrefactura obtenerModificacionPorIdPrefactura(String id) {
 		 
 		ResponseMofPorIdPrefactura responseResult = new ResponseMofPorIdPrefactura();
 		
@@ -1335,5 +1338,51 @@ public final class wsStock {
 		}
 		
 		return responseResult;
+	}
+	
+	
+	public ResponseResultado cargarPrefacturaWEB() {
+		 
+		ResponseResultado responseResult = new ResponseResultado();
+		try {
+
+			String url = this.hostCotizacion + "/cotizacion/pendientes";
+			 
+			//URI uri = new URI(url);
+			ResponseEntity<String> response = restTemplate.exchange(url , HttpMethod.GET, null,String.class);
+
+			if (response.getStatusCodeValue() == 200) {
+
+				responseResult.setStatus(true);
+				responseResult.setResultado(response.getBody());
+ 
+			}
+
+		} catch (org.springframework.web.client.HttpServerErrorException e) {
+			ErrorState data = new ErrorState();
+			data.setCode(e.getStatusCode().value());
+			data.setMenssage(e.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			 
+		}catch (org.springframework.web.client.HttpClientErrorException e) {
+			
+			JsonParser jsonParser = new JsonParser();
+			int in = e.getLocalizedMessage().indexOf("{");
+			int in2 = e.getLocalizedMessage().indexOf("}");
+			String cadena = e.getMessage().substring(in, in2+1);
+			JsonObject myJson = (JsonObject) jsonParser.parse(cadena);
+			responseResult.setCode(myJson.get("code").getAsInt());
+			ErrorState data = new ErrorState();
+			data.setCode(myJson.get("code").getAsInt());
+			data.setMenssage(myJson.get("menssage").getAsString());			
+			responseResult.setError(data);
+		} 
+		 
+
+		return responseResult;
+
+		 
+
 	}
 }

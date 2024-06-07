@@ -178,7 +178,7 @@ function addPrefactura(id) {
 			//desactivarLoading();
 			if (data.code == 200) {
 
-				document.querySelector('#idPrefactura').innerText = data.prefactura.id_prefactura;
+				document.querySelector('#idPrefactura').innerText = data.prefactura.cod_factura;
 				document.querySelector('#datepicker').innerText = data.prefactura.fecha_hora; 
 				$("#txtFormaPago > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
 				//$("#txtEnvio > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
@@ -229,7 +229,7 @@ function editarPrefactura(id, estado) {
 			var data = JSON.parse(response);
 			desactivarLoading();
 			if (data.code == 200) {
-				document.querySelector('#idPrefacturaE').innerText = data.prefactura.id_prefactura;
+				document.querySelector('#idPrefacturaE').innerText = data.prefactura.cod_factura;
 				//document.querySelector('#datepicker').innerText = respuesta["fecha_hora"]; 
 				$("#txtFormaPagoE > option[value=" + data.prefactura.id_moneda + "]").attr("selected", true);
 				//$("#txtEnvioE > option[value=" + data.prefactura.id_plazo + "]").attr("selected", true);
@@ -332,10 +332,11 @@ function guardarDetallePrefactura(event) {
 	var importe = $('#precioUtil').val();
 	var datos = new FormData();
 	var accion = "insert";
+	var idPref = $('#idPrefacturaT').val();
 
 	datos.append("accion", accion);
 	datos.append("idProducto", idProducto);
-	datos.append("id", id);
+	datos.append("id", idPref);
 	datos.append("cantidad", cantidad);
 	datos.append("importe", importe);
 
@@ -558,11 +559,12 @@ $(document).ready(function() {
 function guardar_cliente(idCliente) {
 	var id = document.getElementById('idPrefactura').innerHTML;
 	var datos = new FormData();
+	var idPref = $('#idPrefacturaT').val();
 	var accion = "uCliente";
 	datos.append("accion", accion);
 	$('#id_cliente').val(idCliente);
 	datos.append("idCliente", idCliente);
-	datos.append("idPrefactura", id);
+	datos.append("idPrefactura", idPref);
 	datos.append("estado", 1);
 	datos.append("fecha", "");
 	datos.append("plazo", 0);
@@ -615,6 +617,7 @@ function guardar_orden(estado) {
 
 		var idCliente = $('#id_cliente').val();
 		var id = document.getElementById('idPrefactura').innerHTML;
+		var idPref = $('#idPrefacturaT').val();
 		//var plazo = $('#txtEnvio').val();
 		var utilidad = $('#txtUtil').val();
 		var forma_pago = $('#txtFormaPago').val();
@@ -635,7 +638,7 @@ function guardar_orden(estado) {
 		} else {
 			datos.append("accion", accion);
 			datos.append("idCliente", idCliente);
-			datos.append("idPrefactura", id);
+			datos.append("idPrefactura", idPref);
 			datos.append("utilidad", utilidad);
 			datos.append("forma_pago", forma_pago);
 			datos.append("fecha", fecha);
@@ -799,17 +802,16 @@ function guardar_prefacturaEditadas(estado) {
 }
 
 
-function eliminarOrdenCompra(idOrden) {
+function eliminarPefactura(idPref,codPrefactura) {
 	//var idOrden=  $(this).attr("idOrden");
 	var datos = new FormData();
 	var accion = "delete";
 
 	datos.append("accion", accion);
-	datos.append("idProveedor", 0);
-	datos.append("idOrden", idOrden);
+	datos.append("idPrefactura", idPref);
+	datos.append("idCliente",0);	
 	datos.append("estado", 1);
 	datos.append("fecha", "");
-	datos.append("plazo", 0);
 	datos.append("forma_pago", 0);
 
 	const swalWithBootstrapButtons = Swal.mixin({
@@ -821,7 +823,7 @@ function eliminarOrdenCompra(idOrden) {
 	})
 
 	swalWithBootstrapButtons.fire({
-		title: 'Estas seguro de eliminar la orden con ID: ' + idOrden,
+		title: 'Estas seguro de eliminar la prefactura con ID: ' + codPrefactura,
 
 		icon: 'error',
 		showCancelButton: true,
@@ -832,7 +834,7 @@ function eliminarOrdenCompra(idOrden) {
 		if (result.isConfirmed) {
 
 			$.ajax({
-				url: globalPath+"/crear-orden-compra",
+				url: globalPath+"/crear-prefactura-venta",
 				method: "POST",
 				data: datos,
 				chache: false,
@@ -845,7 +847,7 @@ function eliminarOrdenCompra(idOrden) {
 					if (datas.code == 200) {
 						swalWithBootstrapButtons.fire(
 							'Eliminado!',
-							'La orden a sido eliminada.',
+							'La prefactura a sido eliminada.',
 							'success'
 						).then((result) => {
 							if (result.isConfirmed)
@@ -855,7 +857,7 @@ function eliminarOrdenCompra(idOrden) {
 					} else {
 						Swal.fire({
 							icon: 'error',
-							text: 'Ocurrio un error eliminando la orden!',
+							text: 'Ocurrio un error eliminando la prefactura!',
 						})
 					}
 
@@ -880,10 +882,10 @@ function eliminarOrdenCompra(idOrden) {
 
 //CREACION DEL PAGINADO 
 $(document).ready(function() {
-	$("#searchordenes").keyup(function() {
+	$("#searchprefact").keyup(function() {
 		_this = this;
 		// Show only matching TR, hide rest of them
-		$.each($("#ordenes tbody tr"), function() {
+		$.each($("#prefacturas tbody tr"), function() {
 			if ($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
 				$(this).hide();
 			else
@@ -892,11 +894,12 @@ $(document).ready(function() {
 	});
 });
 
-function datosImprimir(idPrefactura,idCliente){
+function datosImprimir(idPrefactura,idCliente,codFactura){
         var datos = new FormData();
 
         	datos.append("idCliente", idCliente);
         	datos.append("idPrefactura", idPrefactura);
+        	datos.append("codigo",codFactura)
                  $.ajax({
         				url: globalPath+"/imprimir-prefactura",
         				method: "POST",
@@ -910,7 +913,7 @@ function datosImprimir(idPrefactura,idCliente){
         					var datas = JSON.parse(response);
         					if (datas.code == 200) {
         					//window.open(datas.resultado,"_blank");
-        					ventanaCentrada('/prefacturas/prefactura_'+idPrefactura+'.pdf','Prefactura','','1024','768','true');
+        					ventanaCentrada('/prefacturas/'+codFactura+'.pdf','Prefactura','','1024','768','true');
 
 
         					} else {
@@ -942,7 +945,7 @@ function ventanaCentrada(theURL,winName,features, myWidth, myHeight, isCenter) {
 
 $(document).ready(function() {
 
-	addPagerToTables('#ordenes', 8);
+	addPagerToTables('#prefacturas', 8);
 
 });
 

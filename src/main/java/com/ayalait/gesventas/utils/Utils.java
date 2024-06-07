@@ -226,9 +226,9 @@ public class Utils {
 		return lstService;
 	}
 
-	public static String generarNumeroFactura() throws SQLException {
+	public static String generarNumeroFactura(int id) throws SQLException {
 		String numero = "";
-		ResultSet estado = Conexion.getConexion("SELECT CONCAT(codigo,'-',(select round( rand()*100000))) numero from codigo_factura");
+		ResultSet estado = Conexion.getConexion("SELECT CONCAT(codigo,'-',(select round( rand()*100000))) numero from codigo_factura where id="+id);
 		try {
 			while ( estado.next()) {
 				 numero = estado.getString("numero");
@@ -264,7 +264,7 @@ public class Utils {
 	
 	
 	
-	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra,int id) throws SQLException {
+	public static double obtenerIvaACalcularProducto(List<ItemsOrdenCompra> itemsCompra,String id) throws SQLException {
 		double calculoIVA=0;
 		double iva1=0;
 		int cantidad=0;
@@ -274,7 +274,7 @@ public class Utils {
 		if(!itemsCompra.isEmpty()) {
 			for(ItemsOrdenCompra item: itemsCompra) {
 				 estado = Conexion.getConexion("SELECT i.aplicar as iva,pf.cantidad FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
-						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura="+id+" GROUP BY i.aplicar,pf.importe");
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura='"+id+"' GROUP BY i.aplicar,pf.importe");
 				while ( estado.next()) {
 					 iva1 = estado.getDouble("iva");
 					 if(item.getImporte()>0)
@@ -303,7 +303,7 @@ public class Utils {
 	}
 	
 	
-	public static double obtenerIvaAFactura(List<ItemOrden> itemsCompra, int id)  {
+	public static double obtenerIvaAFactura(List<ItemOrden> itemsCompra, String id)  {
 		double calculoIVA=0;
 		double iva1=0;
 		int cantidad=0;
@@ -313,7 +313,7 @@ public class Utils {
 		if(!itemsCompra.isEmpty()) {
 			for(ItemOrden item: itemsCompra) {
 				 estado = Conexion.getConexion("SELECT i.aplicar as iva,pf.cantidad FROM prefactura_detalle pf JOIN producto p ON (pf.id_producto=p.id) "
-						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura="+id+"  GROUP BY i.aplicar,pf.importe");
+						+ "JOIN impuestos i ON(i.id_impuesto=p.idiva) WHERE p.codigo='"+item.getCodigo()+"' AND pf.id_prefactura='"+id+"'  GROUP BY i.aplicar,pf.importe");
 				while ( estado.next()) {
 					 iva1 = estado.getDouble("iva");
 					 if(item.getTotal()>0)
@@ -729,13 +729,13 @@ public class Utils {
 		return lstArqueos;
 	}
 
-	public static List<ItemsOrdenCompra> listadoItemsCompras(int idOrden) throws SQLException {
+	public static List<ItemsOrdenCompra> listadoItemsCompras(String idOrden) throws SQLException {
 		List<ItemsOrdenCompra> lstItems = new ArrayList<ItemsOrdenCompra>();
 		ResultSet ordenes=null;
 		try {
 			ordenes = Conexion.getConexion(
-					"select o.id_orden_de_compra_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre from ordenes_de_compras_detalle o inner join producto p \r\n                             on (o.id_producto=p.id) and o.id_orden_compra="
-							+ idOrden + "  group by p.codigo");
+					"select o.id_orden_de_compra_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre from ordenes_de_compras_detalle o inner join producto p \r\n                             on (o.id_producto=p.id) and o.id_orden_compra='"
+							+ idOrden + "'  group by p.codigo");
 
 			while (ordenes.next()) {
 				ItemsOrdenCompra items = new ItemsOrdenCompra();
@@ -758,13 +758,13 @@ public class Utils {
 	}
 	
 	
-	public static List<ItemsOrdenCompra> listadoItemsPrefactura(int idOrden) throws SQLException {
+	public static List<ItemsOrdenCompra> listadoItemsPrefactura(String idOrden) throws SQLException {
 		List<ItemsOrdenCompra> lstItems = new ArrayList<ItemsOrdenCompra>();
 		ResultSet ordenes=null;
 		try {
 			ordenes = Conexion.getConexion(
 					"select o.id_prefactura_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre,p.um from prefactura_detalle o inner join producto p \r\n"
-					+ " on (o.id_producto=p.id) and o.id_prefactura="+idOrden+"  group by p.codigo");
+					+ " on (o.id_producto=p.id) and o.id_prefactura='"+idOrden+"'  group by p.codigo");
 			if(ordenes!=null) {
 				while (ordenes.next()) {
 					ItemsOrdenCompra items = new ItemsOrdenCompra();
@@ -789,13 +789,13 @@ public class Utils {
 		return lstItems;
 	}
 
-	public static List<ItemsOrdenCompra> listadoItemsFacturas(int idOrden) throws SQLException {
+	public static List<ItemsOrdenCompra> listadoItemsFacturas(String idOrden) throws SQLException {
 		List<ItemsOrdenCompra> lstItems = new ArrayList<ItemsOrdenCompra> ();
 		ResultSet ordenes=null;
 		try {
 			ordenes = Conexion.getConexion(
-					"select o.id_entrada_compra_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre\r\n\t\t\t\t from entradas_compras_detalle o inner join producto p \t\t\t\t  on (o.id_producto=p.id) and o.id_entrada_compra="
-							+ idOrden + "  group by p.codigo");
+					"select o.id_entrada_compra_detalle as id_detalle, o.cantidad, o.importe, p.codigo,p.nombre\r\n\t\t\t\t from entradas_compras_detalle o inner join producto p \t\t\t\t  on (o.id_producto=p.id) and o.id_entrada_compra='"
+							+ idOrden + "'  group by p.codigo");
 
 			while (ordenes.next()) {
 				ItemsOrdenCompra items = new ItemsOrdenCompra();
@@ -991,7 +991,7 @@ public class Utils {
 				while (proveedor.next()) {
 					ItemsProveedore items = new ItemsProveedore();
 					items.setText(proveedor.getString("razon_social"));
-					items.setId(proveedor.getInt("id_proveedor"));
+					items.setId(proveedor.getString("id_proveedor"));
 					items.setDireccion(proveedor.getString("direccion"));
 					items.setEmail(proveedor.getString("email"));
 					items.setTelefono(proveedor.getString("telefono"));
@@ -1017,12 +1017,12 @@ public class Utils {
 		ResultSet proveedor =null;
 		try {
 			 proveedor = Conexion.getConexion("SELECT * FROM clientes WHERE nombres LIKE '%" + search
-					+ "%' and fecha_baja is null and id_tipo_cliente=3 LIMIT 40");
+					+ "%' and fecha_baja is null and id_tipo_cliente in(3,5) LIMIT 40");
 			if(proveedor!=null){
 				while (proveedor.next()) {
 					ItemsProveedore items = new ItemsProveedore();
 					items.setText(proveedor.getString("nombres"));
-					items.setId(proveedor.getInt("id_cliente"));
+					items.setId(proveedor.getString("id_cliente"));
 					items.setDireccion(proveedor.getString("direccion"));
 					items.setEmail(proveedor.getString("email"));
 					items.setTelefono(proveedor.getString("telefono"));
