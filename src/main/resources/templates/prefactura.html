@@ -112,7 +112,7 @@
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa fa-file-pdf-o"></i></button>
 								</span>
 								<span th:if="${prefactura.id_estado}==3">
-								<button class="btn btn-success" th:onclick="sendMailPrefactura('[(${prefactura.id_prefactura})]')"
+								<button class="btn btn-success" th:onclick="sendMailPrefactura('[(${prefactura.id_prefactura})]','[(${prefactura.cod_factura})]')"
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i class="fa-solid fa-envelope-open-text"></i></button>
 								</span>
 								

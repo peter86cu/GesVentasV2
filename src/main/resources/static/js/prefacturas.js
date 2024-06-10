@@ -60,11 +60,12 @@ function validarDiaAbierto() {
 	
 	}
 
-function sendMailPrefactura(id) {
+function sendMailPrefactura(id,codigo) {
 	
 	var datos = new FormData();
-	
+	 activarLoader();
 	datos.append("id", id);
+	datos.append("codigo",codigo)
 	$.ajax({
 		url: globalPath+"/send-mail-prefactura",
 		method: "POST",
@@ -76,6 +77,14 @@ function sendMailPrefactura(id) {
 		success: function(respuesta) {
 			var response = JSON.stringify(respuesta, null, '\t');
 			var data = JSON.parse(response);
+			//Ocultar DIV
+			var x = document.getElementById("loadingTemplate");
+		    if (x.style.display === "none") {
+		        x.style.display = "block";
+		    } else {
+		        x.style.display = "none";
+		    }
+		    desactivarLoading();
 				if(data.status){
 					mensajeOKSinActPagina(data.resultado)
 				}else{

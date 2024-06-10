@@ -45,7 +45,7 @@ import org.springframework.web.client.RestTemplate;
 
 public final class wsStock {
 
-	private String hostStock;
+	public String hostStock;
 	private String hostTerminal;
 	private String hostMail;
 	private String hostCotizacion;
