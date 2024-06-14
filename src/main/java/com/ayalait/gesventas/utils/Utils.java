@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,6 +61,24 @@ public class Utils {
 
 
 	}
+	
+	
+	public static String convertFileToBase64(String filePath) {
+        try {
+            // Lee el archivo como un array de bytes
+            Path path = Paths.get(filePath);
+            byte[] fileBytes = Files.readAllBytes(path);
+
+            // Convierte el array de bytes a una cadena Base64
+            String base64String = Base64.getEncoder().encodeToString(fileBytes);
+
+            return base64String;
+        } catch (IOException e) {
+            // Maneja la excepción en caso de error al leer el archivo
+            e.printStackTrace();
+            return null;
+        }
+    }
 	
 	public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
 		return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);

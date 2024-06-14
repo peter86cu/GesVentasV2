@@ -1224,8 +1224,8 @@ public class OrdenesFacturasController {
 				confirmar.setName(cliente.getCliente().getNombres());
 				confirmar.setSubject("Confirmar solicitud.");
 				confirmar.setAdjunto(true);
-				confirmar.setArchivo(LoginController.rutaPDFPrefacturas+""+codigo+".pdf");
-				
+				confirmar.setArchivo(Utils.convertFileToBase64(LoginController.rutaPDFPrefacturas+""+codigo+".pdf") );
+				confirmar.setNombreArchivo(codigo+".pdf");
 				String mensajeEnvio=  " <html lang=\"en\">\r\n"
 						+ "<head>\r\n"
 						+ "    <meta charset=\"UTF-8\">\r\n"
