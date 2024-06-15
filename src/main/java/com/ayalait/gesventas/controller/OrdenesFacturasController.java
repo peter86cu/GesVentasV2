@@ -117,9 +117,10 @@ public class OrdenesFacturasController {
 	public String inicioPrefactura(Model modelo) throws SQLException {
 		if (LoginController.session.getToken() != null) {
 			modelo.addAttribute("user", LoginController.session.getUser());
+			ResponseResultado responseCot= LoginController.conStock.cargarPrefacturaWEB();
+
 			ResponseListaPrefactura response = LoginController.conStock.listadoPrefactura();
 			ResponseListaPrefAprobadas lstOCAprobadas = LoginController.conStock.listadoPrefacturaAprobadas();
-			ResponseResultado responseCot= LoginController.conStock.cargarPrefacturaWEB();
 			
 			OrdenCompra ordenCompra = new OrdenCompra();
 			if(response.isStatus()){
