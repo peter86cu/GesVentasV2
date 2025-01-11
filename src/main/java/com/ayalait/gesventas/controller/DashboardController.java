@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-
+import com.ayalait.gesventas.NotificacionesWebSocketHandler;
 import com.ayalait.gesventas.utils.*;
 import com.ayalait.modelo.*;
 import com.ayalait.response.*;
@@ -19,11 +19,17 @@ import com.ayalait.web.ResponseVisitantes;
 import com.ayalait.web.VisitantesLog;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -42,7 +48,8 @@ public class DashboardController {
 	
 	@Autowired
 	RestTemplate restTemplate;
-
+	 @Autowired
+	 NotificacionesWebSocketHandler webSocketHandler;
 
 	public DashboardController() {
 		fechaSinHora = FormatoFecha.YYYYMMDD;
@@ -89,5 +96,21 @@ public class DashboardController {
 		}
 		return "redirect:/";
 	}
+	
+	
+	@GetMapping("/send-notification/{username}")
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> sendNotification(@PathVariable String username) {
+        try {
+            // Aquí enviamos un mensaje al usuario específico a través del WebSocket
+            webSocketHandler.sendMessageToUser(username, "¡Hola! Tienes una nueva notificación.");
+
+            return ResponseEntity.ok("Notificación enviada exitosamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al enviar la notificación.");
+        }
+    }
 
 }

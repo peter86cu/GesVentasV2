@@ -1124,6 +1124,16 @@ public final class wsStock {
 			responseResult.setError(data);
 			responseResult.setStatus(false);
 			return responseResult;	
+		}catch(org.springframework.web.client.ResourceAccessException ex){
+			
+			responseResult.setCode(505);
+			ErrorState data = new ErrorState();
+			data.setCode(505);
+			data.setMenssage(ex.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			responseResult.setStatus(false);
+			return responseResult;	
 		}
 		 
 
@@ -1377,7 +1387,17 @@ public final class wsStock {
 			data.setCode(myJson.get("code").getAsInt());
 			data.setMenssage(myJson.get("menssage").getAsString());			
 			responseResult.setError(data);
-		} 
+		} catch(org.springframework.web.client.ResourceAccessException ex){
+			
+			responseResult.setCode(505);
+			ErrorState data = new ErrorState();
+			data.setCode(505);
+			data.setMenssage(ex.getMessage());
+			responseResult.setCode(data.getCode());
+			responseResult.setError(data);
+			responseResult.setStatus(false);
+			return responseResult;	
+		}
 		 
 
 		return responseResult;

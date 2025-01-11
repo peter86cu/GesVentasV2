@@ -54,6 +54,11 @@ public class Utils {
 	private static Conexion conexion = new Conexion();
 	private static FormatoFecha formatoFechaHoy;
 	private static FormatoFecha formatoFechaSinHora;
+	
+	public static String CLASSWARNING="bi bi-exclamation-circle text-warning";
+	public static String CLASSDANGER="bi bi-x-circle text-danger";
+	public static String CLASSSUCCESS="bi bi-check-circle text-success";
+	public static String CLASSPRIMARY="bi bi-info-circle text-primary";
 
 	public Utils() {
 		formatoFechaHoy = FormatoFecha.YYYYMMDDH24;

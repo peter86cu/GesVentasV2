@@ -21,6 +21,7 @@ import java.util.UUID;
 import com.ayalait.gesventas.request.*;
 import com.ayalait.gesventas.utils.*;
 import com.ayalait.modelo.*;
+import com.ayalait.notificaciones.Notificaciones;
 import com.ayalait.response.*;
 import com.ayalait.utils.Email;
 import com.ayalait.utils.ResponsePrefactura;
@@ -118,6 +119,17 @@ public class OrdenesFacturasController {
 		if (LoginController.session.getToken() != null) {
 			modelo.addAttribute("user", LoginController.session.getUser());
 			ResponseResultado responseCot= LoginController.conStock.cargarPrefacturaWEB();
+			if(!responseCot.isStatus()) {
+				Notificaciones notificacion= new Notificaciones();
+				notificacion.setTipo("Error");
+				notificacion.setError(responseCot.getError().getMenssage());
+				notificacion.setNotificacion("Cotización WEB");
+				notificacion.setUserid(LoginController.session.getUser().getIdusuario());
+				notificacion.setEstado("PENDIENTE");
+				notificacion.setFecha(Utils.obtenerFechaPorFormato(FormatoFecha.YYYYMMDDH24.getFormato()));
+				notificacion.setClase(Utils.CLASSDANGER);
+				LoginController.conNotificaciones.addNotidicacion(notificacion);
+			}
 
 			ResponseListaPrefactura response = LoginController.conStock.listadoPrefactura();
 			ResponseListaPrefAprobadas lstOCAprobadas = LoginController.conStock.listadoPrefacturaAprobadas();

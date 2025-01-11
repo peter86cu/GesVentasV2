@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+	
 <head th:replace="template :: html_head">
+	
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 	
 	
 <body >
 <div th:replace="template :: header"></div>
 <div th:replace="template :: menu"></div>
-
+ 	
+    <div id="notificacion">Esperando notificaciones...</div>
 
  <main id="main" class="main">
 
@@ -128,7 +132,7 @@
  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 		<div th:replace="template :: loadingTemplate"></div>
 	<div th:replace="template :: mDiaTemplate"></div>
-
+    <div th:replace="template :: mNotificacionTemplate"></div>
 </body>
 <div th:replace="template :: footer"> </div>
 

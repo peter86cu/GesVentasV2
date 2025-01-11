@@ -89,7 +89,6 @@
 	<!-- Template Main CSS File -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 	<script type="text/javascript" src="js/caja.js"></script>
 	<script type="text/javascript" src="js/ordenes-compras.js"></script>
 	<script type="text/javascript" src="js/facturas-compras.js"></script>
@@ -102,7 +101,8 @@
 	<script type="text/javascript" src="js/empleados.js"></script>
 	<script type="text/javascript" src="js/contable.js"></script>
 	<script type="text/javascript" src="js/prefacturas.js"></script>
-		<script type="text/javascript" src="js/dashboard.js"></script>
+	<script type="text/javascript" src="js/dashboard.js"></script>
+   
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
@@ -130,7 +130,6 @@
 				</form>
 			</div><!-- End Search Bar -->
 
-
 			<nav class="header-nav ms-auto">
 				<ul class="d-flex align-items-center">
 
@@ -144,22 +143,22 @@
 
 						<a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
 							<i class="bi bi-bell"></i>
-							<span class="badge bg-primary badge-number">4</span>
+							<span class="badge bg-primary badge-number" id="cantNotiT"></span>
 						</a><!-- End Notification Icon -->
 
 						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
 							<li class="dropdown-header">
-								You have 4 new notifications
+								Tienes <span id="cantNoti"></span> notificaciones
 								<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
 							</li>
 							<li>
 								<hr class="dropdown-divider">
 							</li>
-
-							<li class="notification-item">
+						<span id="listaNoti"></span>
+							<!--<li class="notification-item">
 								<i class="bi bi-exclamation-circle text-warning"></i>
 								<div>
-									<h4>Lorem Ipsum</h4>
+									<h4 id="">Lorem Ipsum</h4>
 									<p>Quae dolorem earum veritatis oditseno</p>
 									<p>30 min. ago</p>
 								</div>
@@ -206,7 +205,7 @@
 
 							<li>
 								<hr class="dropdown-divider">
-							</li>
+							</li> -->
 							<li class="dropdown-footer">
 								<a href="#">Show all notifications</a>
 							</li>
@@ -280,6 +279,7 @@
 						</ul><!-- End Messages Dropdown Items -->
 
 					</li><!-- End Messages Nav -->
+<input type="hidden" id="userId" name="userId" th:value="${user.idusuario}">
 
 					<li class="nav-item dropdown pe-3">
 
@@ -527,15 +527,33 @@
 					</li>
 
 				</ul>
+			</li>
+			
+				<li class="nav-item" th:if="${user.getIdrol().idrol}==1 or ${user.getIdrol().idrol}==6">
+				<a class="nav-link collapsed" data-bs-target="#components-nav-ticket" data-bs-toggle="collapse"
+					href="inicio">
+					<img src="iconos/incidente.png" alt=""><span> GESTIÓN DE TICKET</span><i
+						class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="components-nav-ticket" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<li>
+						<a href="javaScript:validarServer('gestion-ticket')">
+							<img src="iconos/importante.png" alt=""><span> Ticket</span>
+
+						</a>
+					</li>
+				
+
+				</ul>
 			</li><!-- End Components Nav -->
 
 		</ul>
-
+<script type="text/javascript" src="js/notificaciones.js"></script>
 
 
 	</aside><!-- End Sidebar-->
 
-
+ 
 
 	<!-- Control Sidebar -->
 	<aside class="control-sidebar control-sidebar-dark">
@@ -667,11 +685,38 @@
 				</div>
 			</div>
 		</div>
-
-
-
-		<!--*******************************************FIN APERTURA DIA*************************************************-->
 	</div>
+<!--*******************************************FIN APERTURA DIA*************************************************-->
+
+
+<!--*******************************************INICIO DE NOTIFICACION*************************************************-->
+
+	<div id="mNotificacionTemplate" th:fragment="mNotificacionTemplate">
+		<div class="myForm">
+			<div class="modal fade" id="notificacionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header" style="background: #17a2b8;">
+							<h4 class="modal-title"><strong>DETALLE DE NOTIFICACIÓN</strong></h4>
+							<button type="button" class="close" onclick="cerrarModal('abrirDia'); return false"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="card-body">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--*******************************************FIN notificacion*************************************************-->
+
+
 
 
 
@@ -705,15 +750,9 @@
 
 	<footer id="footer" class="footer" th:fragment="footer">
 		<div class="copyright">
-			&copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+			&copy; Copyright <strong><span>AyalaIT S.A.S</span></strong>. All Rights Reserved
 		</div>
-		<div class="credits">
-			<!-- All the links in the footer should remain intact. -->
-			<!-- You can delete the links only if you purchased the pro version. -->
-			<!-- Licensing information: https://bootstrapmade.com/license/ -->
-			<!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-			Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-		</div>
+		
 
 	</footer><!-- End Footer -->
 
