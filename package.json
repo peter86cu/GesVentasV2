@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/peter86cu/GesVentasV2#readme",
   "dependencies": {
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "ws": "^8.17.1"
   }
 }
