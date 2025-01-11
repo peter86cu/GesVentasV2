@@ -902,12 +902,12 @@ public class Utils {
 		return lstItems;
 	}
 
-	public static List<ItemsProducto> listadoItemsProductos(String search) throws SQLException {
+	public static List<ItemsProducto> listadoItemsProductos(String search, int evento) throws SQLException {
 		List<ItemsProducto> lstItems = new ArrayList<ItemsProducto>();
 		ResultSet producto =null;
 		try {
 			 producto = Conexion.getConexion("SELECT * FROM producto WHERE codigo LIKE '%" + search
-					+ "%' or nombre LIKE '%" + search + "%'  LIMIT 40");
+					+ "%' or nombre LIKE '%" + search + "%' and evento="+evento+" LIMIT 40");
 
 			while (producto.next()) {
 				ItemsProducto items = new ItemsProducto();

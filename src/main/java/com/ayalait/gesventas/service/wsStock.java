@@ -954,7 +954,7 @@ public final class wsStock {
 			ResponseEntity<String> response = restTemplate.exchange(uri , HttpMethod.POST, requestEntity,String.class);
 
 			if (response.getStatusCodeValue() == 200) {
-
+				responseResult.setCode(response.getStatusCodeValue() );
 				responseResult.setStatus(true);
 				responseResult.setResultado(response.getBody());
  

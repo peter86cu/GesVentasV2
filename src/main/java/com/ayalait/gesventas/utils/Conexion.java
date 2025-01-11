@@ -29,9 +29,9 @@ public class Conexion {
     public Conexion() {
         try {
             if(LoginController.desarrollo){
-                this.userBD = "root";
-                this.passBD = "XXBgoo71756";
-                this.url="jdbc:mysql://gesventas-prod.web.elasticloud.uy:3306/gesventas?serverTimezone=UTC";
+                this.userBD = "gesventas";
+                this.passBD = "GesVentas123*";
+                this.url="jdbc:mysql://node3817-gesventas-prod.web.elasticloud.uy:3306/gesventas?serverTimezone=UTC";
                 this.driver="com.mysql.cj.jdbc.Driver";
             }else{
                 cargarServer();

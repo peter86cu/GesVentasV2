@@ -495,7 +495,8 @@ $(document).ready(function() {
 			data: function(params) {
 				return {
 					q: params.term, // search term
-					tipo: $('#txtFormaPago').val()
+					tipo: $('#txtFormaPago').val(),
+					evento:3
 				};
 			},
 			processResults: function(data) {

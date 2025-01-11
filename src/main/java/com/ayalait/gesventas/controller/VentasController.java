@@ -625,7 +625,7 @@ public class VentasController {
             }
 
             if (response.isStatus()) {
-
+            	resultado.setStatus(true);
                 resultado.setCode(response.getCode());
                 double productoIvaSuma = 0;
                 for (ItemsVenta item : response.getItemsVentas()) {

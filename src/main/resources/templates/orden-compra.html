@@ -95,7 +95,7 @@
 								<td th:if="${orden.id_estado}!=2 and ${orden.id_estado}!=3 and ${orden.id_estado}!=4 and ${orden.id_estado}!=5" ><span  class="text_negro" th:text="${orden.estado}"></span></td>
 								<td>
 								<span th:if="${orden.id_estado}!=1">								
-									<button class="btn btn-primary ModalEditarOrdenes" 	th:onclick="editarOrdenCompra('[(${orden.id_orden_compra})]','[(${orden.id_estado})]')"
+									<button class="btn btn-primary ModalEditarOrdenes" 	th:onclick="editarOrdenCompraOld('[(${orden.id_orden_compra})]','[(${orden.id_estado})]')"
 										style="color: #000000;background-color: #66CDAA;border-color: #20B2AA"><i
 											class="far fa-edit"></i></button>
 								</span>
@@ -229,10 +229,10 @@
 							</div>
 
 							<button type="submit" class="btn btn-success" href="javascript:;"
-								onclick="guardar_orden(1); return false">Crear orden de compra</button>
+								onclick="guardar_ordenOld(1); return false">Crear orden de compra</button>
 
 							<button type="submit" class="btn btn-danger" style="float: right;" href="javascript:;"
-								onclick="guardar_orden(0); return false">Guardar borrador</button>
+								onclick="guardar_ordenOld(0); return false">Guardar borrador</button>
 						</div>
 					</div>
 
@@ -255,7 +255,7 @@
 
 						<div class="row">
 							<div class="col-lg-6 col-md-6 col-sm-6">
-								<select style="width: 100%" class="productos form-control" name="productos"
+								<select style="width: 100%" class="productosOld form-control" name="productos"
 									id="producto" required>
 									<option value="">Buscar producto</option>
 								</select>

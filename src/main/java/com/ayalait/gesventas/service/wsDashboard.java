@@ -58,6 +58,7 @@ public final class wsDashboard {
 				propertiesStream.close();
 
 				hostDashboard = p.getProperty("server.dashboard");
+				//hostDashboard = "http://localhost:7007";
 			}
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(wsDashboard.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,17 +66,19 @@ public final class wsDashboard {
 
 	}
 
-	public wsDashboard() {
-		try {
+	public wsDashboard() throws IOException {
+		//try {
 			if(LoginController.desarrollo){
 				hostDashboard = "http://localhost:7007";
 			}else{
 				cargarServer();
+				//hostDashboard = "http://localhost:7007";
+
 			}
 
-		} catch (IOException ex) {
+		/*} catch (IOException ex) {
 			Logger.getLogger(wsDashboard.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		}*/
 	}
 
 	 public ResponseResultado validarConectividadServidor() {

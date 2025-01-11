@@ -23,6 +23,25 @@ class MiObjetoConArchivo {
 }
 
 
+// Datos de ejemplo (simulando los datos de contabilidad)
+const datosContabilidad = [
+    { tipo: 'SALARIO IVAN', saldo: 18732, entradaSalida: 'EGRESO' },
+    { tipo: 'INTERNET', saldo: 1600, entradaSalida: 'EGRESO' },
+    { tipo: 'FACTURA ABITAB', saldo: 141.52, entradaSalida: 'INGRESO' },
+    { tipo: 'PUBLICACIONES EN R.S', saldo: 2000, entradaSalida: 'EGRESO' },
+    { tipo: 'DGI', saldo: 17000, entradaSalida: 'EGRESO' },
+    { tipo: 'BPS', saldo: 17000, entradaSalida: 'EGRESO' },
+    { tipo: 'LICENCIA MICROSOFT', saldo: 4073, entradaSalida: 'EGRESO' },
+];
+
+// Función para calcular el saldo total basado en 'EGRESO' o 'INGRESO'
+function calcularContabilidad() {
+    return datosContabilidad
+        .filter(item => item.entradaSalida === tipoOperacion)
+        .reduce((acc, item) => acc + item.saldo, 0);
+}
+
+
 $(document).ready(function() {
 	$(".gastos").select2({
 		dropdownParent: $('#gastosNuevoModal'),

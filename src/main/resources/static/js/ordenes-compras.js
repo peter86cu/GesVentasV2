@@ -38,7 +38,7 @@ function agregarOrdenInicial(event) {
 				$("#idOrdenT").val(data.resultado);
 				document.querySelector('#idOrden').innerText = data.resultado;
 				$('#ModalADDOrdenes').modal('show');
-				mostrar_items(data.resultado, "nada");
+				mostrar_itemsOld(data.resultado, "nada");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -83,7 +83,7 @@ function addOrdenCompra(idOrden) {
 				$("#datepicker").val(data.ordenCompra.fecha_hora);
 				$("#id_proveedor").val(data.ordenCompra.id_proveedor);
 				buscar_proveedor_orden(data.ordenCompra.id_proveedor, "2");
-				mostrar_items(data.ordenCompra.id_orden_compra, "nada");
+				mostrar_itemsOld(data.ordenCompra.id_orden_compra, "nada");
 
 				$('#ModalADDOrdenes').modal('show');
 			} else {
@@ -100,7 +100,7 @@ function addOrdenCompra(idOrden) {
 
 }
 
-function editarOrdenCompra(idOrden, estado) {
+function editarOrdenCompraOld(idOrden, estado) {
 
 	var datos = new FormData();
 
@@ -127,7 +127,7 @@ function editarOrdenCompra(idOrden, estado) {
 				$("#txtFormaPagoE > option[value=" + data.ordenCompra.id_forma_pago + "]").attr("selected", true);
 				$("#txtEnvioE > option[value=" + data.ordenCompra.id_plazo + "]").attr("selected", true);
 				buscar_proveedor_orden(data.ordenCompra.id_proveedor, "1");
-				mostrar_items(data.ordenCompra.id_orden_compra, "editar");
+				mostrar_itemsOld(data.ordenCompra.id_orden_compra, "editar");
 
 				$("#idOrden1E").val(data.ordenCompra.id_orden_compra);
 				$("#proveedorE1").val(data.ordenCompra.id_proveedor);
@@ -254,7 +254,7 @@ function guardarDetalleOrden(event) {
 				})
 
 
-				mostrar_items(idOrden, "nada");
+				mostrar_itemsOld(idOrden, "nada");
 
 			} else {
 				Swal.fire({
@@ -271,7 +271,7 @@ function guardarDetalleOrden(event) {
 
 
 
-function mostrar_items(id, accion) {
+function mostrar_itemsOld(id, accion) {
 
 	var datos = new FormData();
 
@@ -327,7 +327,7 @@ function eliminar_item(id, idOrden) {
 			var datos = JSON.parse(response);
 
 			if (datos.code == 200) {
-				mostrar_items(idOrden, "nada");
+				mostrar_itemsOld(idOrden, "nada");
 				Swal.fire({
 					position: "top-end",
 					icon: "success",
@@ -350,7 +350,7 @@ function eliminar_item(id, idOrden) {
 
 
 $(document).ready(function() {
-	$(".productos").select2({
+	$(".productosOld").select2({
 		//dropdownParent: $('#ModalADDOrdenes'),
 		dropdownParent: $('#addItem'),
 		theme: 'bootstrap-5',
@@ -361,7 +361,10 @@ $(document).ready(function() {
 			delay: 250,
 			data: function(params) {
 				return {
-					q: params.term // search term
+					q: params.term, // search term
+					evento: 1,
+					tipo: 1
+					
 				};
 			},
 			processResults: function(data) {
@@ -374,8 +377,8 @@ $(document).ready(function() {
 		minimumInputLength: 2
 	}).on('change', function(e) {
 
-		$("#descripcionProducto").val($('.productos').select2('data')[0].nombre);
-		$("#precio").val($('.productos').select2('data')[0].precio);
+		$("#descripcionProducto").val($('.productosOld').select2('data')[0].nombre);
+		$("#precio").val($('.productosOld').select2('data')[0].precio);
 
 	})
 });
@@ -457,7 +460,7 @@ function guardar_proveedor(idProveedor) {
 }
 
 
-function guardar_orden(estado) {
+function guardar_ordenOld(estado) {
 
 	if (estado == 1) {
 		var var_estado = 2;

@@ -287,7 +287,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-	$(".producto").select2({
+	$(".productoFac").select2({
 		dropdownParent: $('#addFactura'),
 		theme: 'bootstrap-5',
 		ajax: {
@@ -297,7 +297,9 @@ $(document).ready(function() {
 			delay: 250,
 			data: function(params) {
 				return {
-					q: params.term // search term
+					q: params.term, // search term
+					evento:2,
+					tipo:1
 				};
 			},
 			processResults: function(data) {
@@ -310,8 +312,8 @@ $(document).ready(function() {
 		minimumInputLength: 2
 	}).on('change', function(e) {
 
-		$("#descripcion").val($('.producto').select2('data')[0].nombre);
-		$("#precio").val($('.producto').select2('data')[0].precio);
+		$("#descripcion").val($('.productoFac').select2('data')[0].nombre);
+		$("#precio").val($('.productoFac').select2('data')[0].precio);
 		$("#producto").select2('data', null);
 
 

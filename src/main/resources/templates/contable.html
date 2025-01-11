@@ -47,16 +47,17 @@
 						</div>
 					</div>
 					<div class="dropdown">
-						<button class="btn btn-primary" style='width: 170px; height: 50px'>Ingresos</button>
+						<button class="btn btn-primary" style='width: 170px; height: 50px'>Presupuesto</button>
 						<div class="dropdown-content">
-							<a href="#" onclick="abrirModal('asistenciaModal')">Gasto Indirecto</a> 
-							<a href="#" onclick="abrirModal('asistenciaModal')">Gasto Directos</a>
+							<a href="#" onclick="abrirModal('presupuestoNuevoModal')">Presupuesto Mensual</a> 
+							<a href="#" onclick="abrirModal('presupuestoModal')">Estado Presupuesto</a>
 						</div>
 					</div>
 					<div class="dropdown">
 						<button class="btn btn-primary" style='width: 170px; height: 50px'>Utitilades</button>
 						<div class="dropdown-content">
 							<a href="javaScript:abrirModal('filtroCostoModal')">Cálculo Hrs/Hombres</a> 
+							<a href="javaScript:abrirModal('calculoContabilidadModal')">Finalzas</a> 
 							
 						</div>
 					</div>
@@ -307,6 +308,82 @@
 	</div>
 <!-- *************************************************FIN************************************************ -->
 
+
+
+
+<!--******************************************NUEVO MODAL PARA GENERAR LA CONTABILIDAD************************************** -->
+<div class="modal" id="calculoContabilidadModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="background: #28a745;">
+				<h5 class="modal-title">GESTIÓN DE CONTABILIDAD MENSUAL - INGRESOS Y EGRESOS</h5>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close"
+					onclick="cerrarModal('calculoContabilidadModal'); return false">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card-body">
+
+					<!-- Sección de ingresos -->
+					<h5>INGRESOS</h5>
+					<div class="card-block">
+						<table class="table table-bordered table-striped" id="table-ingresos">
+							<thead>
+								<tr style="background: #d4edda">
+									<th>DESCRIPCIÓN INGRESO</th>
+									<th>TOTAL/MES</th>
+									<th>FECHA</th>
+									<th>ACCIÓN</th>
+								</tr>
+							</thead>
+							<tbody id="cuerpo-items-ingresos">
+								<!-- Aquí se agregarán dinámicamente las filas de ingresos -->
+							</tbody>
+						</table>
+					</div>
+					<br>
+
+					<!-- Sección de egresos -->
+					<h5>EGRESOS</h5>
+					<div class="card-block">
+						<table class="table table-bordered table-striped" id="table-egresos">
+							<thead>
+								<tr style="background: #f8d7da">
+									<th>DESCRIPCIÓN EGRESO</th>
+									<th>TOTAL/MES</th>
+									<th>FECHA</th>
+									<th>ACCIÓN</th>
+								</tr>
+							</thead>
+							<tbody id="cuerpo-items-egresos">
+								<!-- Aquí se agregarán dinámicamente las filas de egresos -->
+							</tbody>
+						</table>
+					</div>
+
+				<div class="modal-footer">
+					<div id="divResultado" class="posicion-inferior-izquierda">
+						<label>Resultado Mensual (Ingresos - Egresos): </label><label id="resultadoContabilidad">0</label>
+					</div>
+					<div class="text-center">
+						<button type="submit" class="btn btn-primary" href="javascript:;"
+							onclick="calcularContabilidad(); return false">Calcular Contabilidad</button>
+						<button id="btGuardarContabilidad" type="submit" class="btn btn-success" href="javascript:;"
+							onclick="guardarContabilidad(); return false" disabled>Guardar</button>
+					</div>
+				</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- *************************************************FIN************************************************ -->
+
+
 <style>
     .posicion-inferior-izquierda {
   position: absolute;
@@ -357,6 +434,115 @@
 	</div>
 
 	<!--******************************************FIN******************************************************-->
+
+<!--******************************************NUEVO MODAL PARA REGISTRAR EL PRESUPUESTO************************************** -->
+<div class="modal" id="presupuestoNuevoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #17a2b8;">
+                <h5 class="modal-title">GESTIÓN DE PRESUPUESTOS</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModal('presupuestoNuevoModal'); return false">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <!-- Form Row -->
+                    <div class="row">
+                        <!-- Banco y Número de Cuenta -->
+                        <div class="input-group col-md-6 mb-3">
+                            <label for="cuentaBancaria" class="col-form-label">Cuenta Bancaria</label>
+                            <select id="cuentaBancaria" name="cuentaBancaria" class="form-control custom-select" required>
+                                <option value="" selected disabled>Seleccionar Banco y Cuenta</option>
+                                <!-- Las opciones se llenarán dinámicamente desde la base de datos -->
+                            </select>
+                        </div>
+                    </div>
+					<input type="hidden" id="centrocID" name="centrocID" value="">
+
+                    <!-- Presupuesto Inicial -->
+                    <div class="row">
+                        <!-- Presupuesto en Pesos -->
+                        <label for="presupuestoInicial" class="col-md-2 col-form-label">Presupuesto (Pesos)</label>
+                        <div class="input-group col-md-4 mb-3">
+                            <input type="number" id="presupuestoInicial" name="presupuestoInicial" class="form-control" placeholder="Monto en pesos" required>
+                        </div>
+
+                        <!-- Presupuesto en Dólares -->
+                        <label for="presupuestoInicialDolares" class="col-md-2 col-form-label">Presupuesto (Dólares)</label>
+                        <div class="input-group col-md-4 mb-3">
+                            <input type="number" id="presupuestoInicialDolares" name="presupuestoInicialDolares" class="form-control" placeholder="Monto en dólares" required>
+                        </div>
+                        
+                        
+                        <div class="imput-group col-md-4">
+								<select style="width: 100%" class="centrocostoPre form-control"
+									name="centrocPre" id="centrocPre" required>
+									<option value="">Centro Costo</option>
+								</select>
+							</div>
+							<br>
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="cerrarModal('presupuestoNuevoModal'); return false">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarPresupuesto(); return false">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<!--******************************************FIN******************************************************-->
+	
+	
+	<!--******************************************NUEVO MODAL PARA consultar movimiento presupuesto************************************** -->
+	
+	<div class="modal" id="presupuestoModal" tabindex="-1" role="dialog" aria-labelledby="presupuestoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #17a2b8;">
+                <h5 class="modal-title" id="presupuestoModalLabel">Resumen de Presupuestos por Centro de Costo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModal('presupuestoModal'); return false">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>CC</th>
+                            <th>Descripción</th>
+                            <th>Mes</th>
+                            <th>Año</th>
+                            <th>Banco</th>
+                            <th>Cuenta Banco</th>
+                            <th>Inicial Pesos</th>                            
+                            <th>Presupuesto Restante</th>
+                            <th>Inicial Dolares</th>
+                            <th>Presupuesto Restante</th>
+                            <th>Saldo en Cuenta</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="presupuestoData">
+                        <!-- Los datos se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+	
+	
+		<!--******************************************FIN******************************************************-->
 
 
 
@@ -482,6 +668,9 @@
 	<div th:replace="template :: loadingTemplate"></div>
 
 	<div th:replace="template :: footer"></div>
+	
+	<script src="js/presupuesto.js"></script>
+	
 
 </body>
 

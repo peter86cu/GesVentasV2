@@ -1177,7 +1177,7 @@ public class OrdenesFacturasController {
 	}
 
 	@PostMapping({ LoginController.ruta+"/items-productos" })
-	public void itemsProductos(@ModelAttribute("accion") String accion, @ModelAttribute("q") String busqueda,
+	public void itemsProductos(@ModelAttribute("accion") String accion, @ModelAttribute("q") String busqueda, @ModelAttribute("evento") int evento,
 			 @ModelAttribute("tipo") int moneda, Model modelo, HttpServletResponse responseHttp) throws IOException, ParseException, SQLException {
 		if (LoginController.session.getToken() != null) {
 			List<ItemsProducto> itemsProductosNew= new ArrayList<ItemsProducto>();
@@ -1191,7 +1191,7 @@ public class OrdenesFacturasController {
 			
 			
 			modelo.addAttribute("user", LoginController.session.getUser());
-			List<ItemsProducto> itemsProductos = Utils.listadoItemsProductos(busqueda);
+			List<ItemsProducto> itemsProductos = Utils.listadoItemsProductos(busqueda,evento);
 			for (ItemsProducto itemsProducto : itemsProductos) {
 				ItemsProducto neow = itemsProducto;
 				if(itemsProducto.getId_moneda()!=moneda && moneda==1) {
